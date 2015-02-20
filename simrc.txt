@@ -1,0 +1,167 @@
+# test syntax validation
+<stx>WWE:I1;                <stx>ERR:0;
+<stx>WWC:1.010,1.010,1.010; <stx>ERR:0;
+<stx>XXXX; <stx>ERR:0;
+<stx>XX; <stx>ERR:0;
+
+# Globals
+<stx>VRC:1.010,1.010,1.010; <ack>           # (not real command) set version number
+<stx>VRQ;                   <stx>VRS:1.010,1.010,1.010;
+<stx>SCC:000,"default_scene"; <ack>         # (bodge - really SSC) set scene name / number
+<stx>SCQ;                   <stx>SCS:000,"default_scene";
+
+# Channel defaults (<input> expands to I1 ... I48, so each command will be execute 48 times)
+<stx>CNC:<input>,"NoName";       <ack>           # channel name
+<stx>FDC:<input>,INF;            <ack>           # fader
+<stx>MUC:<input>,1;              <ack>           # mute
+<stx>PTC:<input>,0;              <ack>           # phantom on/off
+<stx>PSC:<input>,0;              <ack>           # phase on/off
+<stx>EQC:<input>,0;              <ack>           # equaliser on/off
+<stx>FLC:<input>,0;              <ack>           # hp filter on/off
+<stx>PGC:<input>,0,-80.0;        <ack>           # (pad on/off) gain
+<stx>AXC:<input>,AX1,-80.0,C;    <ack>           # Aux Setting
+<stx>AXC:<input>,AX2,-80.0,C;    <ack>           # Aux Setting
+<stx>AXC:<input>,AX3,-80.0,C;    <ack>           # Aux Setting
+<stx>AXC:<input>,AX4,-80.0,C;    <ack>           # Aux Setting
+<stx>AXC:<input>,AX5,-80.0,C;    <ack>           # Aux Setting
+<stx>AXC:<input>,AX6,-80.0,C;    <ack>           # Aux Setting
+<stx>AXC:<input>,AX7,-80.0,C;    <ack>           # Aux Setting
+<stx>AXC:<input>,AX8,-80.0,C;    <ack>           # Aux Setting
+<stx>AXC:<input>,AX9,-80.0,C;    <ack>           # Aux Setting
+<stx>AXC:<input>,AX10,-80.0,C;   <ack>           # Aux Setting
+<stx>AXC:<input>,AX11,-80.0,C;   <ack>           # Aux Setting
+<stx>AXC:<input>,AX12,-80.0,C;   <ack>           # Aux Setting
+<stx>AXC:<input>,AX13,-80.0,C;   <ack>           # Aux Setting
+<stx>AXC:<input>,AX14,-80.0,C;   <ack>           # Aux Setting
+<stx>AXC:<input>,AX15,-80.0,C;   <ack>           # Aux Setting
+<stx>AXC:<input>,AX16,-80.0,C;   <ack>           # Aux Setting
+
+# Give AUX output channels names
+<stx>CNC:AX1,"OUT1  ";           <ack>      # aux channel name
+<stx>CNC:AX2,"OUT2  ";           <ack>      # aux channel name
+<stx>CNC:AX3,"OUT3  ";           <ack>      # aux channel name
+<stx>CNC:AX4,"OUT4  ";           <ack>      # aux channel name
+<stx>CNC:AX5,"OUT5  ";           <ack>      # aux channel name
+<stx>CNC:AX6,"OUT6  ";           <ack>      # aux channel name
+<stx>CNC:AX7,"OUT7  ";           <ack>      # aux channel name
+<stx>CNC:AX8,"OUT8  ";           <ack>      # aux channel name
+<stx>CNC:AX9,"OUT9  ";           <ack>      # aux channel name
+<stx>CNC:AX10,"OUT10 ";           <ack>      # aux channel name
+<stx>CNC:AX11,"OUT11 ";           <ack>      # aux channel name
+<stx>CNC:AX12,"OUT12 ";           <ack>      # aux channel name
+<stx>CNC:AX13,"OUT13 ";           <ack>      # aux channel name
+<stx>CNC:AX14,"OUT14 ";           <ack>      # aux channel name
+<stx>CNC:AX15,"OUT15 ";           <ack>      # aux channel name
+<stx>CNC:AX16,"OUT16 ";           <ack>      # aux channel name
+
+# Give the channels some unique names
+<stx>CNC:I1,"ONE   ";        <ack>           # channel name
+<stx>CNC:I2,"TWO   ";        <ack>           # channel name
+<stx>CNC:I3,"THREE ";        <ack>           # channel name
+<stx>CNC:I4,"FOUR  ";        <ack>           # channel name
+<stx>CNC:I5,"FIVE  ";        <ack>           # channel name
+<stx>CNC:I6,"SIX   ";        <ack>           # channel name
+<stx>CNC:I7,"SEVEN ";        <ack>           # channel name
+<stx>CNC:I8,"EIGHT ";        <ack>           # channel name
+<stx>CNC:I9,"NINE  ";        <ack>           # channel name
+<stx>CNC:I10,"TEN   ";       <ack>           # channel name
+<stx>CNC:I11,"IN11  ";       <ack>           # channel name
+<stx>CNC:I12,"IN12  ";       <ack>           # channel name
+<stx>CNC:I13,"IN13  ";       <ack>           # channel name
+<stx>CNC:I14,"IN14  ";       <ack>           # channel name
+<stx>CNC:I15,"IN15  ";       <ack>           # channel name
+<stx>CNC:I16,"IN16  ";       <ack>           # channel name
+<stx>CNC:I17,"IN17  ";       <ack>           # channel name
+<stx>CNC:I18,"IN18  ";       <ack>           # channel name
+<stx>CNC:I19,"IN19  ";       <ack>           # channel name
+<stx>CNC:I20,"TWENTY";       <ack>           # channel name
+<stx>CNC:I21,"IN21  ";       <ack>           # channel name
+<stx>CNC:I22,"IN22  ";       <ack>           # channel name
+<stx>CNC:I23,"IN23  ";       <ack>           # channel name
+<stx>CNC:I24,"IN24  ";       <ack>           # channel name
+<stx>CNC:I25,"IN25  ";       <ack>           # channel name
+<stx>CNC:I26,"IN26  ";       <ack>           # channel name
+<stx>CNC:I27,"IN27  ";       <ack>           # channel name
+<stx>CNC:I28,"IN28  ";       <ack>           # channel name
+<stx>CNC:I29,"IN29  ";       <ack>           # channel name
+<stx>CNC:I30,"THIRTY";       <ack>           # channel name
+<stx>CNC:I31,"IN31  ";       <ack>           # channel name
+<stx>CNC:I32,"IN32  ";       <ack>           # channel name
+<stx>CNC:I33,"IN33  ";       <ack>           # channel name
+<stx>CNC:I34,"IN34  ";       <ack>           # channel name
+<stx>CNC:I35,"IN35  ";       <ack>           # channel name
+<stx>CNC:I36,"IN36  ";       <ack>           # channel name
+<stx>CNC:I37,"IN37  ";       <ack>           # channel name
+<stx>CNC:I38,"IN38  ";       <ack>           # channel name
+<stx>CNC:I39,"IN39  ";       <ack>           # channel name
+<stx>CNC:I40,"FORTY ";       <ack>           # channel name
+<stx>CNC:I41,"IN41  ";       <ack>           # channel name
+<stx>CNC:I42,"IN42  ";       <ack>           # channel name
+<stx>CNC:I43,"IN43  ";       <ack>           # channel name
+<stx>CNC:I44,"IN44  ";       <ack>           # channel name
+<stx>CNC:I45,"IN45  ";       <ack>           # channel name
+<stx>CNC:I46,"IN46  ";       <ack>           # channel name
+<stx>CNC:I47,"IN47  ";       <ack>           # channel name
+<stx>CNC:I48,"IN48  ";       <ack>           # channel name
+
+# REAC inputs
+<stx>PIC:I1,RAI1;            <ack>           # channel REAC input
+<stx>PIC:I2,RAI2;            <ack>           # channel REAC input
+<stx>PIC:I3,RAI3;            <ack>           # channel REAC input
+<stx>PIC:I4,RAI4;            <ack>           # channel REAC input
+<stx>PIC:I5,RAI5;            <ack>           # channel REAC input
+<stx>PIC:I6,RAI6;            <ack>           # channel REAC input
+<stx>PIC:I7,RAI7;            <ack>           # channel REAC input
+<stx>PIC:I8,RAI8;            <ack>           # channel REAC input
+<stx>PIC:I9,RAI9;            <ack>           # channel REAC input
+<stx>PIC:I10,RAI10;          <ack>           # channel REAC input
+<stx>PIC:I11,RAI11;          <ack>           # channel REAC input
+<stx>PIC:I12,RAI12;          <ack>           # channel REAC input
+<stx>PIC:I13,RAI13;          <ack>           # channel REAC input
+<stx>PIC:I14,RAI14;          <ack>           # channel REAC input
+<stx>PIC:I15,RAI15;          <ack>           # channel REAC input
+<stx>PIC:I16,RAI16;          <ack>           # channel REAC input
+<stx>PIC:I17,RAI17;          <ack>           # channel REAC input
+<stx>PIC:I18,RAI18;          <ack>           # channel REAC input
+<stx>PIC:I19,RAI19;          <ack>           # channel REAC input
+<stx>PIC:I20,RAI20;          <ack>           # channel REAC input
+<stx>PIC:I21,RAI21;          <ack>           # channel REAC input
+<stx>PIC:I22,RAI22;          <ack>           # channel REAC input
+<stx>PIC:I23,RAI23;          <ack>           # channel REAC input
+<stx>PIC:I24,RAI24;          <ack>           # channel REAC input
+<stx>PIC:I25,RAI25;          <ack>           # channel REAC input
+<stx>PIC:I26,RAI26;          <ack>           # channel REAC input
+<stx>PIC:I27,RAI27;          <ack>           # channel REAC input
+<stx>PIC:I28,RAI28;          <ack>           # channel REAC input
+<stx>PIC:I29,RAI29;          <ack>           # channel REAC input
+<stx>PIC:I30,RAI30;          <ack>           # channel REAC input
+<stx>PIC:I31,RAI31;          <ack>           # channel REAC input
+<stx>PIC:I32,RAI32;          <ack>           # channel REAC input
+<stx>PIC:I33,RAI33;          <ack>           # channel REAC input
+<stx>PIC:I34,RAI34;          <ack>           # channel REAC input
+<stx>PIC:I35,RAI35;          <ack>           # channel REAC input
+<stx>PIC:I36,RAI36;          <ack>           # channel REAC input
+<stx>PIC:I37,RAI37;          <ack>           # channel REAC input
+<stx>PIC:I38,RAI38;          <ack>           # channel REAC input
+<stx>PIC:I39,RAI39;          <ack>           # channel REAC input
+<stx>PIC:I40,RAI40;          <ack>           # channel REAC input
+<stx>PIC:I41,RAI41;          <ack>           # channel REAC input
+<stx>PIC:I42,RAI42;          <ack>           # channel REAC input
+<stx>PIC:I43,RAI43;          <ack>           # channel REAC input
+<stx>PIC:I44,RAI44;          <ack>           # channel REAC input
+<stx>PIC:I45,RAI45;          <ack>           # channel REAC input
+<stx>PIC:I46,RAI46;          <ack>           # channel REAC input
+<stx>PIC:I47,RAI47;          <ack>           # channel REAC input
+<stx>PIC:I48,RAI48;          <ack>           # channel REAC input
+
+# REAC outputs
+<stx>POC:O1,RAO1;            <ack>           # channel REAC output
+<stx>POC:O2,RAO2;            <ack>           # channel REAC output
+<stx>POC:O3,RAO3;            <ack>           # channel REAC output
+<stx>POC:O4,RAO4;            <ack>           # channel REAC output
+<stx>POC:O5,RAO5;            <ack>           # channel REAC output
+<stx>POC:O6,RAO6;            <ack>           # channel REAC output
+<stx>POC:O7,RAO7;            <ack>           # channel REAC output
+<stx>POC:O8,RAO8;            <ack>           # channel REAC output
+
+

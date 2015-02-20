@@ -1,0 +1,32 @@
+# comment
+<stx>WWE:I1;	<ack>
+<stx>WWC:1.010,1.010,1.010;<ack>
+<stx>XXXX; <ack>
+<stx>XX;                         <ack>
+
+# Globals
+<stx>VRC:1.010,1.010,1.010; 	 <ack>      # (not real command) set version number
+<stx>VRQ;                   	 <ack>
+<stx>SCC:000,"default_scene"; 	 <ack>      # (bodge - really SSC) set scene name / number
+<stx>SCQ;                        jk         # test mismatching response
+<stx>SCQ;                   	 <ack>
+
+# Channel defaults (<input> expands to I1 ... I48, so each command will be execute 48 times)
+<stx>CNC:<input>,"NoName";       <ack>     # channel name
+<stx>FDC:<input>,INF;            <ack>     # fader
+<stx>MUC:<input>,1;              <ack>     # mute
+<stx>PTC:<input>,0;              <ack>     # phantom on/off
+<stx>PSC:<input>,0;              <ack>     # phase on/off
+<stx>EQC:<input>,0;              <ack>     # equaliser on/off
+<stx>FLC:<input>,0;              <ack>     # hp filter on/off
+<stx>PGC:<input>,0,-80.0;        <ack>     # (pad on/off) gain
+<stx>AXC:<input>,AX1,-80.0,C;    <ack>     # Aux Setting
+<stx>AXC:<input>,AX2,-80.0,C;    <ack>     # Aux Setting
+<stx>AXC:<input>,AX3,-80.0,C;    <ack>
+<stx>AXC:<input>,AX4,-80.0,C;    <ack>
+
+# Give AUX output channels names
+<stx>CNC:AX1,"OUT1  ";           <ack>     # aux channel name
+<stx>CNC:AX2,"OUT2  ";           <ack>   
+<stx>CNC:AX3,"OUT3  ";           <ack>     # aux channel name
+<stx>CNC:AX4,"OUT4  ";           <ack>   
