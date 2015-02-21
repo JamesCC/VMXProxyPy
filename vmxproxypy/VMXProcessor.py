@@ -23,9 +23,11 @@ a simulation mode, which will emulate an attached mixer."""
 
 import threading
 import logging
+import random
+import time
 
-from vmxproxypy.VMXParser import VMXParser
-from vmxproxypy.VMXStateMonitor import VMXStateMonitor
+from VMXParser import VMXParser
+from VMXStateMonitor import VMXStateMonitor
 
 class Sink:
     """A dummy class to sink strings, and issues blank responses.  Used for
@@ -34,8 +36,8 @@ class Sink:
     def reset(self):
         """Dummy reset method.  Does nothing."""
         pass
-        
-    def process(self, string = None):
+    
+    def process(self, dummy = None):
         """Accept a string and return nothing."""
         return None
 
@@ -49,12 +51,29 @@ class VMXProcessor:
         self.__state_monitor = VMXStateMonitor()
         self.__output_parser = VMXParser()
         self.__mixer_if      = Sink()
+        self.__discard_rate  = None
+        self.__cmd_delay     = None
+    
+    def reset(self):
+        """Reset the command processor, but preserve state database."""
+        self.__stage2_parser.reset()
+        self.__output_parser.reset()
+        # Intentionally don't reset the state monitor - to preserve db
+        self.__mixer_if.reset()
     
     def set_mixer_interface(self, mixer_if_object):
         """Set the interface for the mixer.  Typically passed an object of the
         VMXSerialPort class, which exposes the serial interface.  Will override
         the default Sink interface used for simulation."""
         self.__mixer_if = mixer_if_object
+
+    def set_debug_discard_rate(self, discard_rate):
+        """Set command discard rate (debug option).  Randomly discards 1 in X."""
+        self.__discard_rate = discard_rate
+
+    def set_debug_cmd_delay_in_ms(self, cmd_delay_in_ms):
+        """Set command maximum delay in milliseconds (debug option)."""
+        self.__cmd_delay = cmd_delay_in_ms / 1000
 
     def process(self, command = ""):
         """Accept a command or commands, process them, returning the 
@@ -70,6 +89,11 @@ class VMXProcessor:
         while output_stage2:
             logging.debug(">> " + output_stage2)
 
+            # discard rate is a debug feature
+            if self.__discard_rate is not None:
+                if random.randint(1, self.__discard_rate) == self.__discard_rate:
+                    continue
+
             # Send to mixer or simulator dummy function (which will return None)            
             mixer_reply = self.__mixer_if.process(output_stage2)
             
@@ -79,6 +103,10 @@ class VMXProcessor:
             #output_string += state_monitor_output
             output_string += self.__output_parser.process(state_monitor_output)
             
+            # cmd delay is a debug feature
+            if self.__cmd_delay is not None:
+                time.sleep(self.__cmd_delay)
+
             # check for any further commands (will be the case if a concatenated command)
             output_stage2 = self.__stage2_parser.process()
 

@@ -26,10 +26,12 @@ import SocketServer
 import os
 import time
 
-from vmxproxypy.VMXSimFileParser import VMXSimFileParser
-from vmxproxypy.VMXSerialPort import VMXSerialPort
-from vmxproxypy.VMXProcessor import VMXProcessor
-from vmxproxypy.VMXParser import VMXParser
+from VMXSimFileParser import VMXSimFileParser
+from VMXSerialPort import VMXSerialPort
+from VMXProcessor import VMXProcessor
+from VMXParser import VMXParser
+from ZeroconfService import ZeroconfService
+
 
 class ThreadedTCPRequestHandler(SocketServer.BaseRequestHandler):
     """Handler container for incoming TCP connections"""
@@ -78,6 +80,9 @@ VERBOSITY = logging.INFO
 
 CMD_PROCESSOR = VMXProcessor()    
 
+DEBUG_DISCARD_RATE = None
+DEBUG_CMD_DELAY    = None
+
 
 def parse_parameters():
     """Parse the command line parameters and alter any global variables to
@@ -88,6 +93,8 @@ def parse_parameters():
     global PORT
     global PASSWORD
     global VERBOSITY
+    global DEBUG_DISCARD_RATE
+    global DEBUG_CMD_DELAY
     
     parser = optparse.OptionParser(usage="""\
 %prog [options]
@@ -117,13 +124,22 @@ Roland VMixer interface adaptor.  It can run in three modes.
     parser.add_option("-p", "--password", dest="password",
         help="set password authentication", default=None, metavar="PASSWD")
 
-    (options, args) = parser.parse_args()
+    parser.add_option("-z", "--delay", dest="debug_cmd_delay",
+        help="(debug) set random delay", default=None, metavar="MS")
+
+    parser.add_option("-x", "--discard", dest="debug_discard_rate",
+        help="(debug) set discard rate", default=None, metavar="X")
+
+    (options, dummy) = parser.parse_args()
 
     SERIAL    = options.serial
     BAUD      = options.baud
     PORT      = options.port
     PASSWORD  = options.password
-
+    
+    DEBUG_DISCARD_RATE = options.debug_discard_rate
+    DEBUG_CMD_DELAY    = options.debug_cmd_delay
+    
     if options.quiet:           # just warnings and errors
         VERBOSITY = logging.WARNING
     elif options.verbosity:     # debug output
@@ -131,6 +147,58 @@ Roland VMixer interface adaptor.  It can run in three modes.
     else:                       # normal output
         VERBOSITY = logging.INFO
 
+
+def input_from_network(serial_port):
+    """Handle input from network (Simulation or Proxy)."""
+    server = ThreadedTCPServer((HOST, int(PORT)), ThreadedTCPRequestHandler)
+    dummy, port = server.server_address
+    logging.info("Network Server started on port %d", port)
+
+    if SERIAL is not None:
+        CMD_PROCESSOR.set_mixer_interface(serial_port)
+
+    # Start a thread with the server -- that thread will then start one
+    # more thread for each request
+    server_thread = threading.Thread(target=server.serve_forever)
+    # Exit the server thread when the main thread terminates
+    server_thread.daemon = True
+    server_thread.start()
+    logging.info("Server loop running in thread: " + server_thread.name)
+
+    service = ZeroconfService(name="TestService", port=int(PORT), stype='_serial_port._tcp')
+    service.publish()
+    
+    try:
+        while True:
+            time.sleep(1)
+            
+    except KeyboardInterrupt:
+        server.shutdown()
+        service.unpublish()
+        logging.info("Server shutdown")
+        if SERIAL is not None:
+            del serial_port
+            logging.info("Serial Port shutdown")
+        os._exit(0)
+
+def input_from_serial(serial_port):
+    """Handle input from serial port (Simulation)."""
+    logging.info("Mixer Emulation - expecting input from Serial Port")
+    try:
+        to_serial = ""
+        serial_input_gatherer = VMXParser()
+        while True:
+            from_serial = serial_port.process(to_serial)
+            to_serial = ""
+            serial_command = serial_input_gatherer.process(from_serial)
+            while serial_command:
+                to_serial += CMD_PROCESSOR.process(serial_command)
+                serial_command = serial_input_gatherer.process()
+
+    except KeyboardInterrupt:
+        del serial_port
+        logging.info("Serial Port shutdown")
+        os._exit(0)
 
 def main():
     """The main program setting up required objects, network server interface,
@@ -141,6 +209,8 @@ def main():
     if SERIAL is not None:
         serial_port = VMXSerialPort( SERIAL, int(BAUD) )
         logging.info("Opened Serial Port %s at %s baud", SERIAL, BAUD)
+    else:
+        serial_port = None
 
     # proxy mode is only available if both network and serial are declared
     if SERIAL is not None and PORT is not None:
@@ -152,53 +222,21 @@ def main():
     if PASSWORD is not None:
         logging.info("Password is set - Authentication will be required")
 
+    if DEBUG_DISCARD_RATE is not None:
+        logging.info("Debug Mode - Randomly discard 1 in %s commands", DEBUG_DISCARD_RATE)
+        CMD_PROCESSOR.set_debug_discard_rate( int(DEBUG_DISCARD_RATE) )
+    
+    if DEBUG_CMD_DELAY is not None:
+        logging.info("Debug Mode - Randomly delay up to %sms", DEBUG_CMD_DELAY)
+        CMD_PROCESSOR.set_debug_cmd_delay_in_ms( int(DEBUG_CMD_DELAY) )
+
     if PORT is not None:
         # Input is from Network
-        server = ThreadedTCPServer((HOST, int(PORT)), ThreadedTCPRequestHandler)
-        ip_addr, port = server.server_address
-        logging.info("Network Server started on port %d", port)
-
-        if SERIAL is not None:
-            CMD_PROCESSOR.set_mixer_interface(serial_port)
-
-        # Start a thread with the server -- that thread will then start one
-        # more thread for each request
-        server_thread = threading.Thread(target=server.serve_forever)
-        # Exit the server thread when the main thread terminates
-        server_thread.daemon = True
-        server_thread.start()
-        logging.info("Server loop running in thread: " + server_thread.name)
+        input_from_network(serial_port)
         
-        try:
-            while True:
-                time.sleep(1)
-                
-        except KeyboardInterrupt:
-            server.shutdown()
-            logging.info("Server shutdown")
-            if SERIAL is not None:
-                del serial_port
-                logging.info("Serial Port shutdown")
-            os._exit(0)
-
     elif SERIAL is not None:        # (and PORT is None)
         # Input is from Serial Port
-        logging.info("Mixer Emulation - expecting input from Serial Port")
-        try:
-            to_serial = ""
-            serial_input_gatherer = VMXParser()
-            while True:
-                from_serial = serial_port.process(to_serial)
-                to_serial = ""
-                serial_command = serial_input_gatherer.process(from_serial)
-                while serial_command:
-                    to_serial += CMD_PROCESSOR.process(serial_command)
-                    serial_command = serial_input_gatherer.process()
-
-        except KeyboardInterrupt:
-            del serial_port
-            logging.info("Serial Port shutdown")
-            os._exit(0)
+        input_from_serial(serial_port)
     
     else:
         logging.error("Invalid mode.  Need either or both -s or -n options.")

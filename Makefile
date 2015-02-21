@@ -18,10 +18,10 @@ all: test
 
 # run targets
 nsim:
-	python2 vmxproxypy/VMXProxy.py -v -n 10000
+	python2 vmxproxypy/VMXProxy.py -n 10000
 
 ssim:
-	python2 vmxproxypy/VMXProxy.py -v -s /dev/ttyUSB0
+	python2 vmxproxypy/VMXProxy.py -s /dev/ttyUSB0
 
 proxy:
 	python2 vmxproxypy/VMXProxy.py -n 10000 -s /dev/ttyUSB0

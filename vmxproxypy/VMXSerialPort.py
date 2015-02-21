@@ -34,6 +34,7 @@ class VMXSerialPort:
         self.__serial.close()
 
     def reset(self):
+        """Flushes the input and output buffers of the serial port."""
         self.__serial.flushInput()
         self.__serial.flushOutput()
 
@@ -43,15 +44,16 @@ class VMXSerialPort:
         if string is not None:
             self.__serial.flushInput()
             self.__serial.write(string)
+        response = ""
         inside_quotes = False
         while True:
             char = self.__serial.read(1)
-            string += char
+            response += char
             if ( char == "" or char == chr(6) ):
                 break
             if ( char == "\"" ):
                 inside_quotes = not inside_quotes
             if ( char == ";" and not inside_quotes ):
                 break
-        return string
+        return response
 
