@@ -45,15 +45,15 @@ class TestVMXParser(unittest.TestCase):
     def testIsEmpty(self):
         vmxparser = VMXParser()
         self.assertEqual( vmxparser.process(vmxparser.STX+"cmd1:I1,st"), "")
-        self.assertFalse( vmxparser.isEmpty() )
+        self.assertFalse( vmxparser.is_empty() )
         self.assertEqual( vmxparser.process("art;"), vmxparser.STX+"cmd1:I1,start;" )
-        self.assertTrue( vmxparser.isEmpty() )
+        self.assertTrue( vmxparser.is_empty() )
 
     def testReset(self):
         vmxparser = VMXParser()
         self.assertEqual( vmxparser.process(vmxparser.STX+"cmd1:I1,st"), "")
         vmxparser.reset()
-        self.assertTrue( vmxparser.isEmpty() )
+        self.assertTrue( vmxparser.is_empty() )
         self.assertEqual( vmxparser.process(vmxparser.STX+"cmd2:I2,param;"), vmxparser.STX+"cmd2:I2,param;" )
-        self.assertTrue( vmxparser.isEmpty() )
+        self.assertTrue( vmxparser.is_empty() )
 

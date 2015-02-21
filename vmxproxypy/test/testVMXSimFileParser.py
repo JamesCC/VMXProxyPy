@@ -28,7 +28,7 @@ class TestVMXSimFileParser(unittest.TestCase):
 
     def testParser(self):
         sfp = VMXSimFileParser(mockCommandProcessor())
-        successfulCommands, commands = sfp.ReadFile("vmxproxypy/test/parser.txt")
+        successfulCommands, commands = sfp.read_file("vmxproxypy/test/parser.txt")
         self.assertEqual( successfulCommands, 575 )
         self.assertEqual( commands, 577 )
 

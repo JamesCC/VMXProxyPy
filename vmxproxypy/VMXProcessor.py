@@ -1,5 +1,10 @@
 #! /usr/bin/env python
 
+"""The Command Processor.  Takes a command or commands and issues them one 
+command one at a time to the mixer, collecting the responses and echoing them
+back.  If the .set_mixer_interface method is not called it will operate in
+a simulation mode, which will emulate an attached mixer."""
+
 #    This file is part of VMXProxyPy.
 #
 #    VMXProxyPy is free software: you can redistribute it and/or modify
@@ -19,56 +24,71 @@
 import threading
 import logging
 
-from VMXParser import VMXParser
-from VMXStateMonitor import VMXStateMonitor
+from vmxproxypy.VMXParser import VMXParser
+from vmxproxypy.VMXStateMonitor import VMXStateMonitor
 
-class VMXSimulator:
+class Sink:
+    """A dummy class to sink strings, and issues blank responses.  Used for
+    the simulator, and satisfies the expected interface requirements."""
+    
+    def reset(self):
+        """Dummy reset method.  Does nothing."""
+        pass
+        
     def process(self, string = None):
+        """Accept a string and return nothing."""
         return None
 
 class VMXProcessor:
-    __lock = threading.Lock()
+    """The Command Processor.  Accepts one or more commands, processes them
+    and returns the responses."""
     
-    __stage2Parser = VMXParser()
-    __stateMonitor = VMXStateMonitor()
-    __OutputParser = VMXParser()
+    def __init__(self):
+        self.__lock = threading.Lock()
+        self.__stage2_parser = VMXParser()
+        self.__state_monitor = VMXStateMonitor()
+        self.__output_parser = VMXParser()
+        self.__mixer_if      = Sink()
     
-    __mixerIO      = VMXSimulator()
-    
-    def setMixerIO(self, mixerIOObject):
-        self.__mixerIO = mixerIOObject
+    def set_mixer_interface(self, mixer_if_object):
+        """Set the interface for the mixer.  Typically passed an object of the
+        VMXSerialPort class, which exposes the serial interface.  Will override
+        the default Sink interface used for simulation."""
+        self.__mixer_if = mixer_if_object
 
     def process(self, command = ""):
-        
+        """Accept a command or commands, process them, returning the 
+        responses.  Will pass mixer commands to the mixer interface setup via
+        the .set_mixer_interface() method."""
         self.__lock.acquire()
     
         # parse stage1 output to split up any concatenated commands
-        outputStage2 = self.__stage2Parser.process(command)
+        output_stage2 = self.__stage2_parser.process(command)
 
         # while any commands to process...
-        outputString = ""
-        while outputStage2:
-            logging.debug(">> " + outputStage2)
+        output_string = ""
+        while output_stage2:
+            logging.debug(">> " + output_stage2)
 
             # Send to mixer or simulator dummy function (which will return None)            
-            mixerReply = self.__mixerIO.process(outputStage2)
+            mixer_reply = self.__mixer_if.process(output_stage2)
             
-            stateMonitorOutput = self.__stateMonitor.process(outputStage2, mixerReply)
-            logging.debug("<< " + stateMonitorOutput)
+            state_monitor_output = self.__state_monitor.process(output_stage2, mixer_reply)
+            logging.debug("<< " + state_monitor_output)
 
-            #outputString += stateMonitorOutput
-            outputString += self.__OutputParser.process(stateMonitorOutput)
+            #output_string += state_monitor_output
+            output_string += self.__output_parser.process(state_monitor_output)
             
             # check for any further commands (will be the case if a concatenated command)
-            outputStage2 = self.__stage2Parser.process()
+            output_stage2 = self.__stage2_parser.process()
 
-        if not self.__stage2Parser.isEmpty():
+        if not self.__stage2_parser.is_empty():
             # This is bomb proofing, this method should not have been called with fragmented
             # commands, so this should never occur.
             logging.warning("Parser should be empty - discarding fragment")
-            __stage2Parser.reset()
+            self.__stage2_parser.reset()
             
         self.__lock.release()
     
-        return( outputString )
+        return( output_string )
 

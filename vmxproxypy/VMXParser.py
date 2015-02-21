@@ -1,5 +1,7 @@
 #! /usr/bin/env python
 
+"""A Validator for V-Mixer Serial Port Protocol."""
+
 #    This file is part of VMXProxyPy.
 #
 #    VMXProxyPy is free software: you can redistribute it and/or modify
@@ -16,73 +18,78 @@
 #    along with VMXProxyPy.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-import unittest
-import logging
-
 class VMXParser:
-    """Parses an (potential fragmented) input stream constructing whole commands.
-    Commands are output one full command at a time, with the exception of concatenated
-    commands which are reformed into individual commands, but are output as one unit."""
+    """Parses an (potential fragmented) input stream constructing whole 
+    commands. Commands are output one full command at a time, with the 
+    exception of concatenated commands which are reformed into individual 
+    commands, but are output as one unit."""
 
     STX = chr(2)
     ACK = chr(6)
     
-    __inBuffer = ''         # collector of input text
+    def __init__(self):
+        self.__in_buffer = ""
 
     def reset(self):
-        self.__inBuffer = ""
+        """Resets the VMXParser internal state discarding any data 
+        fragments."""
+        self.__in_buffer = ""
     
-    def isEmpty(self):
-        if self.__inBuffer:
+    def is_empty(self):
+        """Return True if no partial commands are in the internal buffer."""
+        if self.__in_buffer:
             return False
         else:
             return True
     
     def process(self, string = None):
+        """Accept commands or partial commands, outputting a command only when
+        a full command is seen (otherwise an empty string).  Can be called 
+        without a parameter to see if there are any more commands."""
         if string is not None:
-            self.__inBuffer += string
-        outputCommand = self._parse()
-        return outputCommand
+            self.__in_buffer += string
+        output_command = self._parse()
+        return output_command
 
     def _parse(self):
-        cmdString = ''
+        """Parse the internal buffer, returning the first valid command seen,
+        or an empty string otherwise."""
         string = ''
-        stxFound=False
-        complete=False
+        stx_found = False
 
-        outputCommand = ""
-        for c in self.__inBuffer:
-            if outputCommand:
+        output_command = ""
+        for character in self.__in_buffer:
+            if output_command:
                 # got command - do not parse anything further
-                string += c
+                string += character
                 continue
-            elif c == self.STX:
+            elif character == self.STX:
                 # start of command - drop all leading junk 
-                string = c
-                skipSemis = False
-                stxFound = True
-            elif c == self.ACK:
-                # acknowledgement - drop all leading junk and assign to cmdString
-                outputCommand = c
+                string = character
+                skip_semis = False
+                stx_found = True
+            elif character == self.ACK:
+                # acknowledgement - drop all leading junk and assign ACK
+                output_command = character
                 string = ''
-            elif stxFound:
-                # start of command seen, wait for semicolon skipping ones inside quotes
-                if c == '"':
+            elif stx_found:
+                # start of command seen, wait for semicolon skipping quoted
+                if character == '"':
                     # track quotes to know if inside or outside a pair
-                    string += c
-                    skipSemis = not skipSemis
-                elif not skipSemis and c == '&':
+                    string += character
+                    skip_semis = not skip_semis
+                elif not skip_semis and character == '&':
                     # concatenated command keep collecting
                     string += ';' + self.STX
-                elif not skipSemis and c == ';':
-                    # end of command assign to cmdString
+                elif not skip_semis and character == ';':
+                    # end of command assign to cmd_string
                     string += ';'
-                    outputCommand = string
+                    output_command = string
                     string = ''
                 else:
-                    string += c
+                    string += character
         
         # leave any residue in the buffer for next time
-        self.__inBuffer = string
-        return outputCommand 
+        self.__in_buffer = string
+        return output_command 
 
