@@ -33,62 +33,26 @@ from VMXParser import VMXParser
 from ZeroconfService import ZeroconfService
 
 
-class ThreadedTCPRequestHandler(SocketServer.BaseRequestHandler):
-    """Handler container for incoming TCP connections"""
+SERIAL_DEV  = None
+BAUD        = 115200
+HOST        = ""
+PORT        = 10000
+PASSWORD    = None
+SIMFILERC   = "simrc.txt"
+VERBOSITY   = logging.INFO
 
-    def handle(self):
-        """Handler for incoming TCP connections"""
-        address = self.request.getsockname()
-        logging.info( "Connected to " + address[0] + address[1] )
-        authenticated = (PASSWORD is None)
-        tcp_input_gatherer = VMXParser()
-        try:
-            data = self.request.recv(1024)
-            while data:
-                tcp_command = tcp_input_gatherer.process(data)
-                while tcp_command:
-                    if authenticated:
-                        response = CMD_PROCESSOR.process(tcp_command)
-                    elif tcp_command == chr(2)+"###PWD:"+PASSWORD+";":
-                        response = chr(6)
-                        authenticated = 1
-                    else:
-                        logging.warning("Not Authenticated")
-                        response = chr(2)+"ERR:6;"  
-                    if response != "":
-                        self.request.sendall(response)
-                    tcp_command = tcp_input_gatherer.process()
-                data = self.request.recv(1024)
-        except:
-            pass
-        logging.info( "Disconnected from " + address[0] + address[1] )
-
-class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
-    """Instance of a TCP Server that can handle multiple simultaneous 
-    connections."""
-    pass
-
-
-
-SERIAL    = None
-BAUD      = 115200
-HOST      = ""
-PORT      = 10000
-PASSWORD  = None
-SIMFILERC = "simrc.txt"
-VERBOSITY = logging.INFO
-
-CMD_PROCESSOR = VMXProcessor()    
+CMD_PROCESSOR = VMXProcessor()
+TEST_METHOD_INJECTION = None
 
 DEBUG_DISCARD_RATE = None
 DEBUG_CMD_DELAY    = None
 
 
-def parse_parameters():
+def parse_cmdline_parameters():
     """Parse the command line parameters and alter any global variables to
     reflect the configuration."""
     
-    global SERIAL
+    global SERIAL_DEV
     global BAUD
     global PORT
     global PASSWORD
@@ -113,7 +77,7 @@ Roland VMixer interface adaptor.  It can run in three modes.
         help="show debug", default=False)
 
     parser.add_option("-s", "--serial", dest="serial",
-        help="use serial port as proxy", default=None, metavar="SERIAL")
+        help="use serial port as proxy", default=None, metavar="DEV")
 
     parser.add_option("-b", "--baud", dest="baud",
         help="serial port baud rate", default=BAUD, metavar="BAUD")
@@ -132,7 +96,7 @@ Roland VMixer interface adaptor.  It can run in three modes.
 
     (options, dummy) = parser.parse_args()
 
-    SERIAL    = options.serial
+    SERIAL_DEV    = options.serial
     BAUD      = options.baud
     PORT      = options.port
     PASSWORD  = options.password
@@ -148,13 +112,52 @@ Roland VMixer interface adaptor.  It can run in three modes.
         VERBOSITY = logging.INFO
 
 
+###############################################################################
+
+class ThreadedTCPRequestHandler(SocketServer.BaseRequestHandler):
+    """Handler container for incoming TCP connections"""
+
+    def handle(self):
+        """Handler for incoming TCP connections"""
+        address = self.request.getsockname()
+        remote_address = self.request.getpeername()
+        logging.info( "Connected to %s:%d", remote_address[0], remote_address[1] )
+        authenticated = (PASSWORD is None)
+        tcp_input_gatherer = VMXParser()
+        try:
+            data = self.request.recv(1024)
+            while data:
+                tcp_command = tcp_input_gatherer.process(data)
+                while tcp_command:
+                    if authenticated:
+                        response = CMD_PROCESSOR.process(tcp_command)
+                    elif tcp_command == chr(2)+"###PWD:"+PASSWORD+";":
+                        response = chr(6)
+                        authenticated = 1
+                    else:
+                        logging.warning("Not Authenticated")
+                        response = chr(2)+"ERR:6;"  
+                    if response != "":
+                        self.request.sendall(response)
+                    tcp_command = tcp_input_gatherer.process()
+                data = self.request.recv(1024)
+        except:
+            pass
+        logging.info( "Disconnected from %s:%d", remote_address[0], remote_address[1] )
+
+class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
+    """Instance of a TCP Server that can handle multiple simultaneous 
+    connections."""
+    pass
+
+
 def input_from_network(serial_port):
     """Handle input from network (Simulation or Proxy)."""
     server = ThreadedTCPServer((HOST, int(PORT)), ThreadedTCPRequestHandler)
     dummy, port = server.server_address
     logging.info("Network Server started on port %d", port)
 
-    if SERIAL is not None:
+    if SERIAL_DEV is not None:
         CMD_PROCESSOR.set_mixer_interface(serial_port)
 
     # Start a thread with the server -- that thread will then start one
@@ -165,21 +168,22 @@ def input_from_network(serial_port):
     server_thread.start()
     logging.info("Server loop running in thread: " + server_thread.name)
 
-    service = ZeroconfService(name="TestService", port=int(PORT), stype='_serial_port._tcp')
+    service = ZeroconfService(name="vmxproxy", port=int(PORT), stype='_telnet._tcp', text=["vmxproxy=1"])
     service.publish()
     
     try:
         while True:
             time.sleep(1)
             
-    except KeyboardInterrupt:
+    finally:
         server.shutdown()
         service.unpublish()
         logging.info("Server shutdown")
-        if SERIAL is not None:
+        if SERIAL_DEV is not None:
             del serial_port
             logging.info("Serial Port shutdown")
         os._exit(0)
+
 
 def input_from_serial(serial_port):
     """Handle input from serial port (Simulation)."""
@@ -195,10 +199,11 @@ def input_from_serial(serial_port):
                 to_serial += CMD_PROCESSOR.process(serial_command)
                 serial_command = serial_input_gatherer.process()
 
-    except KeyboardInterrupt:
+    finally:
         del serial_port
         logging.info("Serial Port shutdown")
         os._exit(0)
+
 
 def main():
     """The main program setting up required objects, network server interface,
@@ -206,14 +211,14 @@ def main():
     logging.basicConfig(format='%(asctime)s.%(msecs)03d:%(threadName)s:%(levelname)s - %(message)s', datefmt='%H%M%S', 
                         level=VERBOSITY)
 
-    if SERIAL is not None:
-        serial_port = VMXSerialPort( SERIAL, int(BAUD) )
-        logging.info("Opened Serial Port %s at %s baud", SERIAL, BAUD)
+    if SERIAL_DEV is not None:
+        serial_port = VMXSerialPort( SERIAL_DEV, int(BAUD) )
+        logging.info("Opened Serial Port %s at %s baud", SERIAL_DEV, BAUD)
     else:
         serial_port = None
 
     # proxy mode is only available if both network and serial are declared
-    if SERIAL is not None and PORT is not None:
+    if SERIAL_DEV is not None and PORT is not None:
         logging.info("Proxy Mode")
     else:
         logging.info("Simulation Mode")
@@ -234,7 +239,7 @@ def main():
         # Input is from Network
         input_from_network(serial_port)
         
-    elif SERIAL is not None:        # (and PORT is None)
+    elif SERIAL_DEV is not None:        # (and PORT is None)
         # Input is from Serial Port
         input_from_serial(serial_port)
     
@@ -242,6 +247,8 @@ def main():
         logging.error("Invalid mode.  Need either or both -s or -n options.")
 
 
+###############################################################################
+
 if __name__ == "__main__":
-    parse_parameters()
+    parse_cmdline_parameters()
     main()

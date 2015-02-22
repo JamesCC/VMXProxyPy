@@ -29,6 +29,7 @@ class TestZeroconf(unittest.TestCase):
     def _publishAndCheck(self, ip_version_string):
         service = ZeroconfService(name="vmxproxy", port=3000, stype='_telnet._tcp', text=["vmxproxy=1"])
         service.publish()
+        time.sleep(2)
         captured_output = check_output(["avahi-browse", "_telnet._tcp", "-rt"])
         logging.debug(captured_output)
         found = False

@@ -14,17 +14,20 @@
 #    along with VMXProxyPy.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-all: test
+all: examples
 
-# run targets
-nsim:
-	python2 vmxproxypy/VMXProxy.py -n 10000
-
-ssim:
-	python2 vmxproxypy/VMXProxy.py -s /dev/ttyUSB0
-
-proxy:
-	python2 vmxproxypy/VMXProxy.py -n 10000 -s /dev/ttyUSB0
+# example run targets
+examples:
+	@echo
+	@echo "Simulator on Network Port 10000..."
+	@echo "    python2 vmxproxypy/VMXProxy.py -n 10000"
+	@echo 
+	@echo "Simulator on Serial Port /dev/ttyUSB0..."
+	@echo "    python2 vmxproxypy/VMXProxy.py -s /dev/ttyUSB0"
+	@echo
+	@echo "Proxy to Serial Port /dev/ttyUSB0 on Network port 10000..."
+	@echo "    python2 vmxproxypy/VMXProxy.py -n 10000 -s /dev/ttyUSB0"
+	@echo
 
 
 ###############################################################################
@@ -43,13 +46,13 @@ lint:
 
 ###############################################################################
 # test
-test:
+test: clean_test
 	nosetests -v --with-xunit --all-modules --traverse-namespace --with-coverage --cover-package=vmxproxypy --cover-inclusive
 	python2 -m coverage xml --include="vmxproxypy/*"
 	# outputs coverage.xml, nosetest.xml
 
-testcoverageHTML: test
-	coverage html
+testcoverageHTML:
+	python2 -m coverage html --include="vmxproxypy/*"
 	google-chrome htmlcov/index.html &
 
 # legacy test run method
@@ -59,13 +62,13 @@ testUNIT: clean_test
 
 # legacy TAP output test run method
 testTAP: clean_test
-	coverage run python2 vmxproxypy/test/tapout.py
+	coverage run vmxproxypy/test/tapout.py
 	coverage xml
 	prove -e cat test-reports/*.tap
 
 # legacy XML/JUNIT output test run method
 testXML testJUNIT: clean_test
-	coverage run python2 vmxproxypy/test/xmlout.py
+	coverage run vmxproxypy/test/xmlout.py
 	coverage xml
 
 
