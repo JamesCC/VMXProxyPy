@@ -46,9 +46,9 @@ class VMXSimFileParser:
             if match:
                 command = match.group(1);
                 expectedReply = match.group(2)
-                if command.find("<input>") >= 0:
+                if command.find("<I1..48>") >= 0:
                     for i in range(1, 48):
-                        modifiedCommand = command.replace("<input>","I%d" % i)
+                        modifiedCommand = command.replace("<I1..48>","I%d" % i)
                         self.IssueSimCommand(modifiedCommand, expectedReply)
                 else:
                     self.IssueSimCommand(command, expectedReply)

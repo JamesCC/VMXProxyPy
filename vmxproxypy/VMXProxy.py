@@ -31,10 +31,12 @@ from VMXParser import VMXParser
 
 class ThreadedTCPRequestHandler(SocketServer.BaseRequestHandler):
 
+    # note: self.server is an instance of class ThreadedTCPServer
+    #       self.request is an instance of class socket
     def handle(self):
         address = self.request.getsockname();
         print "Connected to ", address[0], address[1]
-        authenticated = (PASSWORD is None)
+        authenticated = (self.server.password is None)
         inputGatherer = VMXParser();
         try:
             data = self.request.recv(1024)
@@ -42,8 +44,8 @@ class ThreadedTCPRequestHandler(SocketServer.BaseRequestHandler):
                 command = inputGatherer.process(data)
                 while command:
                     if authenticated:
-                        response = cmdProcessor.process(command)
-                    elif command == chr(2)+"###PWD:"+PASSWORD+";":
+                        response = self.server.cmdProcessor.process(command)
+                    elif command == chr(2)+"###PWD:"+self.server.password+";":
                         response = chr(6)
                         authenticated = 1
                     else:
@@ -57,12 +59,97 @@ class ThreadedTCPRequestHandler(SocketServer.BaseRequestHandler):
             pass
         print "Disconnected from ", address[0], address[1]
 
+        
 class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
-    pass
+    
+    def startServer(self, cmdProcessor, password):
+        ip, port = self.server_address
+        logging.info("Network Server started on port %d" % port)
+        self.cmdProcessor = cmdProcessor
+        self.password = password
+        
+        if password is not None:
+            logging.info("Password is set - Authentication will be required")
+
+        self.serve_forever()
 
 
+def VMXProxy( SERIAL=None, BAUD=115200, HOST="", PORT=None, PASSWORD=None, VERBOSITY=logging.INFO, 
+              SIMFILERC=os.path.dirname(os.path.abspath(__file__))+"/../simrc.txt" ):
 
-if __name__ == "__main__":
+    logging.basicConfig(format='%(asctime)s.%(msecs)03d:%(threadName)s:%(levelname)s - %(message)s', 
+                        datefmt='%H%M%S', level=VERBOSITY)
+                        
+    cmdProcessor = VMXProcessor()
+    
+    if SERIAL is not None:
+        serialPort = VMXSerialPort( SERIAL, int(BAUD) )
+        logging.info("Opened Serial Port %s at %s baud" % (SERIAL, BAUD))
+
+    # proxy mode is only available if both network and serial are declared
+    if SERIAL is not None and PORT is not None:
+        logging.info("Proxy Mode")
+    else:
+        logging.info("Simulation Mode")
+        VMXSimFileParser(cmdProcessor).ReadFile(SIMFILERC)
+
+    if PORT is not None:
+        # Input is from Network
+        server = ThreadedTCPServer((HOST, int(PORT)), ThreadedTCPRequestHandler)
+
+        if SERIAL is not None:
+            cmdProcessor.setMixerIO(serialPort)
+
+        # Start a thread with the server -- that thread will then start one
+        # more thread for each request
+        server_thread = threading.Thread(target=server.startServer, args=(cmdProcessor, PASSWORD) )
+        # Exit the server thread when the main thread terminates
+        server_thread.daemon = True
+        server_thread.start()
+        
+        try:
+            while True:
+                # do nothing waiting for a keyboard interrupt
+                time.sleep(1)
+                
+        except KeyboardInterrupt:
+            pass
+        finally:
+            server.shutdown()
+            del cmdProcessor
+            logging.info("Server shutdown")
+            if SERIAL is not None:
+                del serialPort
+                logging.info("Serial Port shutdown")
+            os._exit(0)
+
+    elif SERIAL is not None:        # (and PORT is None)
+        # Input is from Serial Port
+        logging.info("Mixer Emulation - expecting input from Serial Port")
+        try:
+            toSerial = ""
+            inputGatherer = VMXParser();
+            while True:
+                fromSerial = serialPort.process(toSerial)
+                toSerial = ""
+                command = inputGatherer.process(fromSerial)
+                while command:
+                    toSerial += cmdProcessor.process(command)
+                    command = inputGatherer.process()
+
+        except KeyboardInterrupt:
+            pass
+        finally:
+            del cmdProcessor
+            del serialPort
+            logging.info("Serial Port shutdown")
+            os._exit(0)
+    
+    else:
+        logging.error("Invalid mode.  Need either or both -s or -n options.")
+
+
+def main():
     parser = optparse.OptionParser(usage="""\
 %prog [options]
 
@@ -93,91 +180,15 @@ Roland VMixer interface adaptor.  It can run in three modes.
 
     (options, args) = parser.parse_args()
 
-    SERIAL    = options.SERIAL
-    BAUD      = options.BAUD
-    HOST      = ""
-    PORT      = options.PORT
-    PASSWORD  = options.PASSWORD
-    SIMFILERC  = "simrc.txt"
-
     if options.QUIET:           # just warnings and errors
-        VERBOSITY = logging.WARNING
+        verbosity = logging.WARNING
     elif options.VERBOSITY:     # debug output
-        VERBOSITY = logging.DEBUG
+        verbosity = logging.DEBUG
     else:                       # normal output
-        VERBOSITY = logging.INFO
+        verbosity = logging.INFO
 
-    logging.basicConfig(format='%(asctime)s.%(msecs)03d:%(threadName)s:%(levelname)s - %(message)s', datefmt='%H%M%S', 
-                        level=VERBOSITY)
+    # Start VMXProxy
+    VMXProxy( SERIAL=options.SERIAL, BAUD=options.BAUD, PORT=options.PORT, PASSWORD=options.PASSWORD, VERBOSITY=verbosity )
 
-
-    cmdProcessor = VMXProcessor()
-    
-    if SERIAL is not None:
-        serialPort = VMXSerialPort( SERIAL, int(BAUD) )
-        logging.info("Opened Serial Port %s at %s baud" % (SERIAL, BAUD))
-
-    # proxy mode is only available if both network and serial are declared
-    if SERIAL is not None and PORT is not None:
-        logging.info("Proxy Mode")
-    else:
-        logging.info("Simulation Mode")
-        VMXSimFileParser(cmdProcessor).ReadFile(SIMFILERC)
-
-    if PASSWORD is not None:
-        logging.info("Password is set - Authentication will be required")
-        cmdProcessor.setPassword(PASSWORD)
-
-    if PORT is not None:
-        # Input is from Network
-        server = ThreadedTCPServer((HOST, int(PORT)), ThreadedTCPRequestHandler)
-        ip, port = server.server_address
-        logging.info("Network Server started on port %d" % port)
-
-        if SERIAL is not None:
-            cmdProcessor.setMixerIO(serialPort)
-
-        # Start a thread with the server -- that thread will then start one
-        # more thread for each request
-        server_thread = threading.Thread(target=server.serve_forever)
-        # Exit the server thread when the main thread terminates
-        server_thread.daemon = True
-        server_thread.start()
-        logging.info("Server loop running in thread: " + server_thread.name)
-        
-        try:
-            while True:
-                time.sleep(1)
-                
-        except KeyboardInterrupt:
-            server.shutdown()
-            del cmdProcessor
-            logging.info("Server shutdown")
-            if SERIAL is not None:
-                del serialPort
-                logging.info("Serial Port shutdown")
-            os._exit(0)
-
-    elif SERIAL is not None:        # (and PORT is None)
-        # Input is from Serial Port
-        logging.info("Mixer Emulation - expecting input from Serial Port")
-        try:
-            toSerial = ""
-            inputGatherer = VMXParser();
-            while True:
-                fromSerial = serialPort.process(toSerial)
-                toSerial = ""
-                command = inputGatherer.process(fromSerial)
-                while command:
-                    toSerial += cmdProcessor.process(command)
-                    command = inputGatherer.process()
-
-        except KeyboardInterrupt:
-            del cmdProcessor
-            del serialPort
-            logging.info("Serial Port shutdown")
-            os._exit(0)
-    
-    else:
-        logging.error("Invalid mode.  Need either or both -s or -n options.")
-
+if __name__ == "__main__":
+    main()

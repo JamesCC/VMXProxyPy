@@ -1,51 +1,58 @@
-# test syntax validation
-<stx>WWE:I1;                <stx>ERR:0;
-<stx>WWC:1.010,1.010,1.010; <stx>ERR:0;
-<stx>XXXX; <stx>ERR:0;
-<stx>XX; <stx>ERR:0;
+# This file issues a series of commands to the simulator to setup it's database for
+# responding to commands.  This in effect is setting the starting values.
+#
+# YOU MUST BE VERY CAREFUL WHEN CHANGING VALUES IN THIS FILE
 
-# Globals
+# test syntax validation
+#<stx>WWE:I1;                <stx>ERR:0;
+#<stx>WWC:1.010,1.010,1.010; <stx>ERR:0;
+#<stx>XXXX; <stx>ERR:0;
+#<stx>XX; <stx>ERR:0;
+
+# These commands are not real commands supported by the Mixer, but they will never be issued by
+# the app so we can get away with them.  It makes the responses to VRQ and SCQ easier if we 
+# pretend these commands exist.
 <stx>VRC:1.010,1.010,1.010; <ack>           # (not real command) set version number
 <stx>VRQ;                   <stx>VRS:1.010,1.010,1.010;
-<stx>SCC:000,"default_scene"; <ack>         # (bodge - really SSC) set scene name / number
+<stx>SCC:000,"default_scene"; <ack>         # (bodge - really SSC) set scene name / number for SCQ command
 <stx>SCQ;                   <stx>SCS:000,"default_scene";
 
-# Channel defaults (<input> expands to I1 ... I48, so each command will be execute 48 times)
-<stx>CNC:<input>,"NoName";       <ack>           # channel name
-<stx>FDC:<input>,INF;            <ack>           # fader
-<stx>MUC:<input>,1;              <ack>           # mute
-<stx>PTC:<input>,0;              <ack>           # phantom on/off
-<stx>PSC:<input>,0;              <ack>           # phase on/off
-<stx>EQC:<input>,0;              <ack>           # equaliser on/off
-<stx>FLC:<input>,0;              <ack>           # hp filter on/off
-<stx>PGC:<input>,0,-80.0;        <ack>           # (pad on/off) gain
-<stx>AXC:<input>,AX1,-80.0,C;    <ack>           # Aux Setting
-<stx>AXC:<input>,AX2,-80.0,C;    <ack>           # Aux Setting
-<stx>AXC:<input>,AX3,-80.0,C;    <ack>           # Aux Setting
-<stx>AXC:<input>,AX4,-80.0,C;    <ack>           # Aux Setting
-<stx>AXC:<input>,AX5,-80.0,C;    <ack>           # Aux Setting
-<stx>AXC:<input>,AX6,-80.0,C;    <ack>           # Aux Setting
-<stx>AXC:<input>,AX7,-80.0,C;    <ack>           # Aux Setting
-<stx>AXC:<input>,AX8,-80.0,C;    <ack>           # Aux Setting
-<stx>AXC:<input>,AX9,-80.0,C;    <ack>           # Aux Setting
-<stx>AXC:<input>,AX10,-80.0,C;   <ack>           # Aux Setting
-<stx>AXC:<input>,AX11,-80.0,C;   <ack>           # Aux Setting
-<stx>AXC:<input>,AX12,-80.0,C;   <ack>           # Aux Setting
-<stx>AXC:<input>,AX13,-80.0,C;   <ack>           # Aux Setting
-<stx>AXC:<input>,AX14,-80.0,C;   <ack>           # Aux Setting
-<stx>AXC:<input>,AX15,-80.0,C;   <ack>           # Aux Setting
-<stx>AXC:<input>,AX16,-80.0,C;   <ack>           # Aux Setting
+# Channel defaults (<I1..48> expands to I1 ... I48, so each command will be executed 48 times)
+<stx>CNC:<I1..48>,"NoName";       <ack>           # channel name
+<stx>FDC:<I1..48>,INF;            <ack>           # fader
+<stx>MUC:<I1..48>,1;              <ack>           # mute
+<stx>PTC:<I1..48>,0;              <ack>           # phantom on/off
+<stx>PSC:<I1..48>,0;              <ack>           # phase on/off
+<stx>EQC:<I1..48>,0;              <ack>           # equaliser on/off
+<stx>FLC:<I1..48>,0;              <ack>           # hp filter on/off
+<stx>PGC:<I1..48>,0,-80.0;        <ack>           # (pad on/off) gain
+<stx>AXC:<I1..48>,AX1,-80.0,C;    <ack>           # Aux Setting
+<stx>AXC:<I1..48>,AX2,-80.0,C;    <ack>           # Aux Setting
+<stx>AXC:<I1..48>,AX3,-80.0,C;    <ack>           # Aux Setting
+<stx>AXC:<I1..48>,AX4,-80.0,C;    <ack>           # Aux Setting
+<stx>AXC:<I1..48>,AX5,-80.0,C;    <ack>           # Aux Setting
+<stx>AXC:<I1..48>,AX6,-80.0,C;    <ack>           # Aux Setting
+<stx>AXC:<I1..48>,AX7,-80.0,C;    <ack>           # Aux Setting
+<stx>AXC:<I1..48>,AX8,-80.0,C;    <ack>           # Aux Setting
+<stx>AXC:<I1..48>,AX9,-80.0,C;    <ack>           # Aux Setting
+<stx>AXC:<I1..48>,AX10,-80.0,C;   <ack>           # Aux Setting
+<stx>AXC:<I1..48>,AX11,-80.0,C;   <ack>           # Aux Setting
+<stx>AXC:<I1..48>,AX12,-80.0,C;   <ack>           # Aux Setting
+<stx>AXC:<I1..48>,AX13,-80.0,C;   <ack>           # Aux Setting
+<stx>AXC:<I1..48>,AX14,-80.0,C;   <ack>           # Aux Setting
+<stx>AXC:<I1..48>,AX15,-80.0,C;   <ack>           # Aux Setting
+<stx>AXC:<I1..48>,AX16,-80.0,C;   <ack>           # Aux Setting
 
 # Give AUX output channels names
-<stx>CNC:AX1,"OUT1  ";           <ack>      # aux channel name
-<stx>CNC:AX2,"OUT2  ";           <ack>      # aux channel name
-<stx>CNC:AX3,"OUT3  ";           <ack>      # aux channel name
-<stx>CNC:AX4,"OUT4  ";           <ack>      # aux channel name
-<stx>CNC:AX5,"OUT5  ";           <ack>      # aux channel name
-<stx>CNC:AX6,"OUT6  ";           <ack>      # aux channel name
-<stx>CNC:AX7,"OUT7  ";           <ack>      # aux channel name
-<stx>CNC:AX8,"OUT8  ";           <ack>      # aux channel name
-<stx>CNC:AX9,"OUT9  ";           <ack>      # aux channel name
+<stx>CNC:AX1,"OUT1  ";           <ack>       # aux channel name
+<stx>CNC:AX2,"OUT2  ";           <ack>       # aux channel name
+<stx>CNC:AX3,"OUT3  ";           <ack>       # aux channel name
+<stx>CNC:AX4,"OUT4  ";           <ack>       # aux channel name
+<stx>CNC:AX5,"OUT5  ";           <ack>       # aux channel name
+<stx>CNC:AX6,"OUT6  ";           <ack>       # aux channel name
+<stx>CNC:AX7,"OUT7  ";           <ack>       # aux channel name
+<stx>CNC:AX8,"OUT8  ";           <ack>       # aux channel name
+<stx>CNC:AX9,"OUT9  ";           <ack>       # aux channel name
 <stx>CNC:AX10,"OUT10 ";           <ack>      # aux channel name
 <stx>CNC:AX11,"OUT11 ";           <ack>      # aux channel name
 <stx>CNC:AX12,"OUT12 ";           <ack>      # aux channel name

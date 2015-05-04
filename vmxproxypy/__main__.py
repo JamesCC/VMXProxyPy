@@ -1,0 +1,2 @@
+import VMXProxy
+VMXProxy.main()
