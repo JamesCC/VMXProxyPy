@@ -41,7 +41,7 @@ dropboxBackup:
 ###############################################################################
 # lint
 lint:
-	pylint --rcfile=pylint.rcfile -f parseable vmxproxypy | tee pylint.out
+	pylint --rcfile=pylint.rcfile -f parseable vmxproxypy --ignore pybonjour.py | tee pylint.out
 
 
 ###############################################################################
