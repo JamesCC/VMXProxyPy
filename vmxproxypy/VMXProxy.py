@@ -23,6 +23,10 @@ import threading
 import SocketServer
 import os
 import time
+import select
+import sys
+import pybonjour
+
 
 from VMXSimFileParser import VMXSimFileParser
 from VMXSerialPort import VMXSerialPort
@@ -74,6 +78,10 @@ class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
         self.serve_forever()
 
 
+def register_callback(sdRef, flags, errorCode, name, regtype, domain):
+    if errorCode == pybonjour.kDNSServiceErr_NoError:
+        logging.info("Registered service with Bonjour/AVAHI")
+        
 def VMXProxy( SERIAL=None, BAUD=115200, HOST="", PORT=None, PASSWORD=None, VERBOSITY=logging.INFO, 
               SIMFILERC=os.path.dirname(os.path.abspath(__file__))+"/../simrc.txt" ):
 
@@ -106,15 +114,25 @@ def VMXProxy( SERIAL=None, BAUD=115200, HOST="", PORT=None, PASSWORD=None, VERBO
         # Exit the server thread when the main thread terminates
         server_thread.daemon = True
         server_thread.start()
+
+        txtRecord = pybonjour.TXTRecord({'vmxproxy':1});
+        sdRef = pybonjour.DNSServiceRegister(name = "vmxproxy",
+                                             regtype = "_telnet._tcp",
+                                             port = int(PORT),
+                                             txtRecord = txtRecord,
+                                             callBack = register_callback)
         
         try:
             while True:
                 # do nothing waiting for a keyboard interrupt
-                time.sleep(1)
+                ready = select.select([sdRef], [], [])
+                if sdRef in ready[0]:
+                    pybonjour.DNSServiceProcessResult(sdRef)
                 
         except KeyboardInterrupt:
             pass
         finally:
+            sdRef.close()
             server.shutdown()
             del cmdProcessor
             logging.info("Server shutdown")
