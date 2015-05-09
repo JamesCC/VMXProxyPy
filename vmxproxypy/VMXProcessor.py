@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 
-"""The Command Processor.  Takes a command or commands and issues them one 
+"""The Command Processor.  Takes a command or commands and issues them one
 command one at a time to the mixer, collecting the responses and echoing them
 back.  If the .set_mixer_interface method is not called it will operate in
 a simulation mode, which will emulate an attached mixer."""
@@ -29,38 +29,39 @@ import time
 from VMXParser import VMXParser
 from VMXStateMonitor import VMXStateMonitor
 
-class Sink:
+class Sink(object):
     """A dummy class to sink strings, and issues blank responses.  Used for
     the simulator, and satisfies the expected interface requirements."""
-    
+
     def reset(self):
         """Dummy reset method.  Does nothing."""
-        pass
-    
-    def process(self, dummy = None):
+        _ = self
+
+    def process(self, dummy=None):
         """Accept a string and return nothing."""
+        _ = self
         return None
 
-class VMXProcessor:
+class VMXProcessor(object):
     """The Command Processor.  Accepts one or more commands, processes them
     and returns the responses."""
-    
+
     def __init__(self):
         self.__lock = threading.Lock()
         self.__stage2_parser = VMXParser()
         self.__state_monitor = VMXStateMonitor()
         self.__output_parser = VMXParser()
-        self.__mixer_if      = Sink()
-        self.__discard_rate  = None
-        self.__cmd_delay     = None
-    
+        self.__mixer_if = Sink()
+        self.__discard_rate = None
+        self.__cmd_delay = None
+
     def reset(self):
         """Reset the command processor, but preserve state database."""
         self.__stage2_parser.reset()
         self.__output_parser.reset()
         # Intentionally don't reset the state monitor - to preserve db
         self.__mixer_if.reset()
-    
+
     def set_mixer_interface(self, mixer_if_object):
         """Set the interface for the mixer.  Typically passed an object of the
         VMXSerialPort class, which exposes the serial interface.  Will override
@@ -75,12 +76,12 @@ class VMXProcessor:
         """Set command maximum delay in milliseconds (debug option)."""
         self.__cmd_delay = cmd_delay_in_ms / 1000
 
-    def process(self, command = ""):
-        """Accept a command or commands, process them, returning the 
+    def process(self, command=""):
+        """Accept a command or commands, process them, returning the
         responses.  Will pass mixer commands to the mixer interface setup via
         the .set_mixer_interface() method."""
         self.__lock.acquire()
-    
+
         # parse stage1 output to split up any concatenated commands
         output_stage2 = self.__stage2_parser.process(command)
 
@@ -94,15 +95,15 @@ class VMXProcessor:
                 if random.randint(1, self.__discard_rate) == self.__discard_rate:
                     continue
 
-            # Send to mixer or simulator dummy function (which will return None)            
+            # Send to mixer or simulator dummy function (which will return None)
             mixer_reply = self.__mixer_if.process(output_stage2)
-            
+
             state_monitor_output = self.__state_monitor.process(output_stage2, mixer_reply)
             logging.debug("<< " + state_monitor_output)
 
             #output_string += state_monitor_output
             output_string += self.__output_parser.process(state_monitor_output)
-            
+
             # cmd delay is a debug feature
             if self.__cmd_delay is not None:
                 time.sleep(self.__cmd_delay)
@@ -115,8 +116,8 @@ class VMXProcessor:
             # commands, so this should never occur.
             logging.warning("Parser should be empty - discarding fragment")
             self.__stage2_parser.reset()
-            
+
         self.__lock.release()
-    
-        return( output_string )
+
+        return output_string
 

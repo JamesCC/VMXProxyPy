@@ -46,31 +46,22 @@ lint:
 
 ###############################################################################
 # test
-test: clean_test
-	nosetests -v --with-xunit --all-modules --traverse-namespace --with-coverage --cover-package=vmxproxypy --cover-inclusive
-	python2 -m coverage xml --include="vmxproxypy/*"
-	# outputs coverage.xml, nosetest.xml
-
-testcoverageHTML:
-	python2 -m coverage html --include="vmxproxypy/*"
-	google-chrome htmlcov/index.html &
+test: testUNIT
 
 # legacy test run method
 testUNIT: clean_test 
 	coverage run -m unittest discover vmxproxypy/test
-	coverage xml
+	coverage html
+    coverage report
+	echo "Coverage results in htmlcov/index.html"
 
 # legacy TAP output test run method
 testTAP: clean_test
 	coverage run vmxproxypy/test/tapout.py
-	coverage xml
 	prove -e cat test-reports/*.tap
-
-# legacy XML/JUNIT output test run method
-testXML testJUNIT: clean_test
-	coverage run vmxproxypy/test/xmlout.py
-	coverage xml
-
+	coverage html
+    coverage report
+	echo "Coverage results in htmlcov/index.html"
 
 # clean
 clean_lint:

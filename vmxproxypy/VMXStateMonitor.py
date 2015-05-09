@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 
-"""Monitors traffic to/from the mixer recording its state.""" 
+"""Monitors traffic to/from the mixer recording its state."""
 
 #    This file is part of VMXProxyPy.
 #
@@ -21,16 +21,16 @@
 import logging
 import re
 
-class VMXStateMonitor:
+class VMXStateMonitor(object):
     """Monitors traffic to/from the mixer recording its state.  In simulator mode,
     it will lookup from its state database and create an appropriate response
-    simulating the presence of a mixer""" 
+    simulating the presence of a mixer"""
 
     __STX_CHR = chr(2)
     __ACK_CHR = chr(6)
     __RegExCmdValidate = re.compile(r"^"+__STX_CHR+r"(..)([CSQ])(.*);$")
 
-    # for each command, the number of parameters required to fully qualify 
+    # for each command, the number of parameters required to fully qualify
     # the attribute (database key).  All commands must be listed here to be
     # understood by for "simulation purposes"
     __commandDict = {
@@ -48,7 +48,7 @@ class VMXStateMonitor:
     def __init__(self):
         self.__command_string = ''       # input command
         self.__database = {}             # attribute storage
-        
+
         # following are set after .parse()
         self.__key = ''                  # key/attribute for database
         self.__value = ''                # value of the attribute (if writing)
@@ -59,17 +59,17 @@ class VMXStateMonitor:
         self.__action = ''
         self.__database.clear()
 
-    def process(self, command, reply = None):
+    def process(self, command, reply=None):
         """Process a command to extract state information from it.  If called
-        with only the command will simulate the response for any query 
+        with only the command will simulate the response for any query
         commands, by looking in it's state database."""
         if reply is None:
             # No Mixer, i.e. Simulation Case - just process the original
             self._parse(command)
-            reply = self._interpret()  
+            reply = self._interpret()
         elif reply == self.__ACK_CHR:
             # Mixer Case
-            # if it is an ACK the original command must have been a Set 
+            # if it is an ACK the original command must have been a Set
             # command and so the state must be extracted from the original
             # command.
             self._parse(command)
@@ -107,7 +107,7 @@ class VMXStateMonitor:
                         # track quotes to know if inside or outside a pair
                         self.__key += character
                         skip_semis = not skip_semis
-                    elif not skip_semis and ( character == ',' or character == ':' ):
+                    elif not skip_semis and (character == ',' or character == ':'):
                         if key_field_count == 0:
                             add_to_value = True
                         else:
@@ -131,11 +131,11 @@ class VMXStateMonitor:
                 simulated_response += ':'
             else:
                 simulated_response += ','
-            simulated_response += self.__database.get(self.__key,'?') + ';'
+            simulated_response += self.__database.get(self.__key, '?') + ';'
         else:
             # indicate a syntax error
             simulated_response = self.__STX_CHR + "ERR:0;"
         self.__action = ""
-        
+
         return simulated_response
 

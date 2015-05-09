@@ -1814,7 +1814,7 @@ def DNSServiceReconfirmRecord(
       flags:
         Currently unused, reserved for future use.
 
-      interfaceIndex: 
+      interfaceIndex:
         If non-zero, specifies the interface of the record in
         question.  Passing kDNSServiceInterfaceIndexAny (0) causes all
         instances of this record to be reconfirmed.
@@ -1856,7 +1856,7 @@ def DNSServiceReconfirmRecord(
 
 def DNSServiceConstructFullName(
     service = None,
-    regtype = _NO_DEFAULT, 
+    regtype = _NO_DEFAULT,
     domain = _NO_DEFAULT,
     ):
 

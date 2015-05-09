@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 
-"""Reads a file and issues commands to the supplied VMX command parser 
+"""Reads a file and issues commands to the supplied VMX command parser
 (VMXProcessor) object."""
 
 #    This file is part of VMXProxyPy.
@@ -22,10 +22,10 @@
 import logging
 import re
 
-class VMXSimFileParser:
+class VMXSimFileParser(object):
     """An object to read and parse a file to issue commands to the supplied
-    VMX command parser (VMXProcessor) object.  The parser also handles 
-    comments, blank lines, and confirms the responses match those stated in 
+    VMX command parser (VMXProcessor) object.  The parser also handles
+    comments, blank lines, and confirms the responses match those stated in
     the file.  Can be used as a test."""
 
     RegExMatchComments = re.compile(r"\#.*$")
@@ -42,7 +42,7 @@ class VMXSimFileParser:
         Updates internal state varables counting commands and any failures."""
         command_out = command.replace("<stx>", chr(2))
         response = self.__cmd_processor.process(command_out)
-        response = response.replace(chr(2),"<stx>").replace(chr(6), "<ack>")
+        response = response.replace(chr(2), "<stx>").replace(chr(6), "<ack>")
         if response != expected_reply:
             logging.warning("Response to " + command + " was " + response + " not " + expected_reply)
         else:
@@ -50,8 +50,8 @@ class VMXSimFileParser:
         self.__cmd_count += 1
 
     def parse_line(self, line):
-        """Parse a single line from a file, replacing wildcard <input> with 
-        multiple lines ranging from I1 to I48, and issuing the command to the 
+        """Parse a single line from a file, replacing wildcard <input> with
+        multiple lines ranging from I1 to I48, and issuing the command to the
         command processor."""
         line = self.RegExMatchComments.sub("", line).strip()
         if line != "":
@@ -70,7 +70,7 @@ class VMXSimFileParser:
                 return False
         # report success
         return True
-    
+
 
     def read_file(self, filename):
         """Read a file, parsing the lines, and issuing commands to the command
@@ -81,13 +81,13 @@ class VMXSimFileParser:
             for line in file_hdl:
                 line_number += 1
                 if not self.parse_line(line):
-                    logging.warning("line %d bad format: %s", line_number, line )
+                    logging.warning("line %d bad format: %s", line_number, line)
 
         if self.__successful_cmd_count == self.__cmd_count:
             logging.info("Simulator Setup Complete")
         else:
             logging.info("Simulator Setup Complete [Command Failures]")
-        logging.debug("Executed %d of %d simulation commands successfully", 
+        logging.debug("Executed %d of %d simulation commands successfully",
                       self.__successful_cmd_count, self.__cmd_count)
         return self.__successful_cmd_count, self.__cmd_count
 
