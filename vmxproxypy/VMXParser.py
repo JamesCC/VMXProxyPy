@@ -18,33 +18,33 @@
 #    along with VMXProxyPy.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-class VMXParser:
-    """Parses an (potential fragmented) input stream constructing whole 
-    commands. Commands are output one full command at a time, with the 
-    exception of concatenated commands which are reformed into individual 
+class VMXParser(object):
+    """Parses an (potential fragmented) input stream constructing whole
+    commands. Commands are output one full command at a time, with the
+    exception of concatenated commands which are reformed into individual
     commands, but are output as one unit."""
 
     STX = chr(2)
     ACK = chr(6)
-    
+
     def __init__(self):
         self.__in_buffer = ""
 
     def reset(self):
-        """Resets the VMXParser internal state discarding any data 
+        """Resets the VMXParser internal state discarding any data
         fragments."""
         self.__in_buffer = ""
-    
+
     def is_empty(self):
         """Return True if no partial commands are in the internal buffer."""
         if self.__in_buffer:
             return False
         else:
             return True
-    
-    def process(self, string = None):
+
+    def process(self, string=None):
         """Accept commands or partial commands, outputting a command only when
-        a full command is seen (otherwise an empty string).  Can be called 
+        a full command is seen (otherwise an empty string).  Can be called
         without a parameter to see if there are any more commands."""
         if string is not None:
             self.__in_buffer += string
@@ -64,7 +64,7 @@ class VMXParser:
                 string += character
                 continue
             elif character == self.STX:
-                # start of command - drop all leading junk 
+                # start of command - drop all leading junk
                 string = character
                 skip_semis = False
                 stx_found = True
@@ -88,8 +88,8 @@ class VMXParser:
                     string = ''
                 else:
                     string += character
-        
+
         # leave any residue in the buffer for next time
         self.__in_buffer = string
-        return output_command 
+        return output_command
 

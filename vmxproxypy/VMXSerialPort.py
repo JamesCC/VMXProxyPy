@@ -20,7 +20,7 @@
 
 import serial
 
-class VMXSerialPort:
+class VMXSerialPort(object):
     """An instance of pyserial's Serial class.  It is specific to the VMixer
     Serial Protocol which will respond to every command sent.  This means we
     can send a command block awaiting for a reply.  A semicolon or ACK (0x06)
@@ -38,7 +38,7 @@ class VMXSerialPort:
         self.__serial.flushInput()
         self.__serial.flushOutput()
 
-    def process(self, string = None):
+    def process(self, string=None):
         """Write a string to the output, and wait for a reply.  Can be called
         with no parameters just to wait for a reply."""
         if string is not None:
@@ -49,11 +49,11 @@ class VMXSerialPort:
         while True:
             char = self.__serial.read(1)
             response += char
-            if ( char == "" or char == chr(6) ):
+            if char == "" or char == chr(6):
                 break
-            if ( char == "\"" ):
+            if char == "\"":
                 inside_quotes = not inside_quotes
-            if ( char == ";" and not inside_quotes ):
+            if char == ";" and not inside_quotes:
                 break
         return response
 
