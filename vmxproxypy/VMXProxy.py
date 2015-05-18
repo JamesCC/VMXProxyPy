@@ -36,33 +36,51 @@ from VMXParser import VMXParser
 class ThreadedTCPRequestHandler(SocketServer.BaseRequestHandler):
     """Handler container for incoming TCP connections"""
 
+    def process_directive(self, command, authenticated):
+        """Process special directive commands, not intended for mixer."""
+        if command.startswith( chr(2)+"###PWD:" ):
+            if self.server.password is None:
+                logging.warning("Password sent, but authentication not required")
+                response = chr(6)
+            elif command[7:] == self.server.password+";":
+                response = chr(6)
+                authenticated = 1
+            else:
+                logging.warning("Not Authenticated")
+                response = chr(2)+"ERR:6;"
+        else:
+            response = chr(2)+"ERR:0;"
+            
+        return response, authenticated
+        
     # note: self.server is an instance of class ThreadedTCPServer
     #       self.request is an instance of class socket
     def handle(self):
-        address = self.request.getsockname()
-        print "Connected to ", address[0], address[1]
+        _ = self.request.getsockname()
+        client_ip = self.request.getpeername()[0];
+        logging.info( "%s Connected", client_ip )
         authenticated = (self.server.password is None)
+        command_count = 0;
         tcp_input_gatherer = VMXParser()
         try:
             data = self.request.recv(1024)
             while data:
                 command = tcp_input_gatherer.process(data)
                 while command:
-                    if authenticated:
+                    if command.startswith( chr(2)+"###" ):
+                        response, authenticated = self.process_directive(command, authenticated)
+                        
+                    elif authenticated:
                         response = self.server.cmd_processor.process(command)
-                    elif command == chr(2)+"###PWD:"+self.server.password+";":
-                        response = chr(6)
-                        authenticated = 1
-                    else:
-                        logging.warning("Not Authenticated")
-                        response = chr(2)+"ERR:6;"
+                        command_count += 1
+                    
                     if response != "":
                         self.request.sendall(response)
                     command = tcp_input_gatherer.process()
                 data = self.request.recv(1024)
         except:
             pass
-        print "Disconnected from ", address[0], address[1]
+        logging.info( "%s Disconnected (after %d commands)", client_ip, command_count )
 
 
 class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
