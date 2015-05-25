@@ -35,6 +35,9 @@ from VMXParser import VMXParser
 
 class ThreadedTCPRequestHandler(SocketServer.BaseRequestHandler):
     """Handler container for incoming TCP connections"""
+    
+    BAD_SYNTAX_RESPONSE = chr(2)+"ERR:0;"
+    NOT_AUTENTICATED_RESPONSE = chr(2)+"ERR:6;"
 
     def process_directive(self, command, authenticated):
         """Process special directive commands, not intended for mixer."""
@@ -43,7 +46,7 @@ class ThreadedTCPRequestHandler(SocketServer.BaseRequestHandler):
                 logging.warning("Password sent, but authentication not required")
                 response = chr(6)
             elif command[8:] == self.server.password+";":
-                #response = chr(6)                                              # old behaviour
+                #response = chr(6)                                              # old behaviour (full control)
                 #response = chr(2)+"###PWD:\"---2-4-6-8-0-2-4-6\";"             # no control over main, every other channel
                 #response = chr(2)+"###PWD:\"-M-2-4-6-8-0-2-4-6\";"             # control over main, every other channel
                 #response = chr(2)+"###PWD:\"*M12345678901234567\";"            # bad line
@@ -51,9 +54,9 @@ class ThreadedTCPRequestHandler(SocketServer.BaseRequestHandler):
                 authenticated = 1
             else:
                 logging.warning("Not Authenticated - "+ command[7:])
-                response = chr(2)+"ERR:6;"
+                response = self.NOT_AUTENTICATED_RESPONSE
         else:
-            response = chr(2)+"ERR:0;"
+            response = self.BAD_SYNTAX_RESPONSE
             
         return response, authenticated
         
@@ -77,6 +80,9 @@ class ThreadedTCPRequestHandler(SocketServer.BaseRequestHandler):
                     elif authenticated:
                         response = self.server.cmd_processor.process(command)
                         command_count += 1
+                    
+                    else:
+                        response = self.NOT_AUTENTICATED_RESPONSE
                     
                     if response != "":
                         self.request.sendall(response)
