@@ -42,11 +42,15 @@ class ThreadedTCPRequestHandler(SocketServer.BaseRequestHandler):
             if self.server.password is None:
                 logging.warning("Password sent, but authentication not required")
                 response = chr(6)
-            elif command[7:] == self.server.password+";":
-                response = chr(6)
+            elif command[8:] == self.server.password+";":
+                #response = chr(6)                                              # old behaviour
+                #response = chr(2)+"###PWD:\"---2-4-6-8-0-2-4-6\";"             # no control over main, every other channel
+                #response = chr(2)+"###PWD:\"-M-2-4-6-8-0-2-4-6\";"             # control over main, every other channel
+                #response = chr(2)+"###PWD:\"*M12345678901234567\";"            # bad line
+                response = chr(2)+"###PWD:\"*M1234567890123456\";"              # full control
                 authenticated = 1
             else:
-                logging.warning("Not Authenticated")
+                logging.warning("Not Authenticated - "+ command[7:])
                 response = chr(2)+"ERR:6;"
         else:
             response = chr(2)+"ERR:0;"
