@@ -32,3 +32,4 @@ class TestVMXSimFileParser(unittest.TestCase):
         self.assertEqual( successfulCommands, 575 )
         self.assertEqual( commands, 577 )
 
+

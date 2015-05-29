@@ -81,7 +81,7 @@ class VMXSimFileParser(object):
             for line in file_hdl:
                 line_number += 1
                 if not self.parse_line(line):
-                    logging.warning("line %d bad format: %s", line_number, line)
+                    logging.warning(filename +":%d bad format: %s", line_number, line)
 
         if self.__successful_cmd_count == self.__cmd_count:
             logging.info("Simulator Setup Complete")

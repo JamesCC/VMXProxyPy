@@ -1,0 +1,31 @@
+# Access Control List
+# Start VMXProxy with the -# option and this file name to setup Access Control.
+#
+# The format is simple...     PASSCODE:+RIGHTS_TO_ADD-RIGHTS_TO_REMOVE
+# The PASSCODE is a number, + is used to add RIGHTS, - is used to remove them.
+# RIGHTS:
+#     UNRESTRICTED      - access everything (wildcard)
+#     INPUTADJ          - access to input adjustment screen
+#     MAIN              - access to control main faders, and mutes
+#     AUX1              - access to control aux channel 1
+#     AUX2              - access to control aux channel 2
+#     ...
+#     AUX16             - access to control aux channel 16
+#     AUX*              - access to control all aux channels
+#
+# e.g.
+#     12345:UNRESTRICTED
+#     23:UNRESTRICTED-MAIN-INPUTADJ
+#     999:INPUTADJ+AUX1+AUX3+AUX5
+#     43:AUX*
+#
+# Above passcode 12345 gives unrestricted access to everything
+#       passcode 23 gives access to everything except MAIN and INPUTADJ
+#       passcode 999 gives access only to INPUTADJ, AUX1, AUX3 and AUX5
+#       passcode 42 gives access to all AUX channels, and not INPUTADJ nor MAIN
+#
+# Everything after a # is a comment and ignored, as are blank lines
+
+9876:UNRESTRICTED
+5555:INPUTADJ+MAIN
+1234:AUX*

@@ -32,6 +32,7 @@ from VMXSimFileParser import VMXSimFileParser
 from VMXSerialPort import VMXSerialPort
 from VMXProcessor import VMXProcessor
 from VMXParser import VMXParser
+from VMXPasscodeParser import VMXPasscodeParser
 
 class ThreadedTCPRequestHandler(SocketServer.BaseRequestHandler):
     """Handler container for incoming TCP connections"""
