@@ -25,6 +25,7 @@ import re
 class VMXPasscodeParser(object):
 
     MAX_AUX_CHANNELS = 16
+    UNRESTRICTED_RIGHTS = "*M1234567890123456"
 
     RegExMatchComments = re.compile(r"\#.*$")
     RegExMatchRawRights = re.compile(r"\s*([\-\+])?(UNRESTRICTED|INPUTADJ|MAIN|AUX\*|AUX\d+)")
@@ -33,7 +34,7 @@ class VMXPasscodeParser(object):
         self.access_codes = {}
 
     def get_access_rights(self, passcode):
-        return self.access_codes.get(passcode, "")
+        return self.access_codes.get(passcode, "") 
 
     def _parse_rights(self, passcode, raw_rights_string):
         accessrights = list( "-" * (2+self.MAX_AUX_CHANNELS) )
@@ -46,7 +47,7 @@ class VMXPasscodeParser(object):
                 sign = ""
                 
             if value == "UNRESTRICTED" and sign == "+":
-                accessrights = list( "*M1234567890123456" )
+                accessrights = list( self.UNRESTRICTED_RIGHTS )
                 
             elif value == "INPUTADJ":
                 if sign:
@@ -98,10 +99,14 @@ class VMXPasscodeParser(object):
 
     def read_file(self, filename):
         line_number = 0
-        with open(filename) as file_hdl:
-            for line in file_hdl:
-                line_number += 1
-                if not self.parse_line(line):
-                    logging.warning(filename + ":%d bad format: %s", line_number, line.strip())
-            logging.info("Access Code Parsing Complete - %d valid access codes", len(self.access_codes))
+        try:
+            with open(filename) as file_hdl:
+                for line in file_hdl:
+                    line_number += 1
+                    if not self.parse_line(line):
+                        logging.warning(filename + ":%d bad format: %s", line_number, line.strip())
+                logging.info("Access Code Parsing Complete - %d valid access codes", len(self.access_codes))
+
+        except IOError:
+                logging.info("Unable to open Access Code file - "+filename+" (server is locked down)")
 

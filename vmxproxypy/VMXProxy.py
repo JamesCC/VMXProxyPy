@@ -43,19 +43,18 @@ class ThreadedTCPRequestHandler(SocketServer.BaseRequestHandler):
     def process_directive(self, command, authenticated):
         """Process special directive commands, not intended for mixer."""
         if command.startswith( chr(2)+"###PWD:" ):
-            if self.server.password is None:
+            if self.server.passcode_parser is None:
                 logging.warning("Password sent, but authentication not required")
                 response = chr(6)
-            elif command[8:] == self.server.password+";":
-                #response = chr(6)                                              # old behaviour (full control)
-                #response = chr(2)+"###PWD:\"---2-4-6-8-0-2-4-6\";"             # no control over main, every other channel
-                #response = chr(2)+"###PWD:\"-M-2-4-6-8-0-2-4-6\";"             # control over main, every other channel
-                #response = chr(2)+"###PWD:\"*M12345678901234567\";"            # bad line
-                response = chr(2)+"###PWD:\"*M1234567890123456\";"              # full control
-                authenticated = 1
             else:
-                logging.warning("Not Authenticated - "+ command[7:])
-                response = self.NOT_AUTENTICATED_RESPONSE
+                rights = self.server.passcode_parser.get_access_rights(command[8:-1])
+                if rights:
+                    response = chr(2)+"###PWD:\""+rights+"\";"
+                    authenticated = 1
+                else:
+                    logging.warning("Not Authenticated - "+ command[7:])
+                    response = self.NOT_AUTENTICATED_RESPONSE
+
         else:
             response = self.BAD_SYNTAX_RESPONSE
             
@@ -67,7 +66,7 @@ class ThreadedTCPRequestHandler(SocketServer.BaseRequestHandler):
         _ = self.request.getsockname()
         client_ip = self.request.getpeername()[0];
         logging.info( "%s Connected", client_ip )
-        authenticated = (self.server.password is None)
+        authenticated = (self.server.passcode_parser is None)
         command_count = 0;
         tcp_input_gatherer = VMXParser()
         try:
@@ -98,16 +97,16 @@ class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
     """Instance of a TCP Server that can handle multiple simultaneous
     connections."""
 
-    def start_server(self, cmd_processor, password=None):
+    def start_server(self, cmd_processor, passcode_parser=None):
         """Start the server with the supplied command processor object for handling incoming
         commands."""
         _, port = self.server_address
         logging.info("Network Server started on port %d", port)
         self.cmd_processor = cmd_processor
-        self.password = password
+        self.passcode_parser = passcode_parser
 
-        if password is not None:
-            logging.info("Password is set - Authentication will be required")
+        if passcode_parser is not None:
+            logging.info("Authentication will be required")
 
         self.serve_forever()
 
@@ -132,6 +131,11 @@ def vmx_proxy(serial_port_name=None, baudrate=115200,
                         datefmt='%H%M%S', level=verbosity)
 
     cmd_processor = VMXProcessor()
+    passcode_parser = None
+
+    if server_password:
+        passcode_parser = VMXPasscodeParser()
+        passcode_parser.read_file(server_password)
 
     if serial_port_name is not None:
         serial_port = VMXSerialPort(serial_port_name, int(baudrate))
@@ -161,7 +165,7 @@ def vmx_proxy(serial_port_name=None, baudrate=115200,
 
         # Start a thread with the server -- that thread will then start one
         # more thread for each request
-        server_thread = threading.Thread(target=server.start_server, args=(cmd_processor, server_password))
+        server_thread = threading.Thread(target=server.start_server, args=(cmd_processor, passcode_parser))
         # Exit the server thread when the main thread terminates
         server_thread.daemon = True
         server_thread.start()
