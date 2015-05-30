@@ -28,6 +28,7 @@ class VMXSerialPort(object):
     timeout."""
 
     def __init__(self, device, baudrate):
+        # Configure blocking reads for a 3 second timeout
         self.__serial = serial.Serial(device, baudrate, timeout=3)
 
     def __del__(self):
@@ -56,4 +57,3 @@ class VMXSerialPort(object):
             if char == ";" and not inside_quotes:
                 break
         return response
-

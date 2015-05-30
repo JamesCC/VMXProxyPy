@@ -29,19 +29,6 @@ import time
 from VMXParser import VMXParser
 from VMXStateMonitor import VMXStateMonitor
 
-class Sink(object):
-    """A dummy class to sink strings, and issues blank responses.  Used for
-    the simulator, and satisfies the expected interface requirements."""
-
-    def reset(self):
-        """Dummy reset method.  Does nothing."""
-        _ = self
-
-    def process(self, dummy=None):
-        """Accept a string and return nothing."""
-        _ = self
-        return None
-
 class VMXProcessor(object):
     """The Command Processor.  Accepts one or more commands, processes them
     and returns the responses."""
@@ -51,7 +38,7 @@ class VMXProcessor(object):
         self.__stage2_parser = VMXParser()
         self.__state_monitor = VMXStateMonitor()
         self.__output_parser = VMXParser()
-        self.__mixer_if = Sink()
+        self.__mixer_if = None
         self.__discard_rate = None
         self.__cmd_delay = None
 
@@ -60,12 +47,12 @@ class VMXProcessor(object):
         self.__stage2_parser.reset()
         self.__output_parser.reset()
         # Intentionally don't reset the state monitor - to preserve db
-        self.__mixer_if.reset()
+        if self.__mixer_if:
+            self.__mixer_if.reset()
 
     def set_mixer_interface(self, mixer_if_object):
         """Set the interface for the mixer.  Typically passed an object of the
-        VMXSerialPort class, which exposes the serial interface.  Will override
-        the default Sink interface used for simulation."""
+        VMXSerialPort class, which exposes the serial interface."""
         self.__mixer_if = mixer_if_object
 
     def set_debug_discard_rate(self, discard_rate):
@@ -75,6 +62,11 @@ class VMXProcessor(object):
     def set_debug_cmd_delay_in_ms(self, cmd_delay_in_ms):
         """Set command maximum delay in milliseconds (debug option)."""
         self.__cmd_delay = cmd_delay_in_ms / 1000
+
+    def clear_cache(self):
+        # clear cache ONLY if a mixer is attached (i.e. simulator needs its cache!)
+        if self.__mixer_if:
+            self.__state_monitor.reset()
 
     def process(self, command=""):
         """Accept a command or commands, process them, returning the
@@ -91,17 +83,24 @@ class VMXProcessor(object):
             logging.debug(">> " + output_stage2)
 
             # discard rate is a debug feature
-            if self.__discard_rate is not None:
+            if self.__discard_rate:
                 if random.randint(1, self.__discard_rate) == self.__discard_rate:
                     continue
 
-            # Send to mixer or simulator dummy function (which will return None)
-            mixer_reply = self.__mixer_if.process(output_stage2)
+            # see if there is a cached value for the command (only applies if a query command)
+            state_monitor_output = self.__state_monitor.read_cache(output_stage2)
+            if state_monitor_output:
+                logging.debug("<< " + state_monitor_output + " (CACHED)")
+            else:
+                # Send to mixer (if one is setup)
+                if self.__mixer_if:
+                    mixer_reply = self.__mixer_if.process(output_stage2)
+                else:
+                    mixer_reply = None      # simulator responds with None
+                state_monitor_output = self.__state_monitor.process(output_stage2, mixer_reply)
+                logging.debug("<< " + state_monitor_output)
 
-            state_monitor_output = self.__state_monitor.process(output_stage2, mixer_reply)
-            logging.debug("<< " + state_monitor_output)
-
-            #output_string += state_monitor_output
+            # parse the output to keep form
             output_string += self.__output_parser.process(state_monitor_output)
 
             # cmd delay is a debug feature
@@ -120,4 +119,3 @@ class VMXProcessor(object):
         self.__lock.release()
 
         return output_string
-

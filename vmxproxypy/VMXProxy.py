@@ -36,7 +36,7 @@ from VMXPasscodeParser import VMXPasscodeParser
 
 class ThreadedTCPRequestHandler(SocketServer.BaseRequestHandler):
     """Handler container for incoming TCP connections"""
-    
+
     BAD_SYNTAX_RESPONSE = chr(2)+"ERR:0;"
     NOT_AUTENTICATED_RESPONSE = chr(2)+"ERR:6;"
 
@@ -44,7 +44,7 @@ class ThreadedTCPRequestHandler(SocketServer.BaseRequestHandler):
         """Process special directive commands, not intended for mixer."""
         if command.startswith( chr(2)+"###PWD:" ):
             if self.server.passcode_parser is None:
-                logging.warning("Password sent, but authentication not required")
+                logging.warning("Passcode sent, but authentication not required")
                 response = chr(6)
             else:
                 rights = self.server.passcode_parser.get_access_rights(command[8:-1])
@@ -55,11 +55,16 @@ class ThreadedTCPRequestHandler(SocketServer.BaseRequestHandler):
                     logging.warning("Not Authenticated - "+ command[7:])
                     response = self.NOT_AUTENTICATED_RESPONSE
 
+        elif command.startswith( chr(2)+"###RFC" ):
+            logging.warning("Refresh Seen")
+            self.server.cmd_processor.clear_cache()
+            response = chr(6)
+
         else:
             response = self.BAD_SYNTAX_RESPONSE
-            
+
         return response, authenticated
-        
+
     # note: self.server is an instance of class ThreadedTCPServer
     #       self.request is an instance of class socket
     def handle(self):
@@ -76,14 +81,14 @@ class ThreadedTCPRequestHandler(SocketServer.BaseRequestHandler):
                 while command:
                     if command.startswith( chr(2)+"###" ):
                         response, authenticated = self.process_directive(command, authenticated)
-                        
+
                     elif authenticated:
                         response = self.server.cmd_processor.process(command)
                         command_count += 1
-                    
+
                     else:
                         response = self.NOT_AUTENTICATED_RESPONSE
-                    
+
                     if response != "":
                         self.request.sendall(response)
                     command = tcp_input_gatherer.process()
@@ -122,7 +127,7 @@ def register_callback(sd_ref, flags, error_code, name, regtype, domain):
         logging.info("Registered service with Bonjour/AVAHI")
 
 def vmx_proxy(serial_port_name=None, baudrate=115200,
-              host_ip="", host_port_number=None, server_password=None,
+              host_ip="", host_port_number=None, server_passcodefile=None,
               debug_cmd_delay=None, debug_discard_rate=None,
               simfilerc=os.path.dirname(os.path.abspath(__file__))+"/../simrc.txt", verbosity=logging.INFO):
     """Start the vmx_proxy server / simulator"""
@@ -133,9 +138,9 @@ def vmx_proxy(serial_port_name=None, baudrate=115200,
     cmd_processor = VMXProcessor()
     passcode_parser = None
 
-    if server_password:
+    if server_passcodefile:
         passcode_parser = VMXPasscodeParser()
-        passcode_parser.read_file(server_password)
+        passcode_parser.read_file(server_passcodefile)
 
     if serial_port_name is not None:
         serial_port = VMXSerialPort(serial_port_name, int(baudrate))
@@ -247,8 +252,8 @@ Roland VMixer interface adaptor.  It can run in three modes.
     parser.add_option("-n", "--net", dest="port",
                       help="set host_port_number for network", default=None, metavar="PORT")
 
-    parser.add_option("-p", "--password", dest="password",
-                      help="set password authentication", default=None, metavar="PASSWD")
+    parser.add_option("-p", "--passcodefile", dest="passcodefile",
+                      help="set passcodefile authentication", default=None, metavar="FILE")
 
     parser.add_option("-z", "--delay", dest="debug_cmd_delay",
                       help="(debug) set random delay", default=None, metavar="MS")
@@ -267,7 +272,7 @@ Roland VMixer interface adaptor.  It can run in three modes.
 
     # Start VMXProxy
     vmx_proxy(serial_port_name=options.serial, baudrate=options.baud,
-              host_port_number=options.port, server_password=options.password,
+              host_port_number=options.port, server_passcodefile=options.passcodefile,
               debug_cmd_delay=options.debug_cmd_delay, debug_discard_rate=options.debug_discard_rate,
               verbosity=verbosity)
 
