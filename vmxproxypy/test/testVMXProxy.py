@@ -29,10 +29,10 @@ from vmxproxypy import VMXProxy
 STX = chr(2)
 ACK = chr(6)
 
+@unittest.skip("Does not work with coverage module")
 class TestVMXProxy(unittest.TestCase):
     """Unittests for VMXProxy Application"""
 
-    @unittest.skip("Does not work with coverage module")
     def testAsClientNoPass(self):
         """Check VMXProxy accepts a client without a password."""
 
@@ -64,7 +64,6 @@ class TestVMXProxy(unittest.TestCase):
             os.kill(p.pid, signal.SIGINT)
             p.join()
 
-    @unittest.skip("Does not work with coverage module")
     def testAsClientWithPass(self):
         """Check VMXProxy accepts a client with a password, and it has to be
         correct."""
@@ -103,7 +102,6 @@ class TestVMXProxy(unittest.TestCase):
             os.kill(p.pid, signal.SIGINT)
             p.join()
 
-    @unittest.skip("Does not work with coverage module")
     def testAsTwoClients(self):
         """Check VMXProxy can accept multiple clients."""
 
@@ -146,4 +144,3 @@ class TestVMXProxy(unittest.TestCase):
             s1.close()
             os.kill(p.pid, signal.SIGINT)
             p.join()
-

@@ -14,34 +14,51 @@
 #    along with VMXProxyPy.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-all: examples
+all: help
+
+help:
+	@echo
+	@echo "Make targets:"
+	@echo "    examples                     - example usage"
+	@echo "    lint                         - pylint"
+	@echo "    test                         - unittest"
+	@echo "    dist32 dist64                - create windows binaries"
+	@echo "    clean clean_lint clean_test  - clean"
+	@echo
+
 
 # example run targets
 examples:
 	@echo
 	@echo "Simulator on Network Port 10000..."
-	@echo "    python2 vmxproxypy/VMXProxy.py -n 10000"
-	@echo 
+	@echo "    python vmxproxypy -n 10000"
+	@echo
+	@echo "Simulator on Network Port 10000 with passcode authetication..."
+	@echo "    python vmxproxypy -n 10000 -p passcodes.txt"
+	@echo
 	@echo "Simulator on Serial Port /dev/ttyUSB0..."
-	@echo "    python2 vmxproxypy/VMXProxy.py -s /dev/ttyUSB0"
+	@echo "    python vmxproxypy -s /dev/ttyUSB0"
 	@echo
 	@echo "Proxy to Serial Port /dev/ttyUSB0 on Network port 10000..."
-	@echo "    python2 vmxproxypy/VMXProxy.py -n 10000 -s /dev/ttyUSB0"
+	@echo "    python vmxproxypy -n 10000 -s /dev/ttyUSB0"
 	@echo
-
-
-###############################################################################
-# backup
-dropboxBackup:
-	tar -C .. -cjf ~/Dropbox/Projects/VMXProxyPy/VMXProxyPy.tgz VMXProxyPy
-	ls -l ~/Dropbox/Projects/VMXProxyPy/
-	tar -tjf ~/Dropbox/Projects/VMXProxyPy/VMXProxyPy.tgz
 
 
 ###############################################################################
 # lint
 lint:
-	pylint --rcfile=pylint.rcfile -f parseable vmxproxypy --ignore pybonjour.py | tee pylint.out
+	pylint --rcfile=pylint.rcfile -f parseable vmxproxypy --ignore=pybonjour.py,test | tee pylint.out
+
+
+###############################################################################
+# py2exe
+dist32:
+	python setup.py py2exe
+	mv dist dist32
+
+dist64:
+	python setup.py py2exe
+	mv dist dist64
 
 
 ###############################################################################
@@ -49,7 +66,7 @@ lint:
 test: testUNIT
 
 # legacy test run method
-testUNIT: clean_test 
+testUNIT: clean_test
 	coverage run -m unittest discover vmxproxypy/test
 	coverage html
 	coverage report
@@ -75,4 +92,4 @@ clean_test:
 
 clean: clean_test clean_lint
 	-rm -f vmxproxypy/*.pyc vmxproxypy/test/*.pyc
-
+	-rm -rf build

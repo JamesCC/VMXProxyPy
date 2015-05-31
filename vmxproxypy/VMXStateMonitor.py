@@ -62,15 +62,15 @@ class VMXStateMonitor(object):
         """Reset the State Monitor clearing its state database"""
         self.__action = ''
         self.__database.clear()
-        self.__databaseTimestamps.clear()
+        self.__database_timestamps.clear()
 
     def read_cache(self, command):
         """See if a query can be answered from the Cache.  Returns None if not."""
         self._parse(command)
         # interpretQuery will ignore non Query commands
-        return self._interpretQuery(time_limit=self.CACHE_TIMEOUT)
+        return self._interpret_query(time_limit=self.CACHE_TIMEOUT)
 
-    def process(self, command, reply):
+    def process(self, command, reply=None):
         """Process an incoming command from the mixer"""
         if reply is None:
             # Simulation Case
@@ -124,15 +124,15 @@ class VMXStateMonitor(object):
     def _interpret(self):
         """Interpret a previously parsed command, to either create a response
         from the state database, or store a value in the state database."""
-        simulated_response = self._interpretQuery(time_limit=None)
+        simulated_response = self._interpret_query(time_limit=None)
         if simulated_response is None:
-            simulated_response = self._interpretCommandSet()
+            simulated_response = self._interpret_command_set()
         if simulated_response is None:
             # indicate a syntax error
             simulated_response = self.__STX_CHR + "ERR:0;"
         return simulated_response
 
-    def _interpretCommandSet(self):
+    def _interpret_command_set(self):
         """Interpret a previously parsed command, to create a response
         from the state database, and store a value in the state database."""
         simulated_response = None
@@ -147,20 +147,19 @@ class VMXStateMonitor(object):
 
         return simulated_response
 
-    def _interpretQuery(self, time_limit=None):
+    def _interpret_query(self, time_limit=None):
         """Interpret a previously parsed command, to create a response
         from the state database."""
         simulated_response = None
         if self.__action == 'Q':
             lookup = self.__database.get(self.__key)
-            cacheValid = True
+            cache_valid = True
             if time_limit:
                 now = time.time()
                 timestamp = self.__database_timestamps.get(self.__key, now)
-                if (timestamp + time_limit) > now:
-                    cacheValid = False        # value too old
+                cache_valid = ((timestamp + time_limit) <= now)
 
-            if lookup and cacheValid:
+            if lookup and cache_valid:
                 simulated_response = self.__STX_CHR + self.__key
                 if self.__key.find(':') == -1:
                     simulated_response += ':'

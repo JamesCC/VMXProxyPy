@@ -64,6 +64,7 @@ class VMXProcessor(object):
         self.__cmd_delay = cmd_delay_in_ms / 1000
 
     def clear_cache(self):
+        """Empty the state database."""
         # clear cache ONLY if a mixer is attached (i.e. simulator needs its cache!)
         if self.__mixer_if:
             self.__state_monitor.reset()

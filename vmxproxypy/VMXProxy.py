@@ -27,12 +27,13 @@ import os
 import select
 import pybonjour
 
-
 from VMXSimFileParser import VMXSimFileParser
 from VMXSerialPort import VMXSerialPort
 from VMXProcessor import VMXProcessor
 from VMXParser import VMXParser
 from VMXPasscodeParser import VMXPasscodeParser
+
+__version__ = "2.0"
 
 class ThreadedTCPRequestHandler(SocketServer.BaseRequestHandler):
     """Handler container for incoming TCP connections"""
@@ -42,7 +43,7 @@ class ThreadedTCPRequestHandler(SocketServer.BaseRequestHandler):
 
     def process_directive(self, command, authenticated):
         """Process special directive commands, not intended for mixer."""
-        if command.startswith( chr(2)+"###PWD:" ):
+        if command.startswith(chr(2)+"###PWD:"):
             if self.server.passcode_parser is None:
                 logging.warning("Passcode sent, but authentication not required")
                 response = chr(6)
@@ -55,7 +56,7 @@ class ThreadedTCPRequestHandler(SocketServer.BaseRequestHandler):
                     logging.warning("Not Authenticated - "+ command[7:])
                     response = self.NOT_AUTENTICATED_RESPONSE
 
-        elif command.startswith( chr(2)+"###RFC" ):
+        elif command.startswith(chr(2)+"###RFC"):
             logging.warning("Refresh Seen")
             self.server.cmd_processor.clear_cache()
             response = chr(6)
@@ -69,17 +70,17 @@ class ThreadedTCPRequestHandler(SocketServer.BaseRequestHandler):
     #       self.request is an instance of class socket
     def handle(self):
         _ = self.request.getsockname()
-        client_ip = self.request.getpeername()[0];
-        logging.info( "%s Connected", client_ip )
+        client_ip = self.request.getpeername()[0]
+        logging.info("%s Connected", client_ip)
         authenticated = (self.server.passcode_parser is None)
-        command_count = 0;
+        command_count = 0
         tcp_input_gatherer = VMXParser()
         try:
             data = self.request.recv(1024)
             while data:
                 command = tcp_input_gatherer.process(data)
                 while command:
-                    if command.startswith( chr(2)+"###" ):
+                    if command.startswith(chr(2)+"###"):
                         response, authenticated = self.process_directive(command, authenticated)
 
                     elif authenticated:
@@ -95,7 +96,7 @@ class ThreadedTCPRequestHandler(SocketServer.BaseRequestHandler):
                 data = self.request.recv(1024)
         except:
             pass
-        logging.info( "%s Disconnected (after %d commands)", client_ip, command_count )
+        logging.info("%s Disconnected (after %d commands)", client_ip, command_count)
 
 
 class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
@@ -129,7 +130,7 @@ def register_callback(sd_ref, flags, error_code, name, regtype, domain):
 def vmx_proxy(serial_port_name=None, baudrate=115200,
               host_ip="", host_port_number=None, server_passcodefile=None,
               debug_cmd_delay=None, debug_discard_rate=None,
-              simfilerc=os.path.dirname(os.path.abspath(__file__))+"/../simrc.txt", verbosity=logging.INFO):
+              simfilerc=os.path.abspath(os.getcwd())+"/simrc.txt", verbosity=logging.INFO):
     """Start the vmx_proxy server / simulator"""
 
     logging.basicConfig(format='%(asctime)s.%(msecs)03d:%(threadName)s:%(levelname)s - %(message)s',
@@ -233,9 +234,9 @@ def main():
 Roland VMixer interface adaptor.  It can run in three modes.
 
  1. Provide a network serial interface, specifically to handle the Roland
-    VMixer protocol.  (-s and -n options supplied)
- 2. Provide an emulation of a VMixer over the network.  (if no -s option)
- 3. Provide an emulation of a VMixer over serial.  (if no -n option)""")
+    VMixer protocol  (--serial and --net options supplied)
+ 2. Provide an emulation of a VMixer over the network  (if no --serial option)
+ 3. Provide an emulation of a VMixer over serial  (if no --net option)""")
 
     parser.add_option("-q", "--quiet", dest="quiet", action="store_true",
                       help="quiet mode", default=False)
@@ -253,7 +254,7 @@ Roland VMixer interface adaptor.  It can run in three modes.
                       help="set host_port_number for network", default=None, metavar="PORT")
 
     parser.add_option("-p", "--passcodefile", dest="passcodefile",
-                      help="set passcodefile authentication", default=None, metavar="FILE")
+                      help="use passcode authentication", default=None, metavar="FILE")
 
     parser.add_option("-z", "--delay", dest="debug_cmd_delay",
                       help="(debug) set random delay", default=None, metavar="MS")

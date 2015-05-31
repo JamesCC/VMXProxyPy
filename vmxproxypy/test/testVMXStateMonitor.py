@@ -85,6 +85,4 @@ class TestVMXStateMonitor(unittest.TestCase):
         self.assertEqual( output, chr(6) )
         vmxsm.reset();
         output = vmxsm.process(chr(2)+"MXQ:I2,MX1;")
-        self.assertEqual( output, chr(2)+"MXS:I2,MX1,?;" )
-
-
+        self.assertEqual( output, chr(2)+"ERR:0;" )
