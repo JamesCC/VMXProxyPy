@@ -264,5 +264,14 @@ instructions for linux above to install and get a service running.
 The Raspberry Pi boots within 20seconds, and needs no user interaction, so can be boxed and left
 to be powered up and down with the mixer.
 
+    sudo raspi-config               - expand to use full sd, set language
+    sudo apt-get update
+    sudo apt-get install git        - already installed
+    sudo apt-get install screen
+    sudo apt-get install avahi-daemon avahi-utils
+    sudo update-rc.d avahi-daemon defaults
+    sudo /etc/init.d/avahi-daemon restart
+    git clone https://bitbucket.org/JamesCC/vmxproxypy.git
+
 
 JamesCC @ 06jun15

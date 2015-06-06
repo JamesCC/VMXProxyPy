@@ -127,7 +127,7 @@ def try_announce_service( host_port_number ):
         if platform.system() == "Windows":
             subprocess.Popen(["dns-sd", "-R", "vmxproxy", "_telnet._tcp", "local", host_port_number, "vmxproxy=1"])
         elif platform.system() == "Linux":
-            subprocess.Popen(["avahi-publish", "-s", "vmxproxy", "_telnet._tcp", "local", host_port_number, "vmxproxy=1"])
+            subprocess.Popen(["avahi-publish", "-s", "vmxproxy", "_telnet._tcp", host_port_number, "vmxproxy=1"])
     except:
         pass
 

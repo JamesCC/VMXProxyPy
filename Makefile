@@ -33,16 +33,16 @@ help:
 examples:
 	@echo
 	@echo "Simulator on Network Port 10000..."
-	@echo "    python vmxproxypy -n 10000"
+	@echo "    python VMXProxy -n 10000"
 	@echo
 	@echo "Simulator on Network Port 10000 with passcode authetication..."
-	@echo "    python vmxproxypy -n 10000 -p passcodes.txt"
+	@echo "    python VMXProxy -n 10000 -p passcodes.txt"
 	@echo
 	@echo "Simulator on Serial Port /dev/ttyUSB0..."
-	@echo "    python vmxproxypy -s /dev/ttyUSB0"
+	@echo "    python VMXProxy -s /dev/ttyUSB0"
 	@echo
 	@echo "Proxy to Serial Port /dev/ttyUSB0 on Network port 10000..."
-	@echo "    python vmxproxypy -n 10000 -s /dev/ttyUSB0"
+	@echo "    python VMXProxy -n 10000 -s /dev/ttyUSB0"
 	@echo
 
 
