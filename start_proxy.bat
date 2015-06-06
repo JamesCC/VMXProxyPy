@@ -31,4 +31,7 @@ rem                           use passcode authentication
 rem     -z MS, --delay=MS     (debug) set random delay
 rem     -x X, --discard=X     (debug) set discard rate
 rem ***********************************************************************************************
-%DIST_PATH%\VMXProxy --net=10000 -serial=COM1
+rem %DIST_PATH%\VMXProxy --net=10000 -serial=COM1
+start "" dns-sd -R vmxproxy _telnet._tcp local 10000 vmxproxy=1
+python VMXProxy --net=10000
+pause

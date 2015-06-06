@@ -10,7 +10,7 @@ setup(
     description = 'An optimised network bridge for accessing Roland V Mixer desks',
     author = 'James Covey-Crump',
     license = 'Lesser GPLv3',
-    console=['vmxproxypy/VMXProxy.py'],
+    console=['VMXProxy/VMXProxy.py'],
     options={
                 "py2exe":{
                         "ignores": ['FCNTL', 'System', 'System.IO.Ports', 'TERMIOS', 'clr'],

@@ -47,7 +47,7 @@ examples:
 ###############################################################################
 # lint
 lint:
-	pylint --rcfile=pylint.rcfile -f parseable vmxproxypy --ignore=pybonjour.py,test | tee pylint.out
+	pylint --rcfile=pylint.rcfile -f parseable VMXProxy --ignore=pybonjour.py,test | tee pylint.out
 
 
 ###############################################################################
@@ -67,14 +67,14 @@ test: testUNIT
 
 # legacy test run method
 testUNIT: clean_test
-	coverage run -m unittest discover vmxproxypy/test
+	coverage run -m unittest discover VMXProxy/test
 	coverage html
 	coverage report
 	echo "Coverage results in htmlcov/index.html"
 
 # legacy TAP output test run method
 testTAP: clean_test
-	coverage run vmxproxypy/test/tapout.py
+	coverage run VMXProxy/test/tapout.py
 	prove -e cat test-reports/*.tap
 	coverage html
 	coverage report
@@ -91,5 +91,8 @@ clean_test:
 	-rm -f nosetests.xml coverage.xml
 
 clean: clean_test clean_lint
-	-rm -f vmxproxypy/*.pyc vmxproxypy/test/*.pyc
+	-rm -f VMXProxy/*.pyc VMXProxy/test/*.pyc
 	-rm -rf build
+
+mrproper: clean
+	-rm -rf dist32 dist64
