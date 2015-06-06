@@ -1,0 +1,57 @@
+#! /bin/sh
+# /etc/init.d/VMXProxyStartup 
+
+### BEGIN INIT INFO
+# Provides:          VMXProxy
+# Required-Start:    $remote_fs $syslog
+# Required-Stop:     $remote_fs $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Simple script to start VMXProxy at boot
+# Description:       A simple script that will start / stop VMXPorxy at boot / shutdown.
+### END INIT INFO
+
+# If you want a command to always run, put it here
+
+
+install_dir=__INSTALL_DIR__
+
+# Carry out specific functions when asked to by the system
+case "$1" in
+  start)
+    echo "Starting VMXProxy"
+
+    # uncomment for sim (and comment proxy below)
+    #echo "Simulations on Port 10000 and /dev/ttyUSB0"
+    #screen -dmS VMXProxyNetworkSim python2 ${install_dir}/VMXProxy --net 10000
+    #screen -dmS VMXProxySerialSim python2 ${install_dir}/VMXProxy --serial /dev/ttyUSB0
+
+    # uncomment for Proxy (and comment sims above)
+    echo "Proxy on Port 10000 to /dev/ttyUSB0"
+    screen -dmS VMXProxyProxy python2 ${install_dir}/VMXProxy --serial /dev/ttyUSB0 --net 10000
+    ;;
+
+  stop)
+    echo "Stopping VMXProxy"
+    for session in $(screen -ls VMXProxy | grep -o '[0-9]\{4\}');
+    do 
+        screen -S ${session} -X quit
+    done
+    ;;
+
+  restart)
+    $0 stop
+    $0 start
+    ;;
+
+  status)
+    screen -ls VMXProxy
+    ;;
+
+  *)
+    echo "Usage: /etc/init.d/VMXProxyStartup {start|stop|restart|status}"
+    exit 1
+    ;;
+esac
+
+exit 0

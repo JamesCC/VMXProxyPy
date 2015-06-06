@@ -24,6 +24,8 @@ help:
 	@echo "    test                         - unittest"
 	@echo "    dist32 dist64                - create windows binaries"
 	@echo "    clean clean_lint clean_test  - clean"
+	@echo "    mrproper                     - clean, remove dist32 dist64"
+	@echo "    install uninstall            - install/remove startup service for linux"
 	@echo
 
 
@@ -42,6 +44,21 @@ examples:
 	@echo "Proxy to Serial Port /dev/ttyUSB0 on Network port 10000..."
 	@echo "    python vmxproxypy -n 10000 -s /dev/ttyUSB0"
 	@echo
+
+
+###############################################################################
+# install (linux)
+install:
+	sed "s%__INSTALL_DIR__%${PWD}%" VMXProxy.initrc > /etc/init.d/VMXProxyStartup
+	chmod 755 /etc/init.d/VMXProxyStartup
+	update-rc.d VMXProxyStartup defaults
+	@echo "type...  sudo /etc/init.d/VMXProxyStartup start to start service now."
+
+uninstall:
+	@echo "You need to run as root for these commands to work (sudo make uninstall)"
+	@echo "The following command will error if VMXProxyStart is not installed (ignore it)."
+	/etc/init.d/VMXProxyStartup stop
+	update-rc.d -f  VMXProxyStartup remove
 
 
 ###############################################################################
