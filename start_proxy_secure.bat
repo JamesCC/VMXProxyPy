@@ -1,14 +1,4 @@
 @echo off
-echo Your IP address(es):
-ipconfig | findstr /R /b /C:" *IP.*"
-echo.
-
-reg.exe Query HKLM\Hardware\Description\System\CentralProcessor\0 | find /i "x86"
-if %ERRORLEVEL% == 0 (
-    set DIST_PATH=dist32
-) else (
-    set DIST_PATH=dist64
-)
 
 rem ***********************************************************************************************
 rem   Roland VMixer interface adaptor.  It can run in three modes.
@@ -31,4 +21,5 @@ rem                           use passcode authentication
 rem     -z MS, --delay=MS     (debug) set random delay
 rem     -x X, --discard=X     (debug) set discard rate
 rem ***********************************************************************************************
-%DIST_PATH%\VMXProxy --net=10000 -serial=COM1
+
+call start_VMXProxy.bat --net=10000 --serial=COM1 --passcodefile=passcodes.txt                  <NUL

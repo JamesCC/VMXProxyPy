@@ -25,7 +25,9 @@ import threading
 import SocketServer
 import os
 import select
-import pybonjour
+import time
+import subprocess
+import platform
 
 from VMXSimFileParser import VMXSimFileParser
 from VMXSerialPort import VMXSerialPort
@@ -117,15 +119,18 @@ class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
         self.serve_forever()
 
 
-def register_callback(sd_ref, flags, error_code, name, regtype, domain):
-    """Callback used to report success when starting up Bonjour/AVAHI."""
-    _ = sd_ref
-    _ = flags
-    _ = name
-    _ = regtype
-    _ = domain
-    if error_code == pybonjour.kDNSServiceErr_NoError:
-        logging.info("Registered service with Bonjour/AVAHI")
+def try_announce_service( host_port_number ):
+    """Attempt ZeroConf Service Announcement.  Will silently fail, in case users have not 
+    installed the required components in their system."""
+    
+    try:
+        if platform.system() == "Windows":
+            subprocess.Popen(["dns-sd", "-R", "vmxproxy", "_telnet._tcp", "local", host_port_number, "vmxproxy=1"])
+        elif platform.system() == "Linux":
+            subprocess.Popen(["avahi-publish", "-s", "vmxproxy", "_telnet._tcp", "local", host_port_number, "vmxproxy=1"])
+    except:
+        pass
+
 
 def vmx_proxy(serial_port_name=None, baudrate=115200,
               host_ip="", host_port_number=None, server_passcodefile=None,
@@ -176,22 +181,16 @@ def vmx_proxy(serial_port_name=None, baudrate=115200,
         server_thread.daemon = True
         server_thread.start()
 
-        txt_record = pybonjour.TXTRecord({'vmxproxy':1})
-        sd_ref = pybonjour.DNSServiceRegister(name="vmxproxy", regtype="_telnet._tcp",
-                                              port=int(host_port_number), txtRecord=txt_record,
-                                              callBack=register_callback)
+        try_announce_service(host_port_number)
 
         try:
             while True:
                 # do nothing waiting for a keyboard interrupt
-                ready = select.select([sd_ref], [], [])
-                if sd_ref in ready[0]:
-                    pybonjour.DNSServiceProcessResult(sd_ref)
+                time.sleep( 1 )
 
         except KeyboardInterrupt:
             pass
         finally:
-            sd_ref.close()
             server.shutdown()
             del cmd_processor
             logging.info("Server shutdown")
