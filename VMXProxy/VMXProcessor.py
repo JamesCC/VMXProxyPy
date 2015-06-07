@@ -89,7 +89,8 @@ class VMXProcessor(object):
                     continue
 
             # see if there is a cached value for the command (only applies if a query command)
-            state_monitor_output = self.__state_monitor.read_cache(output_stage2)
+            #state_monitor_output = self.__state_monitor.read_cache(output_stage2)
+            state_monitor_output = None
             if state_monitor_output:
                 logging.debug("<< " + state_monitor_output + " (CACHED)")
             else:

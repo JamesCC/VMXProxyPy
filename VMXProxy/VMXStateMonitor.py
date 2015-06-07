@@ -31,7 +31,7 @@ class VMXStateMonitor(object):
 
     __STX_CHR = chr(2)
     __ACK_CHR = chr(6)
-    __RegExCmdValidate = re.compile(r"^"+__STX_CHR+r"(..)([CSQ])(.*);$")
+    __RegExCmdValidate = re.compile(r"^"+__STX_CHR+r"([A-Z][A-Z])([CSQ])(.*);$")
 
     # for each command, the number of parameters required to fully qualify
     # the attribute (database key).  All commands must be listed here to be
