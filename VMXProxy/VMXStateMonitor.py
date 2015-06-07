@@ -157,7 +157,7 @@ class VMXStateMonitor(object):
             if time_limit:
                 now = time.time()
                 timestamp = self.__database_timestamps.get(self.__key, now)
-                cache_valid = ((timestamp + time_limit) <= now)
+                cache_valid = (now < (timestamp + time_limit))
 
             if lookup and cache_valid:
                 simulated_response = self.__STX_CHR + self.__key
