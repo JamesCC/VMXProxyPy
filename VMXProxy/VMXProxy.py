@@ -24,7 +24,6 @@ import optparse
 import threading
 import SocketServer
 import os
-import select
 import time
 import subprocess
 import platform
@@ -118,8 +117,8 @@ class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
         self.serve_forever()
 
 
-def try_announce_service( host_port_number ):
-    """Attempt ZeroConf Service Announcement.  Will silently fail, in case users have not 
+def try_announce_service(host_port_number):
+    """Attempt ZeroConf Service Announcement.  Will silently fail, in case users have not
     installed the required components in their system."""
     
     try:
@@ -185,7 +184,7 @@ def vmx_proxy(serial_port_name=None, baudrate=115200,
         try:
             while True:
                 # do nothing waiting for a keyboard interrupt
-                time.sleep( 1 )
+                time.sleep(1)
 
         except KeyboardInterrupt:
             pass

@@ -69,6 +69,8 @@ class VMXProcessor(object):
         the .set_mixer_interface() method."""
         self.__lock.acquire()
 
+        #logging.debug("> " + command)
+
         # parse stage1 output to split up any concatenated commands
         output_stage2 = self.__stage2_parser.process(command)
 
@@ -80,6 +82,8 @@ class VMXProcessor(object):
             # discard rate is a debug feature
             if self.__discard_rate:
                 if random.randint(1, self.__discard_rate) == self.__discard_rate:
+                    logging.debug("Discarded Command")
+                    output_stage2 = ""
                     continue
 
             # see if there is a cached value for the command (only applies if a query command)
@@ -111,6 +115,7 @@ class VMXProcessor(object):
             logging.warning("Parser should be empty - discarding fragment")
             self.__stage2_parser.reset()
 
-        self.__lock.release()
+        #logging.debug("< " + output_string)
 
+        self.__lock.release()
         return output_string

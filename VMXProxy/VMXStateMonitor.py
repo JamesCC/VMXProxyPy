@@ -153,7 +153,7 @@ class VMXStateMonitor(object):
         """Interpret a previously parsed command, to create a response
         from the state database."""
         simulated_response = None
-        
+
         # request to lookup from cache
         if self.__action == 'Q':
             lookup = self.__database.get(self.__key)
