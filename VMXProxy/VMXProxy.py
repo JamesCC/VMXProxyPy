@@ -58,9 +58,8 @@ class ThreadedTCPRequestHandler(SocketServer.BaseRequestHandler):
                     logging.warning("Not Authenticated - "+ command[7:])
                     response = self.NOT_AUTENTICATED_RESPONSE
 
-        elif command.startswith(chr(2)+"###RFC"):
-            logging.warning("Refresh Seen")
-            self.server.cmd_processor.clear_cache()
+        elif command.startswith(chr(2)+"###CFA"):
+            # We support the Cache Feature
             response = chr(6)
 
         else:

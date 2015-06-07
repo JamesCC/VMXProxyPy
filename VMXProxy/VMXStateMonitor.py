@@ -31,7 +31,7 @@ class VMXStateMonitor(object):
 
     __STX_CHR = chr(2)
     __ACK_CHR = chr(6)
-    __RegExCmdValidate = re.compile(r"^"+__STX_CHR+r"([A-Z][A-Z])([CSQ])(.*);$")
+    __RegExCmdValidate = re.compile(r"^"+__STX_CHR+r"([A-Z][A-Z])([CSQq])(.*);$")
 
     # for each command, the number of parameters required to fully qualify
     # the attribute (database key).  All commands must be listed here to be
@@ -67,23 +67,36 @@ class VMXStateMonitor(object):
     def read_cache(self, command):
         """See if a query can be answered from the Cache.  Returns None if not."""
         self._parse(command)
-        # interpretQuery will ignore non Query commands
-        return self._interpret_query(time_limit=self.CACHE_TIMEOUT)
+        response = None
+        if self.__action == 'q':
+            command = command[0:4].upper()+command[4:]      # uppercase the q
+            now = time.time()
+            timestamp = self.__database_timestamps.get(self.__key, now)
+            cache_valid = (now < (timestamp + self.CACHE_TIMEOUT))
+            if cache_valid:
+                self.__action = 'Q'
+                response = self._interpret_query()
+        return (command, response)
 
     def process(self, command, reply=None):
         """Process an incoming command from the mixer"""
         if reply is None:
             # Simulation Case
             self._parse(command)
-            reply = self._interpret()
+            reply = self._interpret_query()
+            if reply is None:
+                reply = self._interpret_command_set()
+            if reply is None:
+                # indicate a syntax error
+                reply = self.__STX_CHR + "ERR:0;"
         elif reply == self.__ACK_CHR:
             # Mixer Case: reply is ACK, use initial command to gather info.
             self._parse(command)
-            self._interpret()       # preserve reply
+            self._interpret_command_set()       # preserve reply
         else:
             # Mixer Case: reply is not an ACK
             self._parse(reply)
-            self._interpret()       # preserve reply
+            self._interpret_command_set()       # preserve reply
 
         return reply
 
@@ -121,17 +134,6 @@ class VMXStateMonitor(object):
                     else:
                         self.__key += character
 
-    def _interpret(self):
-        """Interpret a previously parsed command, to either create a response
-        from the state database, or store a value in the state database."""
-        simulated_response = self._interpret_query(time_limit=None)
-        if simulated_response is None:
-            simulated_response = self._interpret_command_set()
-        if simulated_response is None:
-            # indicate a syntax error
-            simulated_response = self.__STX_CHR + "ERR:0;"
-        return simulated_response
-
     def _interpret_command_set(self):
         """Interpret a previously parsed command, to create a response
         from the state database, and store a value in the state database."""
@@ -147,19 +149,15 @@ class VMXStateMonitor(object):
 
         return simulated_response
 
-    def _interpret_query(self, time_limit=None):
+    def _interpret_query(self):
         """Interpret a previously parsed command, to create a response
         from the state database."""
         simulated_response = None
+        
+        # request to lookup from cache
         if self.__action == 'Q':
             lookup = self.__database.get(self.__key)
-            cache_valid = True
-            if time_limit:
-                now = time.time()
-                timestamp = self.__database_timestamps.get(self.__key, now)
-                cache_valid = (now < (timestamp + time_limit))
-
-            if lookup and cache_valid:
+            if lookup:
                 simulated_response = self.__STX_CHR + self.__key
                 if self.__key.find(':') == -1:
                     simulated_response += ':'

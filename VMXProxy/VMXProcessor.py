@@ -63,12 +63,6 @@ class VMXProcessor(object):
         """Set command maximum delay in milliseconds (debug option)."""
         self.__cmd_delay = cmd_delay_in_ms / 1000
 
-    def clear_cache(self):
-        """Empty the state database."""
-        # clear cache ONLY if a mixer is attached (i.e. simulator needs its cache!)
-        if self.__mixer_if:
-            self.__state_monitor.reset()
-
     def process(self, command=""):
         """Accept a command or commands, process them, returning the
         responses.  Will pass mixer commands to the mixer interface setup via
@@ -89,8 +83,7 @@ class VMXProcessor(object):
                     continue
 
             # see if there is a cached value for the command (only applies if a query command)
-            #state_monitor_output = self.__state_monitor.read_cache(output_stage2)
-            state_monitor_output = None
+            output_stage2, state_monitor_output = self.__state_monitor.read_cache(output_stage2)
             if state_monitor_output:
                 logging.debug("<< " + state_monitor_output + " (CACHED)")
             else:
