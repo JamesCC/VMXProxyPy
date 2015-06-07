@@ -4,6 +4,7 @@
 ### BEGIN INIT INFO
 # Provides:          VMXProxy
 # Required-Start:    $remote_fs $syslog
+# Should-Start:      avahi
 # Required-Stop:     $remote_fs $syslog
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
