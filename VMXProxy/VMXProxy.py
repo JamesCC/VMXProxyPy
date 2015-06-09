@@ -28,13 +28,13 @@ import time
 import subprocess
 import platform
 
+from version import __version__
+
 from VMXSimFileParser import VMXSimFileParser
 from VMXSerialPort import VMXSerialPort
 from VMXProcessor import VMXProcessor
 from VMXParser import VMXParser
 from VMXPasscodeParser import VMXPasscodeParser
-
-__version__ = "2.0"
 
 class ThreadedTCPRequestHandler(SocketServer.BaseRequestHandler):
     """Handler container for incoming TCP connections"""
@@ -120,7 +120,7 @@ class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
 def try_announce_service(host_port_number):
     """Attempt ZeroConf Service Announcement.  Will silently fail, in case users have not
     installed the required components in their system."""
-    
+
     try:
         if platform.system() == "Windows":
             subprocess.Popen(["dns-sd", "-R", "vmxproxy", "_telnet._tcp", "local", host_port_number, "vmxproxy=1"])
@@ -259,7 +259,14 @@ Roland VMixer interface adaptor.  It can run in three modes.
     parser.add_option("-x", "--discard", dest="debug_discard_rate",
                       help="(debug) set discard rate", default=None, metavar="X")
 
+    parser.add_option("--version", dest="version", action="store_true",
+                      help="show version", default=False)
+
     (options, args) = parser.parse_args()
+
+    if options.version:
+        print __version__
+        os._exit(0)
 
     if options.quiet:           # just warnings and errors
         verbosity = logging.WARNING

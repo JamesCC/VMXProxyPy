@@ -1,9 +1,10 @@
 from distutils.core import setup
 import py2exe
 import sys
-from vmxproxypy.VMXProxy import __version__
 
-sys.path.append("./vmxproxypy")
+execfile('VMXProxy/version.py')
+
+sys.path.append("./VMXProxy")
 setup(
     name = 'VMXProxy',
     version = __version__,
