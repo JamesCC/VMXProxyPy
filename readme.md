@@ -3,6 +3,7 @@
 <https://bitbucket.org/JamesCC/vmxproxypy>
 <https://sites.google.com/site/vmxserialremote/>
 
+
 ## Introduction
 
 A network to serial terminal server optimised for connection to Roland V-Mixer mixing consoles.  
@@ -34,10 +35,11 @@ V-Mixer commands allow adjustment of a variety of controls, over the serial port
 
 These commands take the form... `$CMD:I1,p1,p2;`
 
-    Where $ is the character code 0x02, and CMD is a three letter command code
-    I1 represents the input
-    p1, p2 are two parameters (exact number depends on the cmd)
-    All commands are terminated by a semicolon.
+    Where $ is the character code 0x02 (STX), 
+    CMD is a three letter command code,
+    I1 represents the input,
+    p1, p2 are two parameters (exact number depends on the cmd),
+    and all commands are terminated by a semicolon.
 
 If accepted, the response is either of the same form... `$RSP:I1,p1,p2;' or
 an ACK character code 0x06 (if no response information is needed).
@@ -91,50 +93,62 @@ The heart of VMXProxy is a python script.  It accepts command line parameters.
                             use passcode authentication
       -z MS, --delay=MS     (debug) set random delay
       -x X, --discard=X     (debug) set discard rate
+      --version             show version
 
-Windows users can use an executable, which is a wrapped version of this script, hiding all this
-detail.
+Windows users can use a compiled version of the script, to avoid needing to install python.
 
 
 
 ## Initialisation Files
 
+There are two initialisation files read by VMXProxy on startup - passcodes.txt, and simrc.txt.
 
 
+### Access Control - passcodes.txt
+
+When you start the server with the --passcodefile option (using start_proxy_secure.bat) you can 
+impose access restrictions to the server and what facilities can be controlled on the mixer by 
+the App. The file passcodes.txt is an example which is used by start_proxy_secure.bat.
+
+The syntax is explained in the file, but in summary access control means:
+
+    - Access is only allowed using one of the listed passcode (number codes of any length)
+    - Against each passcode are the permissions that passcode allows
+        - Full Access - UNRESTRICTED
+        - Allow or Disallow access to the Input Adjustment Screen - INPUTADJ
+        - Allow or Disallow access to Main Faders - MAIN
+        - Allow or Disallow access to specific AUX channels (or them all) - AUX
+
+The main purpose of this is to prevent accidental adjustment of the wrong feeds by the wrong 
+people. For example you don't want your musicians accidentally altering the Main Faders.
 
 
-## Get me started Quickly!
+### Simulator Setup - simrc.txt
 
-Okay if you want to get something going fast best go for the Windows installer
+Purely optional.  This file is used for setting up the simulator, and can be fun to play with to 
+set-up the simulator with sensible names and levels for the various channels.  You don't need to 
+adjust this file, there are already some default values in it.
 
-### Prebuild Executable for Windows
+The simulator will validate the responses, so the commands on the left must correspond to the 
+expected responses on the right.  If you get it wrong, nothing disastrous will happen - when the 
+server is started (start_sim.bat) it will issue warnings, and the android app may struggle to 
+remain connected (since it might not get a needed input setting).
 
-First get the latest installer.  This can be found on the website...
-<https://sites.google.com/site/vmxserialremote/>
+I recommend keeping a copy of the original simrc.txt. 
 
-The installer will install all that is needed, without you needing to download ruby, ruby dev 
-kits, gems, etc.  After installing you will need to then alter the VMXProxy.ini to give the 
-settings, before running.
 
-After the install completes, the ini file will be opened.  Uncomment the Proxy forwarding line for
-windows (notice missing # at start of the line)...
+### Prebuilt Executable for Windows
 
-	# uncomment one of the following (first detected takes precedence)
-	#ARGS: --network 10000                              # Simulator on Network port 10000
-	#ARGS: --serial COM1                                # Simulator on Windows serial port COM1
-	#ARGS: --serial /dev/ttyUSB0                        # Simulator on Linux serial port ttyUSB0
-	ARGS: --network 10000 --serial COM1                # Proxy forwarding Network port 10000 to Windows serial port COM1
-	#ARGS: --network 10000 --serial /dev/ttyUSB0        # Proxy forwarding Network port 10000 to Linux serial port ttyUSB0
-	
-	# otherwise you'll just get the help...
-	ARGS: --help
-	
-You may need to alter the COM port number and network port number.  You'll also need to make note
-of the ip address of the computer (you'll need to set this in the settings for the Android App 
-VMX Serial Remote).
+For windows you don't need to install Python, you can use a prebuilt executable, distributed as a 
+zip file. 
 
-To automatically start VMXProxy at bootup, copy the startup icon on the desktop into the "Startup"
-folder in Start Menu -> All Programs.
+This can be found on the website with details of how to install...  
+<https://sites.google.com/site/vmxserialremote/vmxproxy>
+
+Alternatively, you can also run the python script, just install Python 2.7, unzip the zip archive,
+start a console, cd to the directory you create (with this readme.md file) and type...
+
+    python VMXProxy --help
 
 
 ### Automatic Discovery
@@ -154,20 +168,6 @@ the unpack operation.  In there  you'll find Bonjour.msi.  Double click to insta
 independently.
 
 
-### Securing with a Password
-
-On the ARGS line after add a password arguement...
-
-	ARGS: --network 10000 --serial COM1 --password HiPPY    # Proxy forwarding Network port 10000 to Windows serial port COM1
-
-This is specifying HiPPY as the password.  Don't use spaces, the case of letters matters.  Make 
-sure VMX Serial Remote is setup to use the same password.
-
-The password mechanism is only intended as a basic defence agains network hacks.  As you can see
-the password is stored in the clear and can be easily compromised if someone has access to the 
-computer/device running VMXProxy.
-
-
 
 ## Installing under Linux
 
@@ -177,10 +177,9 @@ You will need root privaledges.  For Fedora replace `apt-get` with `yum`
 
     sudo apt-get update
     sudo apt-get install git
-    sudo apt-get install ruby
-    sudo apt-get install ruby-dev
-    sudo apt-get install rake
-    sudo gem install os
+    sudo apt-get install python2.7
+
+python is very likely to already be installed on your system.
 
 (Optional, but recommended) If you wish to use avahi (bonjour) for advertising the server so that
 you can do automatic discovery of the ip address and port for VMXProxy...
@@ -192,21 +191,20 @@ you can do automatic discovery of the ip address and port for VMXProxy...
 Get the VMXProxy code itself...
 
     cd $HOME
-    git clone https://bitbucket.org/JamesCC/vmxproxy.git
+    git clone https://bitbucket.org/JamesCC/vmxproxypy.git
  
-Install gems required for VMXProxy...
-    
-    sudo rake geminstall
+VMXProxy has a python module dependency on pyserial.  In most cases this will have already been 
+installed as part of python, but you can check (and install) by...
 
+    pip install pyserial
+    
 You can now run the script using...
 
-    ruby VMXProxy.rb --help
-
-To save you typing there are some convenience rake targets prefixed with `run`.  See those by 
-typing...  `rake`
+    cd vmxproxypy
+    python2 VMXProxy --help
 
 
-### Intalling as a linux service
+### Installing as a linux service
 
 The VMXProxy.initrc file is used, in conjunction with `screen` to create a service which will run
 (in the background) at bootup.
@@ -219,13 +217,13 @@ use the correct parameters.
 Look for the "Starting VMXProxy" line and uncomment if you want the simulations and adjust any
 port numbers.  Make sure you serial port is attached (if using a USB to serial port adapter).  If
 you are under any doubt as to what it might be instantiated as (/dev/ttyUSB0 is not unusual), 
-disconnect it, reconnect it and type... `dmesg`.  In the last douzen or so lines it will indicate
+disconnect it, reconnect it and type... `dmesg`.  In the last dozen or so lines it will indicate
 the dev name for the USB Serial Port connection.
 
 Now install the service...
 
     sudo apt-get install screen
-    sudo rake install                           # install service
+    sudo make install                           # install service
     sudo /etc/init.d/VMXProxyStartup start      # start service
 
 You can query the state of the service...
@@ -242,9 +240,9 @@ You can stop it (but leaves service still installed)...
 
     sudo /etc/init.d/VMXProxyStartup stop
 
-Finally you remove it by...
+And you remove (uninstall) it by...
 
-    sudo rake uninstall
+    sudo rm /etc/init.d/VMXProxyStartup
 
 
 ### Installing on a Raspberry Pi
@@ -259,19 +257,23 @@ dongle, you will need to connect it to your wireless router via an ethernet cabl
 See <http://www.raspberrypi.org/> for more info.
 
 I used the Raspbian "Wheezy" linux install.  Once that is in place you can just follow the 
-instructions for linux above to install and get a service running.
+instructions for linux above to install and get a service running (you won't need to install
+git or python as they will already be installed).
 
-The Raspberry Pi boots within 20seconds, and needs no user interaction, so can be boxed and left
+The Raspberry Pi boots within 20 seconds, and needs no user interaction, so can be boxed and left
 to be powered up and down with the mixer.
 
-    sudo raspi-config               - expand to use full sd, set language
-    sudo apt-get update
-    sudo apt-get install git        - already installed
-    sudo apt-get install screen
-    sudo apt-get install avahi-daemon avahi-utils
-    sudo update-rc.d avahi-daemon defaults
-    sudo /etc/init.d/avahi-daemon restart
-    git clone https://bitbucket.org/JamesCC/vmxproxypy.git
 
+### Upgrading
 
+If you are running linux, a simple...
+
+    cd $HOME/vmxproxypy
+    git pull
+
+This will fetch the latest version
+
+If you are running 
+
+---
 JamesCC @ 06jun15
