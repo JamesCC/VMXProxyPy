@@ -55,10 +55,6 @@ When it sees an ampersand it breaks up the command into a series of serial port 
 concatenating the results before sending the results back en-mass.  This improves performance
 significantly, important when we are already using a slow interface such as a serial port.
 
-When concatenating commands it is important to avoid any commands that respond with ACKs (i.e. 
-only concatenate query commands).  This is to avoid confusing the application as to which command
-is being acknowledged (since an ACK returns no context information).
-
 In simulation mode, VMXProxy will fake the responses from the mixer, but to the app it looks the
 same.
 
@@ -102,6 +98,7 @@ Windows users can use a compiled version of the script, to avoid needing to inst
 ## Initialisation Files
 
 There are two initialisation files read by VMXProxy on startup - passcodes.txt, and simrc.txt.
+The location of these files are important, so don't move them.
 
 
 ### Access Control - passcodes.txt
@@ -140,13 +137,15 @@ I recommend keeping a copy of the original simrc.txt.
 ### Prebuilt Executable for Windows
 
 For windows you don't need to install Python, you can use a prebuilt executable, distributed as a 
-zip file. 
+zip file.  Just unzip to a directory in a suitable place.  Uninstalling just involved deleting
+the directory.
 
-This can be found on the website with details of how to install...  
+The zip fle can be found on the website, with details of how to install...  
 <https://sites.google.com/site/vmxserialremote/vmxproxy>
 
-Alternatively, you can also run the python script, just install Python 2.7, unzip the zip archive,
-start a console, cd to the directory you create (with this readme.md file) and type...
+Alternatively, you can also run the python script "normally", just install Python 2.7, unzip the
+zip archive, start a windos console, cd to the directory you create (with this readme.md file) and
+type...
 
     python VMXProxy --help
 
@@ -154,7 +153,7 @@ start a console, cd to the directory you create (with this readme.md file) and t
 ### Automatic Discovery
 
 If you use the "Search for Server" option in the VMX Serial Remote App, you will need to install 
-Apple's Bonjour (if running in Windows).  Linux system uses the equivalent called avahi.  This 
+Apple's Bonjour (if running in Windows).  Linux systems use the equivalent called avahi.  This 
 allows VMXProxy to advertise its ip address and port number.
 
 Bonjour is used in a wide variety of places, not just Apple products.  If you don't have it 
@@ -203,6 +202,9 @@ You can now run the script using...
     cd vmxproxypy
     python2 VMXProxy --help
 
+You must run the script from this directory, as VMXProxy expects to find simrc.txt in the current
+directory.
+
 
 ### Installing as a linux service
 
@@ -210,7 +212,7 @@ The VMXProxy.initrc file is used, in conjunction with `screen` to create a servi
 (in the background) at bootup.
 
 If you wish to install the script as a service, you must first edit the VMXProxy.initrc file to
-use the correct parameters.
+pass the correct parameters to the VMXProxy python script.
 
     nano VMXProxy.initrc
 
@@ -266,14 +268,13 @@ to be powered up and down with the mixer.
 
 ### Upgrading
 
-If you are running linux, a simple...
+If you are running linux, the following will upgrade your installation...
 
     cd $HOME/vmxproxypy
     git pull
 
-This will fetch the latest version
-
-If you are running 
+If you are running windows, just download a new copy from the website, unzip it and copy in your 
+passcodes.txt and simrc.txt files from your old installation before you delete it.
 
 ---
 JamesCC @ 06jun15
