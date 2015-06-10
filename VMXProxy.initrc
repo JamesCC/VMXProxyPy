@@ -22,14 +22,12 @@ case "$1" in
   start)
     echo "Starting VMXProxy"
 
-    # uncomment for sim (and comment proxy below)
-    #echo "Simulations on Port 10000 and /dev/ttyUSB0"
-    #screen -dmS VMXProxyNetworkSim python2 ${install_dir}/VMXProxy --net 10000
-    #screen -dmS VMXProxySerialSim python2 ${install_dir}/VMXProxy --serial /dev/ttyUSB0
-
-    # uncomment for Proxy (and comment sims above)
     echo "Proxy on Port 10000 to /dev/ttyUSB0"
-    screen -dmS VMXProxyProxy python2 ${install_dir}/VMXProxy --serial /dev/ttyUSB0 --net 10000
+    screen -dmS VMXProxyProxy ${install_dir}/start_VMXProxy.sh --serial /dev/ttyUSB0 --net 10000
+
+    echo "Simulations on Port 10001 and /dev/ttyUSB1"
+    screen -dmS VMXProxyNetSim ${install_dir}/start_VMXProxy.sh --net 10001
+    screen -dmS VMXProxySerialSim ${install_dir}/start_VMXProxy.sh --serial /dev/ttyUSB1
     ;;
 
   stop)
@@ -47,6 +45,8 @@ case "$1" in
 
   status)
     screen -ls VMXProxy
+    echo "Connect using... sudo screen -r <number>"
+    echo "(CTRL-A CTRL-D will detach)"
     ;;
 
   *)
