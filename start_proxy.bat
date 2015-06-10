@@ -22,4 +22,4 @@ rem     -z MS, --delay=MS     (debug) set random delay
 rem     -x X, --discard=X     (debug) set discard rate
 rem ***********************************************************************************************
 
-call start_VMXProxy.bat --net=10000 --serial=COM1                                               <NUL
+call start_VMXProxy.bat --net=10000 --serial=COM1

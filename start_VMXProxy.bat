@@ -14,3 +14,4 @@ if exist %DIST_PATH%\NUL (
 )
 
 :noparams
+pause
