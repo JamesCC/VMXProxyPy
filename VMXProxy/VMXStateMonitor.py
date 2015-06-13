@@ -40,7 +40,7 @@ class VMXStateMonitor(object):
     # or, in the case of the simulator, return ERR:0;
     #
     # IT IS VERY IMPORTANT THAT YOU CONSIDER BOTH THE FORM OF THE QUERY COMMAND
-    # AND THE FORM OF THE SET RESPONSE FOR ALL xx COMMANDS LISTED HERE.  The 
+    # AND THE FORM OF THE SET RESPONSE FOR ALL xx COMMANDS LISTED HERE.  The
     # following must be true:
     #    0: xxQ      ->  xxS:lookupPrevious[xxS]
     #    1: xxQ:a    ->  xxS:a,lookupPrevious[xxS:a]
@@ -66,6 +66,7 @@ class VMXStateMonitor(object):
         self.__key = ''                  # key/attribute for database
         self.__value = ''                # value of the attribute (if writing)
         self.__action = ''               # action (Q read, C or S write)
+        self.__simulated_response = None
 
     def reset(self):
         """Reset the State Monitor clearing its state database"""
@@ -91,7 +92,7 @@ class VMXStateMonitor(object):
         if reply is None:
             # Simulation Case
             self._parse(command)
-            self._interpret_query(update_cache = True)
+            self._interpret_query(update_cache=True)
             self._interpret_command()
             reply = self.__simulated_response
             if reply is None:
@@ -150,7 +151,7 @@ class VMXStateMonitor(object):
             self.__simulated_response = self.__ACK_CHR
 
     def _interpret_set(self):
-        """Interpret a parsed response, to store a value in the state 
+        """Interpret a parsed response, to store a value in the state
         database."""
         if self.__action == 'S':
             self.__database[self.__key] = self.__value

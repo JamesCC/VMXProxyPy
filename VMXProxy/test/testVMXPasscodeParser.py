@@ -19,7 +19,7 @@
 import sys
 import unittest
 import logging
-from vmxproxypy.VMXPasscodeParser import VMXPasscodeParser
+from VMXProxy.VMXPasscodeParser import VMXPasscodeParser
 
 class TestVMXPasscodeParser(unittest.TestCase):
     """Unittests for VMXPasscodeParser"""
@@ -28,7 +28,7 @@ class TestVMXPasscodeParser(unittest.TestCase):
         #ogging.basicConfig(format='%(asctime)s.%(msecs)03d:%(threadName)s:%(levelname)s - %(message)s',
         #                   datefmt='%H%M%S', level=logging.INFO)
         acp = VMXPasscodeParser()
-        acp.read_file("vmxproxypy/test/passcodes.txt")
+        acp.read_file("VMXProxy/test/passcodes.txt")
 
         self.assertEqual( acp.get_access_rights("0123"),  "*M1234567890123456" )
         self.assertEqual( acp.get_access_rights("10"),    "------------------" )
@@ -42,5 +42,5 @@ class TestVMXPasscodeParser(unittest.TestCase):
 
     def testParserNoFile(self):
         acp = VMXPasscodeParser()
-        acp.read_file("vmxproxypy/test/missingfile")
+        acp.read_file("VMXProxy/test/missingfile")
         self.assertEqual( acp.get_access_rights("0123"),    "" )
