@@ -134,13 +134,13 @@ remain connected (since it might not get a needed input setting).
 I recommend keeping a copy of the original simrc.txt. 
 
 
-### Prebuilt Executable for Windows
+## Prebuilt Executable for Windows
 
 For windows you don't need to install Python, you can use a prebuilt executable, distributed as a 
 zip file.  Just unzip to a directory in a suitable place.  Uninstalling just involved deleting
 the directory.
 
-The zip fle can be found on the website, with details of how to install...  
+The zip fle can be found on the website, with details of how to run it...  
 <https://sites.google.com/site/vmxserialremote/vmxproxy>
 
 Alternatively, you can also run the python script "normally", just install Python 2.7, unzip the
@@ -244,7 +244,7 @@ You can stop it (but leaves service still installed)...
 
 And you remove (uninstall) it by...
 
-    sudo rm /etc/init.d/VMXProxyStartup
+    sudo make uninstall
 
 
 ### Installing on a Raspberry Pi
