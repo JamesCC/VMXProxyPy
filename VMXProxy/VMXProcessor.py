@@ -95,7 +95,7 @@ class VMXProcessor(object):
                 if self.__mixer_if:
                     mixer_reply = self.__mixer_if.process(output_stage2)
                 else:
-                    mixer_reply = None      # simulator responds with None
+                    mixer_reply = self.__state_monitor.simulate(output_stage2)
 
                 # cmd delay is a debug feature
                 if self.__cmd_delay is not None:
