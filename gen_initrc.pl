@@ -1,3 +1,15 @@
+#!/usr/bin/env perl
+
+$arg = shift;
+
+while(<DATA>)
+{
+    next if s/^##(.)#// and $1!=$arg;
+    s/__INSTALL_DIR__/$ENV{'PWD'}/;
+    print;
+}
+
+__DATA__
 #! /bin/sh
 # /etc/init.d/VMXProxyStartup 
 
@@ -15,19 +27,15 @@
 # If you want a command to always run, put it here
 
 
-install_dir=__INSTALL_DIR__
-
 # Carry out specific functions when asked to by the system
 case "$1" in
   start)
     echo "Starting VMXProxy"
-
-    echo "Proxy on Port 10000 to /dev/ttyUSB0"
-    screen -dmS VMXProxyProxy ${install_dir}/start_VMXProxy.sh --serial /dev/ttyUSB0 --net 10000
-
-    echo "Simulations on Port 10001 and /dev/ttyUSB1"
-    screen -dmS VMXProxyNetSim ${install_dir}/start_VMXProxy.sh --net 10001
-    screen -dmS VMXProxySerialSim ${install_dir}/start_VMXProxy.sh --serial /dev/ttyUSB1
+##0#    echo "Proxy on Port 10000 to /dev/ttyUSB0"
+##0#    screen -dmS VMXProxyProxy __INSTALL_DIR__/start_VMXProxy.sh --serial /dev/ttyUSB0 --net 10000
+##1#    echo "Simulations on Port 10000 and /dev/ttyUSB0"
+##1#    screen -dmS VMXProxyNetSim __INSTALL_DIR__/start_VMXProxy.sh --net 10000
+##1#    screen -dmS VMXProxySerialSim __INSTALL_DIR__/start_VMXProxy.sh --serial /dev/ttyUSB0
     ;;
 
   stop)

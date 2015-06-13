@@ -14,6 +14,12 @@
 #    along with VMXProxyPy.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+.PHONY: all help examples
+.PHONY: install_proxy install_sim uninstall
+.PHONY: lint dist 
+.PHONY: test testUNIT testTAP 
+.PHONY: clean_lint clean_test clean mrproper
+
 all: help
 
 help:
@@ -48,8 +54,14 @@ examples:
 
 ###############################################################################
 # install (linux)
-install:
-	sed "s%__INSTALL_DIR__%${PWD}%" VMXProxy.initrc > /etc/init.d/VMXProxyStartup
+install_proxy:
+	perl gen_initrc.pl 0 > /etc/init.d/VMXProxyStartup
+	chmod 755 /etc/init.d/VMXProxyStartup
+	update-rc.d VMXProxyStartup defaults
+	@echo "type...  sudo /etc/init.d/VMXProxyStartup start to start service now."
+
+install_sim:
+	perl gen_initrc.pl 1 > /etc/init.d/VMXProxyStartup
 	chmod 755 /etc/init.d/VMXProxyStartup
 	update-rc.d VMXProxyStartup defaults
 	@echo "type...  sudo /etc/init.d/VMXProxyStartup start to start service now."
@@ -92,6 +104,8 @@ testTAP: clean_test
 	coverage report
 	echo "Coverage results in htmlcov/index.html"
 
+
+###############################################################################
 # clean
 clean_lint:
 	-rm -f pylint.out
