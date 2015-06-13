@@ -162,7 +162,7 @@ def vmx_proxy(serial_port_name=None, baudrate=115200,
         cmd_processor.set_debug_discard_rate(int(debug_discard_rate))
 
     if debug_cmd_delay is not None:
-        logging.info("Debug Mode - Delay mixer responses by %sms", debug_cmd_delay)
+        logging.info("Debug Mode - Delay mixer responses by up to %sms", debug_cmd_delay)
         cmd_processor.set_debug_cmd_delay_in_ms(int(debug_cmd_delay))
 
     if host_port_number is not None:
@@ -254,7 +254,7 @@ Roland VMixer interface adaptor.  It can run in three modes.
                       help="use passcode authentication", default=None, metavar="FILE")
 
     parser.add_option("-z", "--delay", dest="debug_cmd_delay",
-                      help="(debug) set delay", default=None, metavar="MS")
+                      help="(debug) set random delay", default=None, metavar="MS")
 
     parser.add_option("-x", "--discard", dest="debug_discard_rate",
                       help="(debug) set discard rate", default=None, metavar="X")

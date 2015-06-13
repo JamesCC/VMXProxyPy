@@ -33,12 +33,21 @@ class VMXStateMonitor(object):
     __ACK_CHR = chr(6)
     __RegExCmdValidate = re.compile(r"^"+__STX_CHR+r"([A-Z][A-Z])([CSQq])(.*);$")
 
-    # for each command, the number of parameters required to fully qualify
+    # For each command, the number of parameters required to fully qualify
     # the attribute (database key).  All commands must be listed here to be
-    # understood by for "simulation purposes"
+    # understood by for "simulation purposes" and to be put in the cache.
+    # Commands no listed here will be passed onto the mixer (bypass cache)
+    # or, in the case of the simulator, return ERR:0;
+    #
+    # IT IS VERY IMPORTANT THAT YOU CONSIDER BOTH THE FORM OF THE QUERY COMMAND
+    # AND THE FORM OF THE SET RESPONSE FOR ALL xx COMMANDS LISTED HERE.  The 
+    # following must be true:
+    #    0: xxQ      ->  xxS:lookupPrevious[xxS]
+    #    1: xxQ:a    ->  xxS:a,lookupPrevious[xxS:a]
+    #    2: xxQ:a,b  ->  xxS:a,b,lookupPrevious[xxS:a,b]
     __commandDict = {
         # global mixer related
-        'RC': 0, 'SS': 0, 'SC': 0, 'VR': 0,
+        'SC': 0, 'VR': 0,
 
         # input related
         'CN': 1, 'CP': 1, 'EQ': 1, 'FD': 1, 'FL': 1, 'GT': 1, 'MU': 1, 'PG': 1,

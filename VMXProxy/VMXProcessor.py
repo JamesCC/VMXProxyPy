@@ -99,7 +99,7 @@ class VMXProcessor(object):
 
                 # cmd delay is a debug feature
                 if self.__cmd_delay is not None:
-                    time.sleep((1+random.random()*0.2)*self.__cmd_delay)        # add a 20% randomness to the delay
+                    time.sleep(random.random()*self.__cmd_delay)
 
                 state_monitor_output = self.__state_monitor.process(output_stage2, mixer_reply)
                 logging.debug("<< " + state_monitor_output)
