@@ -12,12 +12,12 @@
 # These commands are not real commands supported by the Mixer, but they will never be issued by
 # the app so we can get away with them.  It makes the responses to VRQ and SCQ easier if we 
 # pretend these commands exist.
-<stx>VRC:1.010,1.010,1.010; <ack>           # (not real command) set version number
-<stx>VRQ;                   <stx>VRS:1.010,1.010,1.010;
-<stx>SCC:000,"default_scene"; <ack>         # (bodge - really SSC) set scene name / number for SCQ command
-<stx>SCQ;                   <stx>SCS:000,"default_scene";
+<stx>VRC:1.010,1.010,1.010;       <ack>           # (not real command) set version number
+<stx>VRQ;                         <stx>VRS:1.010,1.010,1.010;
+<stx>SCC:000,"default_scene";     <ack>           # (bodge - really SSC) set scene name / number for SCQ command
+<stx>SCQ;                         <stx>SCS:000,"default_scene";
 
-# Channel defaults (<I1..48> expands to I1 ... I48, so each command will be executed 48 times)
+# Channel defaults (<I1..48> expands to I1 ... I48, so each command in this section will be executed 48 times)
 <stx>CNC:<I1..48>,"NoName";       <ack>           # channel name
 <stx>FDC:<I1..48>,INF;            <ack>           # fader
 <stx>MUC:<I1..48>,1;              <ack>           # mute
@@ -43,16 +43,19 @@
 <stx>AXC:<I1..48>,AX15,INF,C;     <ack>           # Aux Setting
 <stx>AXC:<I1..48>,AX16,INF,C;     <ack>           # Aux Setting
 
-# Give AUX output channels names
-<stx>CNC:AX1,"OUT1  ";           <ack>            # aux channel name
-<stx>CNC:AX2,"OUT2  ";           <ack>            # aux channel name
-<stx>CNC:AX3,"OUT3  ";           <ack>            # aux channel name
-<stx>CNC:AX4,"OUT4  ";           <ack>            # aux channel name
-<stx>CNC:AX5,"OUT5  ";           <ack>            # aux channel name
-<stx>CNC:AX6,"OUT6  ";           <ack>            # aux channel name
-<stx>CNC:AX7,"OUT7  ";           <ack>            # aux channel name
-<stx>CNC:AX8,"OUT8  ";           <ack>            # aux channel name
-<stx>CNC:AX9,"OUT9  ";           <ack>            # aux channel name
+# Give output channels names
+<stx>CNC:MAL,"MAINL ";            <ack>           # aux channel name
+<stx>CNC:MAR,"MAINR ";            <ack>           # aux channel name
+<stx>CNC:MAC,"MAINC ";            <ack>           # aux channel name
+<stx>CNC:AX1,"OUT1  ";            <ack>           # aux channel name
+<stx>CNC:AX2,"OUT2  ";            <ack>           # aux channel name
+<stx>CNC:AX3,"OUT3  ";            <ack>           # aux channel name
+<stx>CNC:AX4,"OUT4  ";            <ack>           # aux channel name
+<stx>CNC:AX5,"OUT5  ";            <ack>           # aux channel name
+<stx>CNC:AX6,"OUT6  ";            <ack>           # aux channel name
+<stx>CNC:AX7,"OUT7  ";            <ack>           # aux channel name
+<stx>CNC:AX8,"OUT8  ";            <ack>           # aux channel name
+<stx>CNC:AX9,"OUT9  ";            <ack>           # aux channel name
 <stx>CNC:AX10,"OUT10 ";           <ack>           # aux channel name
 <stx>CNC:AX11,"OUT11 ";           <ack>           # aux channel name
 <stx>CNC:AX12,"OUT12 ";           <ack>           # aux channel name
@@ -60,6 +63,27 @@
 <stx>CNC:AX14,"OUT14 ";           <ack>           # aux channel name
 <stx>CNC:AX15,"OUT15 ";           <ack>           # aux channel name
 <stx>CNC:AX16,"OUT16 ";           <ack>           # aux channel name
+
+# Give outputs channels fader values
+<stx>FDC:MAL,0;                   <ack>           # aux channel level
+<stx>FDC:MAR,0;                   <ack>           # aux channel level
+<stx>FDC:MAC,0;                   <ack>           # aux channel level
+<stx>FDC:AX1,0;                   <ack>           # aux channel level
+<stx>FDC:AX2,0;                   <ack>           # aux channel level
+<stx>FDC:AX3,0;                   <ack>           # aux channel level
+<stx>FDC:AX4,0;                   <ack>           # aux channel level
+<stx>FDC:AX5,0;                   <ack>           # aux channel level
+<stx>FDC:AX6,0;                   <ack>           # aux channel level
+<stx>FDC:AX7,0;                   <ack>           # aux channel level
+<stx>FDC:AX8,0;                   <ack>           # aux channel level
+<stx>FDC:AX9,0;                   <ack>           # aux channel level
+<stx>FDC:AX10,0;                  <ack>           # aux channel level
+<stx>FDC:AX11,0;                  <ack>           # aux channel level
+<stx>FDC:AX12,0;                  <ack>           # aux channel level
+<stx>FDC:AX13,0;                  <ack>           # aux channel level
+<stx>FDC:AX14,0;                  <ack>           # aux channel level
+<stx>FDC:AX15,0;                  <ack>           # aux channel level
+<stx>FDC:AX16,0;                  <ack>           # aux channel level
 
 # Give the channels some unique names
 <stx>CNC:I1,"ONE   ";            <ack>            # channel name

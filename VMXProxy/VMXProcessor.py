@@ -61,7 +61,7 @@ class VMXProcessor(object):
 
     def set_debug_cmd_delay_in_ms(self, cmd_delay_in_ms):
         """Set command maximum delay in milliseconds (debug option)."""
-        self.__cmd_delay = cmd_delay_in_ms / 1000
+        self.__cmd_delay = cmd_delay_in_ms / 1000.0
 
     def process(self, command=""):
         """Accept a command or commands, process them, returning the
@@ -96,15 +96,16 @@ class VMXProcessor(object):
                     mixer_reply = self.__mixer_if.process(output_stage2)
                 else:
                     mixer_reply = None      # simulator responds with None
+
+                # cmd delay is a debug feature
+                if self.__cmd_delay is not None:
+                    time.sleep((1+random.random()*0.2)*self.__cmd_delay)        # add a 20% randomness to the delay
+
                 state_monitor_output = self.__state_monitor.process(output_stage2, mixer_reply)
                 logging.debug("<< " + state_monitor_output)
 
             # parse the output to keep form
             output_string += self.__output_parser.process(state_monitor_output)
-
-            # cmd delay is a debug feature
-            if self.__cmd_delay is not None:
-                time.sleep(self.__cmd_delay)
 
             # check for any further commands (will be the case if a concatenated command)
             output_stage2 = self.__stage2_parser.process()

@@ -38,7 +38,7 @@ class VMXStateMonitor(object):
     # understood by for "simulation purposes"
     __commandDict = {
         # global mixer related
-        'RC': 0, 'SC': 0, 'VR': 0,
+        'RC': 0, 'SS': 0, 'SC': 0, 'VR': 0,
 
         # input related
         'CN': 1, 'CP': 1, 'EQ': 1, 'FD': 1, 'FL': 1, 'GT': 1, 'MU': 1, 'PG': 1,
@@ -67,7 +67,6 @@ class VMXStateMonitor(object):
     def read_cache(self, command):
         """See if a query can be answered from the Cache.  Returns None if not."""
         self._parse(command)
-        response = None
         if self.__action == 'q':
             command = command[0:4].upper()+command[4:]      # uppercase the q
             now = time.time()
@@ -75,28 +74,26 @@ class VMXStateMonitor(object):
             cache_valid = (now < (timestamp + self.CACHE_TIMEOUT))
             if cache_valid:
                 self.__action = 'Q'
-                response = self._interpret_query()
-        return (command, response)
+                self._interpret_query()
+        return (command, self.__simulated_response)
 
     def process(self, command, reply=None):
         """Process an incoming command from the mixer"""
         if reply is None:
             # Simulation Case
             self._parse(command)
-            reply = self._interpret_query()
+            self._interpret_query(update_cache = True)
+            self._interpret_command()
+            reply = self.__simulated_response
             if reply is None:
-                reply = self._interpret_command_set()
-            if reply is None:
-                # indicate a syntax error
-                reply = self.__STX_CHR + "ERR:0;"
+                reply = self.__STX_CHR + "ERR:0;"   # indicate a syntax error
         elif reply == self.__ACK_CHR:
-            # Mixer Case: reply is ACK, use initial command to gather info.
-            self._parse(command)
-            self._interpret_command_set()       # preserve reply
+            # Mixer Case: reply is ACK
+            pass        # do nothing
         else:
-            # Mixer Case: reply is not an ACK
+            # Mixer Case: reply is not an ACK, sniff response for cache (<stx>xxS)
             self._parse(reply)
-            self._interpret_command_set()       # preserve reply
+            self._interpret_set()                   # preserve reply
 
         return reply
 
@@ -106,6 +103,7 @@ class VMXStateMonitor(object):
         self.__action = ""
         if matches:
             self.__command_string = command
+            self.__simulated_response = None
             self.__key = matches.group(1)
             self.__value = ''
             skip_semis = False
@@ -134,35 +132,30 @@ class VMXStateMonitor(object):
                     else:
                         self.__key += character
 
-    def _interpret_command_set(self):
-        """Interpret a previously parsed command, to create a response
-        from the state database, and store a value in the state database."""
-        simulated_response = None
+    def _interpret_command(self):
+        """Interpret a previously parsed command, to store a value in the
+        state database."""
         if self.__action == 'C':
             self.__database[self.__key] = self.__value
             self.__database_timestamps[self.__key] = time.time()
-            simulated_response = self.__ACK_CHR
-        elif self.__action == 'S':
+            self.__simulated_response = self.__ACK_CHR
+
+    def _interpret_set(self):
+        """Interpret a parsed response, to store a value in the state 
+        database."""
+        if self.__action == 'S':
             self.__database[self.__key] = self.__value
             self.__database_timestamps[self.__key] = time.time()
-            simulated_response = self.__command_string
 
-        return simulated_response
-
-    def _interpret_query(self):
+    def _interpret_query(self, update_cache=False):
         """Interpret a previously parsed command, to create a response
         from the state database."""
-        simulated_response = None
-
-        # request to lookup from cache
         if self.__action == 'Q':
             lookup = self.__database.get(self.__key)
             if lookup:
                 simulated_response = self.__STX_CHR + self.__key
-                if self.__key.find(':') == -1:
-                    simulated_response += ':'
-                else:
-                    simulated_response += ','
-                simulated_response += lookup + ';'
+                simulated_response += ':' if self.__key.find(':') == -1 else ','
+                self.__simulated_response = simulated_response + lookup + ';'
+                if update_cache:
+                    self.__database_timestamps[self.__key] = time.time()
 
-        return simulated_response
