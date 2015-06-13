@@ -15,7 +15,7 @@
 #
 
 .PHONY: all help examples
-.PHONY: install_proxy install_sim uninstall
+.PHONY: install_proxy install_sim install_status uninstall
 .PHONY: lint dist 
 .PHONY: test testUNIT testTAP 
 .PHONY: clean_lint clean_test clean mrproper
@@ -65,6 +65,9 @@ install_sim:
 	chmod 755 /etc/init.d/VMXProxyStartup
 	update-rc.d VMXProxyStartup defaults
 	@echo "type...  sudo /etc/init.d/VMXProxyStartup start to start service now."
+
+install_status:
+    /etc/init.d/VMXProxyStartup status
 
 uninstall:
 	@echo "You need to run as root for these commands to work (sudo make uninstall)"

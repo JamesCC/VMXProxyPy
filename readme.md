@@ -208,29 +208,28 @@ directory.
 
 ### Installing as a linux service
 
-The VMXProxy.initrc file is used, in conjunction with `screen` to create a service which will run
-(in the background) at bootup.
+An initrc file is used, in conjunction with `screen` to create a service which will run (in the
+background) at bootup.
 
-If you wish to install the script as a service, you must first edit the VMXProxy.initrc file to
-pass the correct parameters to the VMXProxy python script.
+If you wish to install the script as a service, you may need to edit the gen_initrc.pl file to
+pass the correct parameters to the VMXProxy python script.  initrc.pl creates the initrc file
+used to kick off the VMXProxy script at bootup.  If you are happy with network port 10000
+and you only have one USB serial port adapter then you should be go to go without altering it,
+otherwise look for lines starting "##0#" (line starting "##1#" are if you wish to install 
+the simulator to run at startup).
 
-    nano VMXProxy.initrc
+    nano gen_initrc.pl
 
-Look for the "Starting VMXProxy" line and uncomment if you want the simulations and adjust any
-port numbers.  Make sure you serial port is attached (if using a USB to serial port adapter).  If
-you are under any doubt as to what it might be instantiated as (/dev/ttyUSB0 is not unusual), 
-disconnect it, reconnect it and type... `dmesg`.  In the last dozen or so lines it will indicate
-the dev name for the USB Serial Port connection.
-
-Now install the service...
+To install the service (proxy)...
 
     sudo apt-get install screen
-    sudo make install                           # install service
+    sudo make install_proxy                     # install service
     sudo /etc/init.d/VMXProxyStartup start      # start service
 
+(replace install_proxy with install_sim if you want the simulator to start at boot instead)
 You can query the state of the service...
 
-    sudo /etc/init.d/VMXProxyStartup status
+    sudo make install_status
 
 And attach to the listed screen sessions for purposes of debugging...
    
@@ -238,11 +237,7 @@ And attach to the listed screen sessions for purposes of debugging...
 
 Once attached... Ctrl A, Ctrl D detaches and Ctrl A, Ctrl K kills.
 
-You can stop it (but leaves service still installed)...
-
-    sudo /etc/init.d/VMXProxyStartup stop
-
-And you remove (uninstall) it by...
+And you can remove (uninstall) it by...
 
     sudo make uninstall
 
