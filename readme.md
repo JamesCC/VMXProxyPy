@@ -14,9 +14,9 @@ It is python script, runs under Linux, Windows and (potentially) OSX.
 There are three modes of operation...
 
   1. Network Simulation Mode - where VMXProxy pretends to be connected to a V-Mixer mixing 
-     console, but does not use a serial port.  Useful for debugging the Android application.
+     console, but does not use a serial port.  Useful for testing the Android application.
 
-  2. Serial Port Simulation Mode - where VMXProxy pretends to be a V-Mixer console
+  2. Serial Port Simulation Mode - where VMXProxy pretends to be a V-Mixer console.
 
   3. Proxy Mode - where VMXProxy does its primary purpose which is to forward on network 
      traffic to the serial port (connected to a V-Mixer console) and echo the responses back.
@@ -25,7 +25,9 @@ VMixer mixing consoles have strict handshake protocol which is fine over a seria
 but over network traffic the long round trip delays can make the protocol very slow.
 
 VMXProxy dramatically improves performance for the android app, as we are able to concatenate
-query commands and their responses minimising that round trip delay.
+query commands and their responses minimising that round trip delay.  It also can handle 
+multiple clients (apps) connecting to the mixer, and provides some caching to limit the 
+traffic going to the mixer serial port.
 
 
 
@@ -109,7 +111,7 @@ the App. The file passcodes.txt is an example which is used by start_proxy_secur
 
 The syntax is explained in the file, but in summary access control means:
 
-    - Access is only allowed using one of the listed passcode (number codes of any length)
+    - Access is only allowed using one of the listed passcodes (number codes of any length)
     - Against each passcode are the permissions that passcode allows
         - Full Access - UNRESTRICTED
         - Allow or Disallow access to the Input Adjustment Screen - INPUTADJ
@@ -122,9 +124,9 @@ people. For example you don't want your musicians accidentally altering the Main
 
 ### Simulator Setup - simrc.txt
 
-Purely optional.  This file is used for setting up the simulator, and can be fun to play with to 
-set-up the simulator with sensible names and levels for the various channels.  You don't need to 
-adjust this file, there are already some default values in it.
+Only interesting if you are testing the app.  This file is used for setting up the simulator, and
+can be fun to play with to set-up the simulator with sensible names and levels for the various 
+channels.  You don't need to adjust this file, there are already some default values in it.
 
 The simulator will validate the responses, so the commands on the left must correspond to the 
 expected responses on the right.  If you get it wrong, nothing disastrous will happen - when the 
@@ -137,7 +139,7 @@ I recommend keeping a copy of the original simrc.txt.
 ## Prebuilt Executable for Windows
 
 For windows you don't need to install Python, you can use a prebuilt executable, distributed as a 
-zip file.  Just unzip to a directory in a suitable place.  Uninstalling just involved deleting
+zip file.  Just unzip to a directory in a suitable place.  Uninstalling just involves deleting
 the directory.
 
 The zip fle can be found on the website, with details of how to run it...  
@@ -165,7 +167,6 @@ downloading the itunes installer from http://www.apple.com/uk/itunes/ and using 
 to unpack the executable (yes you can do that).  Look for... .rsrc/RCDATA/CABINET and repeat 
 the unpack operation.  In there  you'll find Bonjour.msi.  Double click to install this 
 independently.
-
 
 
 ## Installing under Linux
@@ -202,42 +203,48 @@ You can now run the script using...
     cd vmxproxypy
     python2 VMXProxy --help
 
-You must run the script from this directory, as VMXProxy expects to find simrc.txt in the current
-directory.
+You must run the script from this directory (where this readme file is), as VMXProxy expects to 
+find simrc.txt in the current directory.
 
 
-### Installing as a linux service
+### Installing as a linux service (to start at bootup)
 
 An initrc file is used, in conjunction with `screen` to create a service which will run (in the
-background) at bootup.
-
-If you wish to install the script as a service, you may need to edit the gen_initrc.pl file to
-pass the correct parameters to the VMXProxy python script.  initrc.pl creates the initrc file
-used to kick off the VMXProxy script at bootup.  If you are happy with network port 10000
-and you only have one USB serial port adapter then you should be go to go without altering it,
-otherwise look for lines starting "##0#" (line starting "##1#" are if you wish to install 
-the simulator to run at startup).
-
-    nano gen_initrc.pl
-
-To install the service (proxy)...
+background) at bootup.  Whilst it could be made to work without screen, screen is useful for
+debugging any problems you may get starting or running the service.
 
     sudo apt-get install screen
-    sudo make install_proxy                     # install service
+
+To install the service use make install with OPTIONS set to the required arguments for when 
+starting VMXProxy.  For example, choose one of the following...
+
+    sudo make install OPTIONS="--serial /dev/ttyUSB0 --net 10000"
+    sudo make install OPTIONS="--serial /dev/ttyUSB0 --net 10000 --passcodefile=passcodes.txt"
+    sudo make install OPTIONS="--net 10000 --passcodefile=passcodes.txt"
+
+The first starts VMXProxy without passcode access control, the second with passcode control, the
+third simulating the mixer (with passcode access control).
+
+To remind yourself of the options type...
+
+    python2 VMXProxy --help
+
+Once you have run the above install command, to save you rebooting, start the service manually to
+see if all is well...
+
     sudo /etc/init.d/VMXProxyStartup start      # start service
 
-(replace install_proxy with install_sim if you want the simulator to start at boot instead)
 You can query the state of the service...
 
     sudo make install_status
 
-And attach to the listed screen sessions for purposes of debugging...
+And attach to the listed screen sessions for purposes of checking VMXProxy started correctly...
    
     sudo screen -r <NUMBER_PREFIX_FROM_STATUS_LIST>
 
-Once attached... Ctrl A, Ctrl D detaches and Ctrl A, Ctrl K kills.
+Once attached... Ctrl A, Ctrl D detaches leaving it running, or Ctrl A, Ctrl K kills it.
 
-And you can remove (uninstall) it by...
+Lastly, you can remove (uninstall) the service just by...
 
     sudo make uninstall
 
@@ -272,4 +279,4 @@ If you are running windows, just download a new copy from the website, unzip it 
 passcodes.txt and simrc.txt files from your old installation before you delete it.
 
 ---
-JamesCC @ 06jun15
+JamesCC @ 14jun15

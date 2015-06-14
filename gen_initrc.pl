@@ -1,11 +1,11 @@
 #!/usr/bin/env perl
 
-$arg = shift;
+die "Please supply OPTIONS" unless scalar(@ARGV);
 
 while(<DATA>)
 {
-    next if s/^##(.)#// and $1!=$arg;
     s/__INSTALL_DIR__/$ENV{'PWD'}/;
+    s/__ARGS__/@ARGV/;
     print;
 }
 
@@ -31,11 +31,8 @@ __DATA__
 case "$1" in
   start)
     echo "Starting VMXProxy"
-##0#    echo "Proxy on Port 10000 to /dev/ttyUSB0"
-##0#    screen -dmS VMXProxyProxy __INSTALL_DIR__/start_VMXProxy.sh --serial /dev/ttyUSB0 --net 10000
-##1#    echo "Simulations on Port 10000 and /dev/ttyUSB0"
-##1#    screen -dmS VMXProxyNetSim __INSTALL_DIR__/start_VMXProxy.sh --net 10000
-##1#    screen -dmS VMXProxySerialSim __INSTALL_DIR__/start_VMXProxy.sh --serial /dev/ttyUSB0
+    echo "Supplied options: __ARGS__"
+    screen -dmS VMXProxyProxy __INSTALL_DIR__/start_VMXProxy.sh __ARGS__
     ;;
 
   stop)

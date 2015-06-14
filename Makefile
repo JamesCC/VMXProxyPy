@@ -54,26 +54,31 @@ examples:
 
 ###############################################################################
 # install (linux)
-install_proxy:
-	perl gen_initrc.pl 0 > /etc/init.d/VMXProxyStartup
+install:
+ifeq ($(USER),root)
+	perl gen_initrc.pl $(OPTIONS) > /etc/init.d/VMXProxyStartup
 	chmod 755 /etc/init.d/VMXProxyStartup
 	update-rc.d VMXProxyStartup defaults
 	@echo "type...  sudo /etc/init.d/VMXProxyStartup start to start service now."
-
-install_sim:
-	perl gen_initrc.pl 1 > /etc/init.d/VMXProxyStartup
-	chmod 755 /etc/init.d/VMXProxyStartup
-	update-rc.d VMXProxyStartup defaults
-	@echo "type...  sudo /etc/init.d/VMXProxyStartup start to start service now."
+else
+	@echo Please run as root or using sudo
+endif
 
 install_status:
+ifeq ($(USER),root)
 	/etc/init.d/VMXProxyStartup status
+else
+	@echo Please run as root or using sudo
+endif
 
 uninstall:
-	@echo "You need to run as root for these commands to work (sudo make uninstall)"
+ifeq ($(USER),root)
 	@echo "The following command will error if VMXProxyStart is not installed (ignore it)."
 	/etc/init.d/VMXProxyStartup stop
 	update-rc.d -f  VMXProxyStartup remove
+else
+	@echo Please run as root or using sudo
+endif
 
 
 ###############################################################################
