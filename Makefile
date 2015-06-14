@@ -67,7 +67,7 @@ install_sim:
 	@echo "type...  sudo /etc/init.d/VMXProxyStartup start to start service now."
 
 install_status:
-    /etc/init.d/VMXProxyStartup status
+	/etc/init.d/VMXProxyStartup status
 
 uninstall:
 	@echo "You need to run as root for these commands to work (sudo make uninstall)"
