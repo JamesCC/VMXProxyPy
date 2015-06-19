@@ -1,8 +1,9 @@
 # Access Control List
-# Start VMXProxy with the -# option and this file name to setup Access Control.
+# Start VMXProxy with the --passcodefile option and this file name to setup Access Control.
 #
 # The format is simple...     PASSCODE:+RIGHTS_TO_ADD-RIGHTS_TO_REMOVE
 # The PASSCODE is a number, + is used to add RIGHTS, - is used to remove them.
+#
 # RIGHTS:
 #     UNRESTRICTED      - access everything (wildcard)
 #     INPUTADJ          - access to input adjustment screen
@@ -13,19 +14,14 @@
 #     AUX16             - access to control aux channel 16
 #     AUX*              - access to control all aux channels
 #
-# e.g.
-#     12345:UNRESTRICTED
-#     23:UNRESTRICTED-MAIN-INPUTADJ
-#     999:INPUTADJ+AUX1+AUX3+AUX5
-#     43:AUX*
-#
-# Above passcode 12345 gives unrestricted access to everything
-#       passcode 23 gives access to everything except MAIN and INPUTADJ
-#       passcode 999 gives access only to INPUTADJ, AUX1, AUX3 and AUX5
-#       passcode 42 gives access to all AUX channels, and not INPUTADJ nor MAIN
-#
+# Passcodes can be 1-16 digits long
 # Everything after a # is a comment and ignored, as are blank lines
+#
+# See examples below.
 
-9876:UNRESTRICTED
-5555:INPUTADJ+MAIN
-1234:AUX*
+9876:UNRESTRICTED                   # Sound Engineer access
+1234:AUX*                           # Musician access (no access to input settings or main faders)
+
+333:UNRESTRICTED-MAIN-INPUTADJ      # no access to main faders or input settings
+555:INPUTADJ+MAIN                   # only access to main faders and input settings, but not to aux channels (except via settings)
+777:INPUTADJ+AUX1+AUX3+AUX5         # only access to aux1,3,5 and input settings, but no access to main faders (except via settings)
