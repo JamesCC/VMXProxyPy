@@ -28,7 +28,7 @@ help:
 	@echo "    examples                     - example usage"
 	@echo "    lint                         - pylint"
 	@echo "    test                         - unittest"
-	@echo "    dist32 dist64                - create windows binaries"
+	@echo "    dist                         - create windows binaries"
 	@echo "    clean clean_lint clean_test  - clean"
 	@echo "    mrproper                     - clean, remove dist32 dist64"
 	@echo "    install uninstall            - install/remove startup service for linux"
@@ -49,6 +49,9 @@ examples:
 	@echo
 	@echo "Proxy to Serial Port /dev/ttyUSB0 on Network port 10000..."
 	@echo "    python VMXProxy -n 10000 -s /dev/ttyUSB0"
+	@echo
+	@echo "Proxy to Serial Port /dev/ttyUSB0 on Network port 10000 with passcodes..."
+	@echo "    python VMXProxy -n 10000 -s /dev/ttyUSB0 -p passcodes.txt"
 	@echo
 
 
@@ -129,4 +132,4 @@ clean: clean_test clean_lint
 	-rm -rf build
 
 mrproper: clean
-	-rm -rf dist32 dist64
+	-rm -rf dist
