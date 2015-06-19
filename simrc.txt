@@ -47,14 +47,14 @@
 <stx>CNC:MAL,"MAINL ";            <ack>           # aux channel name
 <stx>CNC:MAR,"MAINR ";            <ack>           # aux channel name
 <stx>CNC:MAC,"MAINC ";            <ack>           # aux channel name
-<stx>CNC:AX1,"OUT1  ";            <ack>           # aux channel name
-<stx>CNC:AX2,"OUT2  ";            <ack>           # aux channel name
-<stx>CNC:AX3,"OUT3  ";            <ack>           # aux channel name
+<stx>CNC:AX1,"SingFB";            <ack>           # aux channel name
+<stx>CNC:AX2,"BackFB";            <ack>           # aux channel name
+<stx>CNC:AX3,"KeysFB";            <ack>           # aux channel name
 <stx>CNC:AX4,"OUT4  ";            <ack>           # aux channel name
 <stx>CNC:AX5,"OUT5  ";            <ack>           # aux channel name
 <stx>CNC:AX6,"OUT6  ";            <ack>           # aux channel name
-<stx>CNC:AX7,"OUT7  ";            <ack>           # aux channel name
-<stx>CNC:AX8,"OUT8  ";            <ack>           # aux channel name
+<stx>CNC:AX7,"RECL  ";            <ack>           # aux channel name
+<stx>CNC:AX8,"RECR  ";            <ack>           # aux channel name
 <stx>CNC:AX9,"OUT9  ";            <ack>           # aux channel name
 <stx>CNC:AX10,"OUT10 ";           <ack>           # aux channel name
 <stx>CNC:AX11,"OUT11 ";           <ack>           # aux channel name
@@ -86,38 +86,38 @@
 <stx>FDC:AX16,0;                  <ack>           # aux channel level
 
 # Give the channels some unique names
-<stx>CNC:I1,"ONE   ";            <ack>            # channel name
-<stx>CNC:I2,"TWO   ";            <ack>            # channel name
-<stx>CNC:I3,"THREE ";            <ack>            # channel name
-<stx>CNC:I4,"FOUR  ";            <ack>            # channel name
-<stx>CNC:I5,"FIVE  ";            <ack>            # channel name
-<stx>CNC:I6,"SIX   ";            <ack>            # channel name
-<stx>CNC:I7,"SEVEN ";            <ack>            # channel name
-<stx>CNC:I8,"EIGHT ";            <ack>            # channel name
-<stx>CNC:I9,"NINE  ";            <ack>            # channel name
-<stx>CNC:I10,"TEN   ";           <ack>            # channel name
-<stx>CNC:I11,"IN11  ";           <ack>            # channel name
-<stx>CNC:I12,"IN12  ";           <ack>            # channel name
-<stx>CNC:I13,"IN13  ";           <ack>            # channel name
-<stx>CNC:I14,"IN14  ";           <ack>            # channel name
-<stx>CNC:I15,"IN15  ";           <ack>            # channel name
-<stx>CNC:I16,"IN16  ";           <ack>            # channel name
-<stx>CNC:I17,"IN17  ";           <ack>            # channel name
-<stx>CNC:I18,"IN18  ";           <ack>            # channel name
-<stx>CNC:I19,"IN19  ";           <ack>            # channel name
-<stx>CNC:I20,"TWENTY";           <ack>            # channel name
-<stx>CNC:I21,"IN21  ";           <ack>            # channel name
-<stx>CNC:I22,"IN22  ";           <ack>            # channel name
-<stx>CNC:I23,"IN23  ";           <ack>            # channel name
-<stx>CNC:I24,"IN24  ";           <ack>            # channel name
-<stx>CNC:I25,"IN25  ";           <ack>            # channel name
-<stx>CNC:I26,"IN26  ";           <ack>            # channel name
+<stx>CNC:I1,"SingBu";            <ack>            # channel name
+<stx>CNC:I2,"SingYw";            <ack>            # channel name
+<stx>CNC:I3,"SingRd";            <ack>            # channel name
+<stx>CNC:I4,"SingOr";            <ack>            # channel name
+<stx>CNC:I5,"SingBk";            <ack>            # channel name
+<stx>CNC:I6,"AGuitr";            <ack>            # channel name
+<stx>CNC:I7,"Bass  ";            <ack>            # channel name
+<stx>CNC:I8,"EGuitr";            <ack>            # channel name
+<stx>CNC:I9,"Flute ";            <ack>            # channel name
+<stx>CNC:I10,"KeysL ";           <ack>            # channel name
+<stx>CNC:I11,"KeysR ";           <ack>            # channel name
+<stx>CNC:I12,"Violin";           <ack>            # channel name
+<stx>CNC:I13,"Cello ";           <ack>            # channel name
+<stx>CNC:I14,"DrumSn";           <ack>            # channel name
+<stx>CNC:I15,"DrumHH";           <ack>            # channel name
+<stx>CNC:I16,"DrumBa";           <ack>            # channel name
+<stx>CNC:I17,"HHeldR";           <ack>            # channel name
+<stx>CNC:I18,"HHeldY";           <ack>            # channel name
+<stx>CNC:I19,"Lapel1";           <ack>            # channel name
+<stx>CNC:I20,"Lapel2";           <ack>            # channel name
+<stx>CNC:I21,"iPodL ";           <ack>            # channel name
+<stx>CNC:I22,"iPodR ";           <ack>            # channel name
+<stx>CNC:I23,"CD-L  ";           <ack>            # channel name
+<stx>CNC:I24,"CD-R  ";           <ack>            # channel name
+<stx>CNC:I25,"REVERB";           <ack>            # channel name
+<stx>CNC:I26,"REVERB";           <ack>            # channel name
 <stx>CNC:I27,"IN27  ";           <ack>            # channel name
 <stx>CNC:I28,"IN28  ";           <ack>            # channel name
-<stx>CNC:I29,"IN29  ";           <ack>            # channel name
-<stx>CNC:I30,"THIRTY";           <ack>            # channel name
-<stx>CNC:I31,"IN31  ";           <ack>            # channel name
-<stx>CNC:I32,"IN32  ";           <ack>            # channel name
+<stx>CNC:I29,"PC-L  ";           <ack>            # channel name
+<stx>CNC:I30,"PC-R  ";           <ack>            # channel name
+<stx>CNC:I31,"LECTRN";           <ack>            # channel name
+<stx>CNC:I32,"Amb   ";           <ack>            # channel name
 <stx>CNC:I33,"IN33  ";           <ack>            # channel name
 <stx>CNC:I34,"IN34  ";           <ack>            # channel name
 <stx>CNC:I35,"IN35  ";           <ack>            # channel name
