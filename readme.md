@@ -145,8 +145,11 @@ the directory.
 The zip fle can be found on the website, with details of how to run it...  
 <https://sites.google.com/site/vmxserialremote/vmxproxy>
 
+The batch files start_proxy.bat, start_proxy_secure.bat, and start_sim.bat are there so that you
+can start the simulator by double click the relevant file.
+
 Alternatively, you can also run the python script "normally", just install Python 2.7, unzip the
-zip archive, start a windos console, cd to the directory you create (with this readme.md file) and
+zip archive, start a windows console, cd to the directory you create (with this readme.md file) and
 type...
 
     python VMXProxy --help
