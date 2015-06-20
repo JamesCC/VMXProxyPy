@@ -37,16 +37,17 @@ V-Mixer commands allow adjustment of a variety of controls, over the serial port
 
 These commands take the form... `$CMD:I1,p1,p2;`
 
-    Where $ is the character code 0x02 (STX), 
+    Where $ is the ASCII character code 0x02 (STX), 
     CMD is a three letter command code,
     I1 represents the input,
     p1, p2 are two parameters (exact number depends on the cmd),
     and all commands are terminated by a semicolon.
 
-If accepted, the response is either of the same form... `$RSP:I1,p1,p2;' or
+If accepted, the response is either of the same form... `$RSP:I1,p1,p2;` or
 an ACK character code 0x06 (if no response information is needed).
 
-    Where $ is the character code 0x02, and RSP is a three letter response code
+    Where $ is the ASCII character code 0x02
+    RSP is a three letter response code
     I1 represents the input described
     p1, p2 are two parameters (exact number depends on the response)
     All responses are terminated by a semicolon.
@@ -61,8 +62,8 @@ In simulation mode, VMXProxy will fake the responses from the mixer, but to the 
 same.
 
 A list of the commands is available on the Roland website, but VMXProxy only supports a subset of
-them.  See https://sites.google.com/site/vmxserialremote/ for those.
-
+them in simulation mode.  For more info see https://sites.google.com/site/vmxserialremote/the-concept
+and the copy of Roland's VMixer RS232 protocol PDF in the docs directory of this repository.
 
 
 ## The Python Script
@@ -210,7 +211,7 @@ You must run the script from this directory (where this readme file is), as VMXP
 find simrc.txt in the current directory.
 
 
-### Installing as a linux service (to start at bootup)
+### Installing as a Linux service (to start at bootup)
 
 An initrc file is used, in conjunction with `screen` to create a service which will run (in the
 background) at bootup.  Whilst it could be made to work without screen, screen is useful for
@@ -254,17 +255,17 @@ Lastly, you can remove (uninstall) the service just by...
 
 ### Installing on a Raspberry Pi
 
-I have had great success in following the above instructions for a standard Raspberry Pi linux
+I have had great success in following the above instructions for a standard Raspberry Pi Linux
 install.  The original Raspberry Pi is more than powerful enough.
 
-This is a very cheap (~£30) mini computer which runs linux.  With a serial port adapter and a USB 
-power supply it becomes your very own terminal adapter for the V-Mixer.  Unless you buy a wifi 
-dongle, you will need to connect it to your wireless router via an ethernet cable.  
+This is a very cheap (~£30) mini computer which runs Linux.  With a serial port adapter and a USB 
+power supply it becomes your very own terminal adapter for the V-Mixer.  Unless you buy a WiFi 
+dongle, you will need to connect it to your wireless router via an Ethernet cable.  
 
 See <http://www.raspberrypi.org/> for more info.
 
-I used the Raspbian "Wheezy" linux install.  Once that is in place you can just follow the 
-instructions for linux above to install and get a service running (you won't need to install
+I used the Raspbian "Wheezy" Linux install.  Once that is in place you can just follow the 
+instructions for Linux above to install and get a service running (you won't need to install
 git or python as they will already be installed).
 
 The Raspberry Pi boots within 20 seconds, and needs no user interaction, so can be boxed and left
@@ -273,13 +274,27 @@ to be powered up and down with the mixer.
 
 ### Upgrading
 
-If you are running linux, the following will upgrade your installation...
+If you are running windows, just download a new copy from the website, unzip it and copy in your 
+passcodes.txt and simrc.txt files from your old installation before you delete it.  You may have
+also altered some .bat files for starting vmxproxy.
+
+If you are running Linux, the following will upgrade your installation in place...
 
     cd $HOME/vmxproxypy
+    git status
+    
+git status will report any changes you have made to the installation.  This is likely to be 
+only passcodes.txt, and maybe simrc.txt.  Copy those files so you can restore the file(s) 
+after the upgrade.
+
+The following will revert any changes in the vmxproxypy directory (and any subdirectories),
+and pull in the latest vmxproxy...
+
+    git reset --hard
     git pull
 
-If you are running windows, just download a new copy from the website, unzip it and copy in your 
-passcodes.txt and simrc.txt files from your old installation before you delete it.
+Then copy back any files that have changed.  It is wise to check what you are overwriting
+looks similar (in case the upgrade as change the format of those files).
 
 ---
 JamesCC @ 14jun15
