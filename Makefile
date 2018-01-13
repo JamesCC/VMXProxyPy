@@ -98,19 +98,8 @@ dist:
 
 ###############################################################################
 # test
-test: testUNIT
-
-# legacy test run method
-testUNIT: clean_test
-	coverage run -m unittest discover VMXProxy/test
-	coverage html
-	coverage report
-	echo "Coverage results in htmlcov/index.html"
-
-# legacy TAP output test run method
-testTAP: clean_test
-	coverage run VMXProxy/test/tapout.py
-	prove -e cat test-reports/*.tap
+test: clean_test
+	coverage run -m unittest discover VMXProxy
 	coverage html
 	coverage report
 	echo "Coverage results in htmlcov/index.html"

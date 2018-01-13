@@ -18,7 +18,7 @@
 
 import unittest
 import time
-from VMXProxy.VMXSerialPort import VMXSerialPort
+from VMXSerialPort import VMXSerialPort
 
 SERIAL = None
 #SERIAL = "/dev/ttyUSB0"

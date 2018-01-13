@@ -17,7 +17,7 @@
 #
 
 import unittest
-from VMXProxy.VMXParser import VMXParser
+from VMXParser import VMXParser
 
 class TestVMXParser(unittest.TestCase):
     """Unittests for VMXParser"""

@@ -22,7 +22,7 @@ VMixer serial protocol."""
 import logging
 import optparse
 import threading
-import SocketServer
+import socketserver
 import os
 import time
 import subprocess
@@ -36,7 +36,7 @@ from VMXProcessor import VMXProcessor
 from VMXParser import VMXParser
 from VMXPasscodeParser import VMXPasscodeParser
 
-class ThreadedTCPRequestHandler(SocketServer.BaseRequestHandler):
+class ThreadedTCPRequestHandler(socketserver.BaseRequestHandler):
     """Handler container for incoming TCP connections"""
 
     BAD_SYNTAX_RESPONSE = chr(2)+"ERR:0;"
@@ -52,6 +52,7 @@ class ThreadedTCPRequestHandler(SocketServer.BaseRequestHandler):
                 rights = self.server.passcode_parser.get_access_rights(command[8:-1])
                 if rights:
                     response = chr(2)+"###PWD:\""+rights+"\";"
+                    logging.debug("Authenticated - "+ command[7:])
                     authenticated = 1
                 else:
                     logging.warning("Not Authenticated - "+ command[7:])
@@ -59,6 +60,7 @@ class ThreadedTCPRequestHandler(SocketServer.BaseRequestHandler):
 
         elif command.startswith(chr(2)+"###CFA"):
             # We support the Cache Feature
+            logging.debug("Supporting requested caching feature")
             response = chr(6)
 
         else:
@@ -76,7 +78,7 @@ class ThreadedTCPRequestHandler(SocketServer.BaseRequestHandler):
         command_count = 0
         tcp_input_gatherer = VMXParser()
         try:
-            data = self.request.recv(1024)
+            data = self.request.recv(1024).decode()
             while data:
                 command = tcp_input_gatherer.process(data)
                 while command:
@@ -91,15 +93,15 @@ class ThreadedTCPRequestHandler(SocketServer.BaseRequestHandler):
                         response = self.NOT_AUTENTICATED_RESPONSE
 
                     if response != "":
-                        self.request.sendall(response)
+                        self.request.sendall(response.encode())
                     command = tcp_input_gatherer.process()
-                data = self.request.recv(1024)
+                data = self.request.recv(1024).decode()
         except:
             pass
         logging.info("%s Disconnected (after %d commands)", client_ip, command_count)
 
 
-class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
+class ThreadedTCPServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
     """Instance of a TCP Server that can handle multiple simultaneous
     connections."""
 
@@ -265,7 +267,7 @@ Roland VMixer interface adaptor.  It can run in three modes.
     (options, args) = parser.parse_args()
 
     if options.version:
-        print __version__
+        print(__version__)
         os._exit(0)
 
     if options.quiet:           # just warnings and errors

@@ -2,7 +2,7 @@ from distutils.core import setup
 import py2exe
 import sys
 
-execfile('VMXProxy/version.py')
+exec(compile(open('VMXProxy/version.py').read(), 'VMXProxy/version.py', 'exec'))
 
 sys.path.append("./VMXProxy")
 setup(

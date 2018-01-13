@@ -41,12 +41,12 @@ sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 # Connect the socket to the port where the server is listening
 server_address = ('localhost', 10000)
-print >>sys.stderr, 'connecting to %s port %s' % server_address
+print('connecting to %s port %s' % server_address, file=sys.stderr)
 sock.connect(server_address)
 sock.settimeout(3)
 
 dict = {}
-for loop in xrange(100,0,-1):
+for loop in range(100,0,-1):
 
     for i in range(32):
         inputID = "I"+str(i+1)
@@ -64,8 +64,8 @@ for loop in xrange(100,0,-1):
             sys.stdout.flush()
         else:
             dict[inputID] = reply
-            print bcolors.OKBLUE + command + bcolors.ENDC
-            print bcolors.OKGREEN + reply + bcolors.ENDC
+            print(bcolors.OKBLUE + command + bcolors.ENDC)
+            print(bcolors.OKGREEN + reply + bcolors.ENDC)
 
     command = ""
     for i in range(8):
@@ -80,12 +80,12 @@ for loop in xrange(100,0,-1):
         sys.stdout.flush()
     else:
         dict[inputID] = reply
-        print bcolors.OKBLUE + command + bcolors.ENDC
-        print bcolors.OKGREEN + reply + bcolors.ENDC
+        print(bcolors.OKBLUE + command + bcolors.ENDC)
+        print(bcolors.OKGREEN + reply + bcolors.ENDC)
 
     delay = 5 + random.random()
-    print( "  %gs [%d]" % (delay, loop) )
+    print(( "  %gs [%d]" % (delay, loop) ))
     time.sleep( delay )
 
-print >>sys.stderr, 'closing socket'
+print('closing socket', file=sys.stderr)
 sock.close()

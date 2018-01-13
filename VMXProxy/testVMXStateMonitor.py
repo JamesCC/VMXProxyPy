@@ -17,7 +17,7 @@
 #
 
 import unittest
-from VMXProxy.VMXStateMonitor import VMXStateMonitor
+from VMXStateMonitor import VMXStateMonitor
 
 class TestVMXStateMonitor(unittest.TestCase):
     """Unittests for VMXStateMonitor"""

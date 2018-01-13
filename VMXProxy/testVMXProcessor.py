@@ -17,7 +17,7 @@
 #
 
 import unittest
-from VMXProxy.VMXProcessor import VMXProcessor
+from VMXProcessor import VMXProcessor
 
 class TestVMXProcessor(unittest.TestCase):
     """Unittests for VMXProcessor"""
