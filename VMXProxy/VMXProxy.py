@@ -19,14 +19,21 @@ VMixer serial protocol."""
 #    along with VMXProxyPy.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+import sys
+
 import logging
 import optparse
 import threading
-import socketserver
 import os
 import time
 import subprocess
 import platform
+
+if (sys.version_info > (3, 0)):
+    import socketserver
+else:
+    # rename for benefit of python2 code
+    import SocketServer as socketserver
 
 from version import __version__
 
