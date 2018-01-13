@@ -16,8 +16,8 @@ if exist %DIST_PATH%\NUL (
 rem go hunting for python installation
 for /d %%F in ( "C:\Pydthon*" "%ProgramFiles%\Python *"
                 "%ProgramFiles(x86)%\Python *"
-                "%LocalAppData%\Programs\Python*" 
-                "%LocalAppData%\Programs\Python*-32") do set PYTHONINSTALLDIR=%%F
+                "%LocalAppData%\Programs\Python\Python*" 
+                "%LocalAppData%\Programs\Python\Python*-32") do set PYTHONINSTALLDIR=%%F
 
 if exist %PYTHONINSTALLDIR%\python.exe (
     %PYTHONINSTALLDIR%\python VMXProxy %*
