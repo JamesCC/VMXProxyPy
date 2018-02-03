@@ -14,7 +14,7 @@ if exist %DIST_PATH%\NUL (
 )
 
 rem go hunting for python installation
-for /d %%F in ( "C:\Pydthon*" "%ProgramFiles%\Python *"
+for /d %%F in ( "C:\Python*" "%ProgramFiles%\Python *"
                 "%ProgramFiles(x86)%\Python *"
                 "%LocalAppData%\Programs\Python\Python*" 
                 "%LocalAppData%\Programs\Python\Python*-32") do set PYTHONINSTALLDIR=%%F
