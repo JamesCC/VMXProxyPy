@@ -7,5 +7,4 @@ else
     python VMXProxy "$@"
 fi
 
-echo
-read -rsp $'Press any key to continue...\n' -n1 key
+#echo && read -rsp $'Press any key to continue...\n' -n1 key
