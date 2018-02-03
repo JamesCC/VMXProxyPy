@@ -30,6 +30,12 @@ class VMXParser(object):
     def __init__(self):
         self.__in_buffer = ""
 
+    @classmethod
+    def safeprint(cls, s):
+        s = s.replace(cls.STX, "<stx>");
+        s = s.replace(cls.ACK, "<ack>");
+        return "".join(i if 31 < ord(i) < 127 else "\\x{:02x}".format(ord(i)) for i in s )
+
     def reset(self):
         """Resets the VMXParser internal state discarding any data
         fragments."""

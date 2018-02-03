@@ -130,9 +130,9 @@ class VMXStateMonitor(object):
             self.__value = ''
             key_field_count = self.__commandDict.get(self.__key)
             if key_field_count is None:
-                logging.warning("Ignoring unrecognised Command: "+command)
+                logging.warning("Ignoring unrecognised Command: "+command[1:])
             elif matches.group(3) != "" and not matches.group(3).startswith(":"):
-                logging.warning("Ignoring invalid command: "+command)
+                logging.warning("Ignoring invalid command: "+command[1:])
             else:
                 self.__action = matches.group(2)
                 inside_quotes = False

@@ -69,7 +69,7 @@ class VMXProcessor(object):
         the .set_mixer_interface() method."""
         self.__lock.acquire()
 
-        #logging.debug("> " + command)
+        #logging.debug("> " + VMXParser.safeprint(command))
 
         # parse stage1 output to split up any concatenated commands
         output_stage2 = self.__stage2_parser.process(command)
@@ -77,7 +77,7 @@ class VMXProcessor(object):
         # while any commands to process...
         output_string = ""
         while output_stage2:
-            logging.debug(">> " + output_stage2)
+            logging.debug(">> " + VMXParser.safeprint(output_stage2))
 
             # discard rate is a debug feature
             if self.__discard_rate:
@@ -89,7 +89,7 @@ class VMXProcessor(object):
             # see if there is a cached value for the command (only applies if a query command)
             output_stage2, state_monitor_output = self.__state_monitor.read_cache(output_stage2)
             if state_monitor_output:
-                logging.debug("<< " + state_monitor_output + " (CACHED)")
+                logging.debug("<< " + VMXParser.safeprint(state_monitor_output) + " (CACHED)")
             else:
                 # Send to mixer (if one is setup)
                 if self.__mixer_if:
@@ -102,7 +102,7 @@ class VMXProcessor(object):
                     time.sleep(random.random()*self.__cmd_delay)
 
                 state_monitor_output = self.__state_monitor.process(output_stage2, mixer_reply)
-                logging.debug("<< " + state_monitor_output)
+                logging.debug("<< " + VMXParser.safeprint(state_monitor_output))
 
             # parse the output to keep form
             output_string += self.__output_parser.process(state_monitor_output)
