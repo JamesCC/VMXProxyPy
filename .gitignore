@@ -3,3 +3,4 @@
 .coverage
 htmlcov/
 pylint.out
+.spyproject/
