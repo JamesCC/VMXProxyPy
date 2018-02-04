@@ -21,12 +21,12 @@ class simpleapp_tk(tk.Tk):
     MODE_PROXY = 4
     MODE_SEC_PROXY = 5
 
-
     def __init__(self,parent):
+        """Start the app."""
         tk.Tk.__init__(self,parent)
         self.parent = parent
-        self.options = None
-        
+        self.options_valid = False
+
         self.net_port = tk.IntVar()
         self.serial_port = tk.StringVar()
         self.baud_rate = tk.IntVar()
@@ -41,8 +41,8 @@ class simpleapp_tk(tk.Tk):
         self.widget_enables_callback()
         self.layout()
 
-    
     def initialize(self):
+        """Initialize the App by creating all necessary widgets."""
         self.row=1
         self.mainframe = ttk.Frame(self.parent, padding="10 10 10 10")
         self.mainframe.grid(column=0, row=0, sticky=(tk.N, tk.W, tk.E, tk.S))
@@ -70,13 +70,14 @@ class simpleapp_tk(tk.Tk):
         self.passcode_file_label = ttk.Label(self.mainframe, text="Passcode File:")
         self.passcode_file_widget = ttk.Entry(self.mainframe, width=32, textvariable=self.passcode_file)
         self.passcode_file_button = ttk.Button(self.mainframe, text='...', width=3, command=self.askopenfilename)
-        
+
         self.verbose_checkbutton = ttk.Checkbutton(self.mainframe, text="Verbose", variable=self.verbosity)
 
         self.start_server_button = ttk.Button(self.mainframe, text="Start Server", command=self.start_server)
         self.exit_button = ttk.Button(self.mainframe, text="Exit", command=self.destroy)
 
     def layout_in_row(self, a, b=None, c=None, padding=3):
+        """Layout a row."""
         if a is not None:
             a.grid(row=self.row, sticky=tk.E, padx=padding, pady=padding)
         if b is not None:
@@ -86,6 +87,7 @@ class simpleapp_tk(tk.Tk):
         self.row += 1
 
     def layout(self):
+        """Layout the widgets."""
         self.layout_in_row(self.mode_label, self.r1, padding=0)
         self.layout_in_row(None, self.r2, padding=0)
         self.layout_in_row(None, self.r3, padding=0)
@@ -100,32 +102,33 @@ class simpleapp_tk(tk.Tk):
         self.layout_in_row(self.start_server_button, self.exit_button, None)
 
     def set_variables(self):
+        """Setup initial variable values."""
         self.net_port.set(10000)
         self.serial_port.set(self.serial_ports_list[0])
         self.baud_rate.set(115200)
         self.passcode_file.set("passcodes.txt")
         self.mode.set(2)
         self.passcode_enable.set(False)
+        self.verbosity.set(0)
 
     def askopenfilename(self):
-        """Returns an opened file in read mode.
-        This time the dialog just returns a filename and the file is opened by your own code.
-        """
+        """Returns an opened file in read mode."""
 
         # define options for opening or saving a file
         file_opt = options = {}
         options['defaultextension'] = '.txt'
         options['filetypes'] = [('all files', '.*'), ('text files', '.txt')]
         options['initialfile'] = 'passcodes.txt'
-        options['parent'] = tk.root
+        options['parent'] = None
         options['title'] = 'Choose passcodes file'
 
         # get filename
-        filename = filedialog.askopenfilename(**file_opt)
+        filename = tk.filedialog.askopenfilename(**file_opt)
         if filename:
             self.passcode_file.set(filename)
 
     def widget_enables_callback(self):
+        """Callback used upon radio button changes."""
         if self.mode.get() == self.MODE_SSIM:
             self.net_port_widget.configure(state=tk.DISABLED)
             self.serial_port_widget.configure(state=tk.NORMAL)
@@ -178,45 +181,44 @@ class simpleapp_tk(tk.Tk):
         self.start_server_button.configure(state=tk.NORMAL)
 
     def start_server(self):
-        self.options = {"serial" : None, "baudrate" : None, 
+        """Start server button."""
+        self.options_valid = True
+        self.destroy()
+
+    def get_options(self):
+        """Return options dictionary if start server button pressed else None."""
+        if not self.options_valid:
+            return None
+
+        options = {"serial" : None, "baudrate" : None,
                         "port" : None, "passcodefile" : None,
                         "verbosity" : False}
-        
-        if self.verbosity.get() == 1:
-            self.options["verbosity"] = True
-        
-        if self.mode.get() == self.MODE_SSIM:
-            self.options["serial"] = self.serial_port.get()
-            self.options["baudrate"] = self.baud_rate.get()
-        elif self.mode.get() == self.MODE_NSIM:
-            self.options["port"] = self.net_port.get()
-        elif self.mode.get() == self.MODE_SEC_NSIM:
-            self.options["port"] = self.net_port.get()
-            self.options["passcodefile"] = self.passcode_file.get()
-        elif self.mode.get() == self.MODE_PROXY:
-            self.options["serial"] = self.serial_port.get()
-            self.options["baudrate"] = self.baud_rate.get()
-            self.options["port"] = self.net_port.get()
-        elif self.mode.get() == self.MODE_SEC_PROXY:
-            self.options["serial"] = self.serial_port.get()
-            self.options["baudrate"] = self.baud_rate.get()
-            self.options["port"] = self.net_port.get()
-            self.options["passcodefile"] = self.passcode_file.get()
 
-        self.destroy()
-        
-    def get_options(self):
-        return(self.options)
+        if self.verbosity.get() == 1:
+            options["verbosity"] = True
+
+        if self.mode.get() == self.MODE_SSIM:
+            options["serial"] = self.serial_port.get()
+            options["baudrate"] = self.baud_rate.get()
+        elif self.mode.get() == self.MODE_NSIM:
+            options["port"] = self.net_port.get()
+        elif self.mode.get() == self.MODE_SEC_NSIM:
+            options["port"] = self.net_port.get()
+            options["passcodefile"] = self.passcode_file.get()
+        elif self.mode.get() == self.MODE_PROXY:
+            options["serial"] = self.serial_port.get()
+            options["baudrate"] = self.baud_rate.get()
+            options["port"] = self.net_port.get()
+        elif self.mode.get() == self.MODE_SEC_PROXY:
+            options["serial"] = self.serial_port.get()
+            options["baudrate"] = self.baud_rate.get()
+            options["port"] = self.net_port.get()
+            options["passcodefile"] = self.passcode_file.get()
+
+        return(options)
 
     def find_serial_ports(self):
-        """Lists serial ports
-
-        :raises EnvironmentError:
-
-            On unsupported or unknown platforms
-        :returns:
-            A list of available serial ports
-        """
+        """Lists serial ports"""
         if sys.platform.startswith('win'):
             ports = ['COM' + str(i + 1) for i in range(256)]
 
@@ -245,18 +247,9 @@ class simpleapp_tk(tk.Tk):
         else:
             self.serial_ports_found = True
 
-def start_gui(options):
+def start_gui():
     app = simpleapp_tk(None)
-    app.title("VMXProxyGUI")
-    app.resizable(width=False,height=False);
+    app.title("VMXProxy")
+    app.resizable(width=False, height=False);
     app.mainloop()
-    
-    if app.options is None:
-        options = None
-        return
-    
-    options.serial = app.options["serial"]
-    options.baud = app.options["baudrate"]
-    options.port = app.options["port"]
-    options.passcodefile = app.options["passcodefile"]
-    options.verbosity = app.options["verbosity"]
+    return app.get_options()

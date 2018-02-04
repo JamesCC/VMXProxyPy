@@ -286,21 +286,28 @@ Roland VMixer interface adaptor.  It can run in three modes.
         os._exit(0)
 
     if options.gui:
-        start_gui(options)
+        options_from_gui = start_gui()
+        if options_from_gui is None:
+            os._exit(0)
+        else:
+            options.serial = options_from_gui["serial"]
+            options.baud = options_from_gui["baudrate"]
+            options.port = options_from_gui["port"]
+            options.passcodefile = options_from_gui["passcodefile"]
+            options.verbosity = options_from_gui["verbosity"]
 
-    if options is not None:
-        if options.quiet:           # just warnings and errors
-            verbosity = logging.WARNING
-        elif options.verbosity:     # debug output
-            verbosity = logging.DEBUG
-        else:                       # normal output
-            verbosity = logging.INFO
-            
-        # Start VMXProxy
-        vmx_proxy(serial_port_name=options.serial, baudrate=options.baud,
-                  host_port_number=options.port, server_passcodefile=options.passcodefile,
-                  debug_cmd_delay=options.debug_cmd_delay, debug_discard_rate=options.debug_discard_rate,
-                  verbosity=verbosity)
+    if options.quiet:           # just warnings and errors
+        verbosity = logging.WARNING
+    elif options.verbosity:     # debug output
+        verbosity = logging.DEBUG
+    else:                       # normal output
+        verbosity = logging.INFO
+
+    # Start VMXProxy
+    vmx_proxy(serial_port_name=options.serial, baudrate=options.baud,
+              host_port_number=options.port, server_passcodefile=options.passcodefile,
+              debug_cmd_delay=options.debug_cmd_delay, debug_discard_rate=options.debug_discard_rate,
+              verbosity=verbosity)
 
 if __name__ == "__main__":
     main()
