@@ -46,6 +46,7 @@ from VMXSerialPort import VMXSerialPort
 from VMXProcessor import VMXProcessor
 from VMXParser import VMXParser
 from VMXPasscodeParser import VMXPasscodeParser
+from VMXProxyGUI import start_gui
 
 class ThreadedTCPRequestHandler(socketserver.BaseRequestHandler):
     """Handler container for incoming TCP connections"""
@@ -275,24 +276,31 @@ Roland VMixer interface adaptor.  It can run in three modes.
     parser.add_option("--version", dest="version", action="store_true",
                       help="show version", default=False)
 
+    parser.add_option("-g", "--gui", dest="gui", action="store_true",
+                      help="show GUI", default=False)
+
     (options, args) = parser.parse_args()
 
     if options.version:
         print(__version__)
         os._exit(0)
 
-    if options.quiet:           # just warnings and errors
-        verbosity = logging.WARNING
-    elif options.verbosity:     # debug output
-        verbosity = logging.DEBUG
-    else:                       # normal output
-        verbosity = logging.INFO
+    if options.gui:
+        start_gui(options)
 
-    # Start VMXProxy
-    vmx_proxy(serial_port_name=options.serial, baudrate=options.baud,
-              host_port_number=options.port, server_passcodefile=options.passcodefile,
-              debug_cmd_delay=options.debug_cmd_delay, debug_discard_rate=options.debug_discard_rate,
-              verbosity=verbosity)
+    if options is not None:
+        if options.quiet:           # just warnings and errors
+            verbosity = logging.WARNING
+        elif options.verbosity:     # debug output
+            verbosity = logging.DEBUG
+        else:                       # normal output
+            verbosity = logging.INFO
+            
+        # Start VMXProxy
+        vmx_proxy(serial_port_name=options.serial, baudrate=options.baud,
+                  host_port_number=options.port, server_passcodefile=options.passcodefile,
+                  debug_cmd_delay=options.debug_cmd_delay, debug_discard_rate=options.debug_discard_rate,
+                  verbosity=verbosity)
 
 if __name__ == "__main__":
     main()
