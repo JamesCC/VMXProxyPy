@@ -23,15 +23,15 @@ def sendGetReply(command):
     try:
         message = chr(2) + command + ';'
         sock.sendall(message)
-        while len(reply)==0 or reply[-1] != ';':
+        while len(reply) == 0 or reply[-1] != ';':
             reply += sock.recv(64)
 
     except socket.timeout:
         reply = None
-    
+
     if reply:
-        reply = reply.replace(chr(6),"<ack>")
-        reply = reply.replace(chr(2),"<stx>")
+        reply = reply.replace(chr(6), "<ack>")
+        reply = reply.replace(chr(2), "<stx>")
 
     return reply
 
@@ -45,8 +45,8 @@ print('connecting to %s port %s' % server_address, file=sys.stderr)
 sock.connect(server_address)
 sock.settimeout(3)
 
-dict = {}
-for loop in range(100,0,-1):
+reply_dict = {}
+for loop in range(100, 0, -1):
 
     for i in range(32):
         inputID = "I"+str(i+1)
@@ -56,14 +56,14 @@ for loop in range(100,0,-1):
         command += "MUq:"+inputID+"&"
         command += "FDq:"+inputID
 
-        reply = sendGetReply( command )
-        expectedReply = dict.get(inputID, "")
+        reply = sendGetReply(command)
+        expectedReply = reply_dict.get(inputID, "")
         if expectedReply:
             assert reply == expectedReply
             sys.stdout.write('.')
             sys.stdout.flush()
         else:
-            dict[inputID] = reply
+            reply_dict[inputID] = reply
             print(bcolors.OKBLUE + command + bcolors.ENDC)
             print(bcolors.OKGREEN + reply + bcolors.ENDC)
 
@@ -72,20 +72,20 @@ for loop in range(100,0,-1):
         inputID = "AX"+str(i+1)
         command += "CNq:"+inputID+"&"
     command += "SCq"
-    reply = sendGetReply( command )
-    expectedReply = dict.get(inputID, "")
+    reply = sendGetReply(command)
+    expectedReply = reply_dict.get(inputID, "")
     if expectedReply:
         assert reply == expectedReply
         sys.stdout.write('.')
         sys.stdout.flush()
     else:
-        dict[inputID] = reply
+        reply_dict[inputID] = reply
         print(bcolors.OKBLUE + command + bcolors.ENDC)
         print(bcolors.OKGREEN + reply + bcolors.ENDC)
 
     delay = 5 + random.random()
-    print(( "  %gs [%d]" % (delay, loop) ))
-    time.sleep( delay )
+    print("  %gs [%d]" % (delay, loop))
+    time.sleep(delay)
 
 print('closing socket', file=sys.stderr)
 sock.close()
