@@ -23,8 +23,11 @@ __author__ = "James Covey-Crump"
 __cpyright__ = "Copyright 2018, James Covey-Crump"
 __license__ = "GPLv3"
 
+import os
 import unittest
 from VMXSimFileParser import VMXSimFileParser
+
+TESTDIR = os.path.dirname(os.path.realpath(__file__))
 
 class MockCommandProcessor:
     """Mock command processor to respond ACK to all issued commands."""
@@ -38,6 +41,6 @@ class TestVMXSimFileParser(unittest.TestCase):
     def test_parser(self):
         """Test reading of simulation initialisation file for issuing commands."""
         sfp = VMXSimFileParser(MockCommandProcessor())
-        successful_commands, commands = sfp.read_file("VMXProxy/testVMXSimFileParser-parser.txt")
-        self.assertEqual(VMXSimFileParser, 575)
+        successful_commands, commands = sfp.read_file(TESTDIR+"/test_VMXSimFileParser-parser.txt")
+        self.assertEqual(successful_commands, 575)
         self.assertEqual(commands, 577)

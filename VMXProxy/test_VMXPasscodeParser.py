@@ -23,8 +23,11 @@ __author__ = "James Covey-Crump"
 __cpyright__ = "Copyright 2018, James Covey-Crump"
 __license__ = "GPLv3"
 
+import os
 import unittest
 from VMXPasscodeParser import VMXPasscodeParser
+
+TESTDIR = os.path.dirname(os.path.realpath(__file__))
 
 class TestVMXPasscodeParser(unittest.TestCase):
     """Unittests for VMXPasscodeParser."""
@@ -32,7 +35,7 @@ class TestVMXPasscodeParser(unittest.TestCase):
     def test_parser(self):
         """Test passcode parser correctly parses a passcode file and identifies the rights."""
         acp = VMXPasscodeParser()
-        acp.read_file("VMXProxy/testVMXPasscodeParser-passcodes.txt")
+        acp.read_file(TESTDIR + "/test_VMXPasscodeParser-passcodes.txt")
 
         self.assertEqual(acp.get_access_rights("0123"), "*M1234567890123456")
         self.assertEqual(acp.get_access_rights("10"), "------------------")
@@ -47,5 +50,5 @@ class TestVMXPasscodeParser(unittest.TestCase):
     def test_parser_no_file(self):
         """Test passcode parser handles a missing passcode file."""
         acp = VMXPasscodeParser()
-        acp.read_file("VMXProxy/test/missingfile")
+        acp.read_file(TESTDIR + "missingfile")
         self.assertEqual(acp.get_access_rights("0123"), "")
