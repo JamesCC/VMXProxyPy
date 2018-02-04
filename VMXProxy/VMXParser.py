@@ -1,22 +1,27 @@
 #! /usr/bin/env python
+# -*- coding: utf-8 -*-
 
-"""A Validator for V-Mixer Serial Port Protocol."""
+""" A Validator for V-Mixer Serial Port Protocol.
 
-#    This file is part of VMXProxyPy.
-#
-#    VMXProxyPy is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU Lesser General Public License as published
-#    by the Free Software Foundation, either version 3 of the License, or
-#    (at your option) any later version.
-#
-#    VMXProxyPy is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU Lesser General Public License for more details.
-#
-#    You should have received a copy of the GNU Less General Public License
-#    along with VMXProxyPy.  If not, see <http://www.gnu.org/licenses/>.
-#
+    This file is part of VMXProxyPy.
+
+    VMXProxyPy is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published
+    by the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    VMXProxyPy is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Less General Public License
+    along with VMXProxyPy.  If not, see <http://www.gnu.org/licenses/>.
+"""
+
+__author__ = "James Covey-Crump"
+__cpyright__ = "Copyright 2018, James Covey-Crump"
+__license__ = "LGPLv3"
 
 class VMXParser(object):
     """Parses an (potential fragmented) input stream constructing whole
@@ -31,10 +36,11 @@ class VMXParser(object):
         self.__in_buffer = ""
 
     @classmethod
-    def safeprint(cls, s):
-        s = s.replace(cls.STX, "<stx>");
-        s = s.replace(cls.ACK, "<ack>");
-        return "".join(i if 31 < ord(i) < 127 else "\\x{:02x}".format(ord(i)) for i in s )
+    def safeprint(cls, string):
+        """Replaces non-printable characters with escape codes."""
+        string = string.replace(cls.STX, "<stx>")
+        string = string.replace(cls.ACK, "<ack>")
+        return "".join(i if 31 < ord(i) < 127 else "\\x{:02x}".format(ord(i)) for i in string)
 
     def reset(self):
         """Resets the VMXParser internal state discarding any data
@@ -98,4 +104,3 @@ class VMXParser(object):
         # leave any residue in the buffer for next time
         self.__in_buffer = string
         return output_command
-

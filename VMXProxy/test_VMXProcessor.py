@@ -21,7 +21,7 @@
 
 __author__ = "James Covey-Crump"
 __cpyright__ = "Copyright 2018, James Covey-Crump"
-__license__ = "GPLv3"
+__license__ = "LGPLv3"
 
 import unittest
 from VMXProcessor import VMXProcessor

@@ -1,22 +1,27 @@
 #! /usr/bin/env python
+# -*- coding: utf-8 -*-
 
-"""Monitors traffic to/from the mixer recording its state."""
+""" Monitors traffic to/from the mixer recording its state.
 
-#    This file is part of VMXProxyPy.
-#
-#    VMXProxyPy is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU Lesser General Public License as published
-#    by the Free Software Foundation, either version 3 of the License, or
-#    (at your option) any later version.
-#
-#    VMXProxyPy is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU Lesser General Public License for more details.
-#
-#    You should have received a copy of the GNU Less General Public License
-#    along with VMXProxyPy.  If not, see <http://www.gnu.org/licenses/>.
-#
+    This file is part of VMXProxyPy.
+
+    VMXProxyPy is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published
+    by the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    VMXProxyPy is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Less General Public License
+    along with VMXProxyPy.  If not, see <http://www.gnu.org/licenses/>.
+"""
+
+__author__ = "James Covey-Crump"
+__cpyright__ = "Copyright 2018, James Covey-Crump"
+__license__ = "LGPLv3"
 
 import logging
 import time
@@ -130,9 +135,9 @@ class VMXStateMonitor(object):
             self.__value = ''
             key_field_count = self.__commandDict.get(self.__key)
             if key_field_count is None:
-                logging.warning("Ignoring unrecognised Command: "+command[1:])
+                logging.warning("Ignoring unrecognised Command: %s", command[1:])
             elif matches.group(3) != "" and not matches.group(3).startswith(":"):
-                logging.warning("Ignoring invalid command: "+command[1:])
+                logging.warning("Ignoring invalid command: %s", command[1:])
             else:
                 self.__action = matches.group(2)
                 inside_quotes = False

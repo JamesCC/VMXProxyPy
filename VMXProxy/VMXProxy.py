@@ -1,23 +1,27 @@
 #! /usr/bin/env python
+# -*- coding: utf-8 -*-
 
-"""A program to provide a simulator and networked proxy service for Roland's
-VMixer serial protocol."""
+""" A program to provide a simulator and networked proxy service for Roland's V-Mixer serial protocol.
 
-#    This file is part of VMXProxyPy.
-#
-#    VMXProxyPy is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU Lesser General Public License as published
-#    by the Free Software Foundation, either version 3 of the License, or
-#    (at your option) any later version.
-#
-#    VMXProxyPy is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU Lesser General Public License for more details.
-#
-#    You should have received a copy of the GNU Less General Public License
-#    along with VMXProxyPy.  If not, see <http://www.gnu.org/licenses/>.
-#
+    This file is part of VMXProxyPy.
+
+    VMXProxyPy is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published
+    by the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    VMXProxyPy is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Less General Public License
+    along with VMXProxyPy.  If not, see <http://www.gnu.org/licenses/>.
+"""
+
+__author__ = "James Covey-Crump"
+__cpyright__ = "Copyright 2018, James Covey-Crump"
+__license__ = "LGPLv3"
 
 import sys
 

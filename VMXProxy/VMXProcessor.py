@@ -1,25 +1,32 @@
 #! /usr/bin/env python
+# -*- coding: utf-8 -*-
 
-"""The Command Processor.  Takes a command or commands and issues them one
-command one at a time to the mixer, collecting the responses and echoing them
-back.  If the .set_mixer_interface method is not called it will operate in
-a simulation mode, which will emulate an attached mixer."""
+""" The Command Processor.
 
-#    This file is part of VMXProxyPy.
-#
-#    VMXProxyPy is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU Lesser General Public License as published
-#    by the Free Software Foundation, either version 3 of the License, or
-#    (at your option) any later version.
-#
-#    VMXProxyPy is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU Lesser General Public License for more details.
-#
-#    You should have received a copy of the GNU Less General Public License
-#    along with VMXProxyPy.  If not, see <http://www.gnu.org/licenses/>.
-#
+    Takes a command or commands and issues them one command one at a time to the mixer,
+    collecting the responses and echoing them back.  If the .set_mixer_interface method
+    is not called it will operate in a simulation mode, which will emulate an attached
+    mixer.
+
+    This file is part of VMXProxyPy.
+
+    VMXProxyPy is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published
+    by the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    VMXProxyPy is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Less General Public License
+    along with VMXProxyPy.  If not, see <http://www.gnu.org/licenses/>.
+"""
+
+__author__ = "James Covey-Crump"
+__cpyright__ = "Copyright 2018, James Covey-Crump"
+__license__ = "LGPLv3"
 
 import threading
 import logging
@@ -69,7 +76,7 @@ class VMXProcessor(object):
         the .set_mixer_interface() method."""
         self.__lock.acquire()
 
-        #logging.debug("> " + VMXParser.safeprint(command))
+        #logging.debug("> %s", VMXParser.safeprint(command))
 
         # parse stage1 output to split up any concatenated commands
         output_stage2 = self.__stage2_parser.process(command)
@@ -77,7 +84,7 @@ class VMXProcessor(object):
         # while any commands to process...
         output_string = ""
         while output_stage2:
-            logging.debug(">> " + VMXParser.safeprint(output_stage2))
+            logging.debug(">> %s", VMXParser.safeprint(output_stage2))
 
             # discard rate is a debug feature
             if self.__discard_rate:
@@ -89,7 +96,7 @@ class VMXProcessor(object):
             # see if there is a cached value for the command (only applies if a query command)
             output_stage2, state_monitor_output = self.__state_monitor.read_cache(output_stage2)
             if state_monitor_output:
-                logging.debug("<< " + VMXParser.safeprint(state_monitor_output) + " (CACHED)")
+                logging.debug("<< %s", VMXParser.safeprint(state_monitor_output) + " (CACHED)")
             else:
                 # Send to mixer (if one is setup)
                 if self.__mixer_if:
@@ -102,7 +109,7 @@ class VMXProcessor(object):
                     time.sleep(random.random()*self.__cmd_delay)
 
                 state_monitor_output = self.__state_monitor.process(output_stage2, mixer_reply)
-                logging.debug("<< " + VMXParser.safeprint(state_monitor_output))
+                logging.debug("<< %s", VMXParser.safeprint(state_monitor_output))
 
             # parse the output to keep form
             output_string += self.__output_parser.process(state_monitor_output)
