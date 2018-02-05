@@ -45,7 +45,7 @@ class SimpleApp(tk.Tk):
     MODE_PROXY = 4
     MODE_SEC_PROXY = 5
 
-    def __init__(self, parent):
+    def __init__(self, parent, options):
         """Start the app."""
         tk.Tk.__init__(self, parent)
         self.parent = parent
@@ -61,7 +61,7 @@ class SimpleApp(tk.Tk):
 
         self.find_serial_ports()
         self.initialize()
-        self.set_variables()
+        self.set_options(options)
         self.widget_enables_callback()
         self.layout()
 
@@ -226,37 +226,72 @@ class SimpleApp(tk.Tk):
         self.options_valid = True
         self.destroy()
 
-    def get_options(self):
+    def set_options(self, options):
+        if options.port is None:
+            self.net_port.set(10000)
+        else:
+            self.net_port.set(options.port)
+
+        if options.serial in self.serial_ports_list:
+            self.serial_port.set(options.serial)
+        else:
+            self.serial_port.set(self.serial_ports_list[0])
+
+        if options.baud is None:
+            self.baud_rate.set(115200)
+        else:
+            self.baud_rate.set(options.baud)
+
+        if options.passcodefile is None:
+            self.passcode_file.set("passcodes.txt")
+        else:
+            self.passcode_file.set(options.passcodefile)
+
+        self.verbosity.set(options.verbosity)
+
+        if options.serial is not None and options.port is not None:
+            if options.passcodefile is None:
+                self.mode.set(self.MODE_PROXY)
+            else:
+                self.mode.set(self.MODE_SEC_PROXY)
+        if options.serial is not None and options.port is None:
+            self.mode.set(self.MODE_SSIM)
+        else:
+            if options.passcodefile is None:
+                self.mode.set(self.MODE_NSIM)
+            else:
+                self.mode.set(self.MODE_SEC_NSIM)
+
+
+    def update_options(self, options):
         """Return options dictionary if start server button pressed else None."""
         if not self.options_valid:
-            return None
+            return False
 
-        options = {"serial" : None, "baudrate" : None,
-                   "port" : None, "passcodefile" : None,
-                   "verbosity" : False}
-
-        if self.verbosity.get() == 1:
-            options["verbosity"] = True
+        options.verbosity = (self.verbosity.get() == 1)
+        options.serial = None
+        options.port = None
+        options.passcodefile = None
 
         if self.mode.get() == self.MODE_SSIM:
-            options["serial"] = self.serial_port.get()
-            options["baudrate"] = self.baud_rate.get()
+            options.serial = self.serial_port.get()
+            options.baud = self.baud_rate.get()
         elif self.mode.get() == self.MODE_NSIM:
-            options["port"] = self.net_port.get()
+            options.port = self.net_port.get()
         elif self.mode.get() == self.MODE_SEC_NSIM:
-            options["port"] = self.net_port.get()
-            options["passcodefile"] = self.passcode_file.get()
+            options.port = self.net_port.get()
+            options.passcodefile = self.passcode_file.get()
         elif self.mode.get() == self.MODE_PROXY:
-            options["serial"] = self.serial_port.get()
-            options["baudrate"] = self.baud_rate.get()
-            options["port"] = self.net_port.get()
+            options.serial = self.serial_port.get()
+            options.baud = self.baud_rate.get()
+            options.port = self.net_port.get()
         elif self.mode.get() == self.MODE_SEC_PROXY:
-            options["serial"] = self.serial_port.get()
-            options["baudrate"] = self.baud_rate.get()
-            options["port"] = self.net_port.get()
-            options["passcodefile"] = self.passcode_file.get()
+            options.serial = self.serial_port.get()
+            options.baud = self.baud_rate.get()
+            options.port = self.net_port.get()
+            options.passcodefile = self.passcode_file.get()
 
-        return options
+        return True
 
     def find_serial_ports(self):
         """Lists serial ports"""
@@ -288,10 +323,10 @@ class SimpleApp(tk.Tk):
         else:
             self.serial_ports_found = True
 
-def start_gui():
+def start_gui(options):
     """Start GUI by instantiating the SimpleApp Class."""
-    app = SimpleApp(None)
+    app = SimpleApp(None, options)
     app.title("VMXProxy")
     app.resizable(width=False, height=False)
     app.mainloop()
-    return app.get_options()
+    return app.update_options(options)

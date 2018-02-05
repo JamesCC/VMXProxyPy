@@ -284,15 +284,9 @@ Roland VMixer interface adaptor.  It can run in three modes.
         os._exit(0)
 
     if options.gui:
-        options_from_gui = start_gui()
-        if options_from_gui is None:
+        updated_options = start_gui(options)
+        if not updated_options:
             os._exit(0)
-        else:
-            options.serial = options_from_gui["serial"]
-            options.baud = options_from_gui["baudrate"]
-            options.port = options_from_gui["port"]
-            options.passcodefile = options_from_gui["passcodefile"]
-            options.verbosity = options_from_gui["verbosity"]
 
     if options.quiet:           # just warnings and errors
         verbosity = logging.WARNING
