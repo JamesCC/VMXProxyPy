@@ -209,7 +209,6 @@ def vmx_proxy(serial_port_name=None, baudrate=115200,
             if serial_port_name is not None:
                 del serial_port
                 logging.info("Serial Port shutdown")
-            os._exit(0)
 
     elif serial_port_name is not None:        # (and host_port_number is None)
         # Input is from Serial Port
@@ -218,9 +217,9 @@ def vmx_proxy(serial_port_name=None, baudrate=115200,
             to_serial = ""
             tcp_input_gatherer = VMXParser()
             while True:
-                from_serial = serial_port.process(to_serial)
+                from_serial = serial_port.process(to_serial.encode())
                 to_serial = ""
-                command = tcp_input_gatherer.process(from_serial)
+                command = tcp_input_gatherer.process(from_serial.decode())
                 while command:
                     to_serial += cmd_processor.process(command)
                     command = tcp_input_gatherer.process()
@@ -231,7 +230,6 @@ def vmx_proxy(serial_port_name=None, baudrate=115200,
             del cmd_processor
             del serial_port
             logging.info("Serial Port shutdown")
-            os._exit(0)
 
     else:
         logging.error("Invalid mode.  Need either or both -s or -n options.")
@@ -308,6 +306,8 @@ Roland VMixer interface adaptor.  It can run in three modes.
               host_port_number=options.port, server_passcodefile=options.passcodefile,
               debug_cmd_delay=options.debug_cmd_delay, debug_discard_rate=options.debug_discard_rate,
               verbosity=verbosity)
+
+    os._exit(0)
 
 if __name__ == "__main__":
     main()
