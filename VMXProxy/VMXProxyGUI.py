@@ -1,11 +1,33 @@
+#! /usr/bin/env python
+# -*- coding: utf-8 -*-
+
+""" A Window to let users specify settings through a Graphical Interface.
+
+    This file is part of VMXProxyPy.
+
+    VMXProxyPy is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published
+    by the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    VMXProxyPy is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Less General Public License
+    along with VMXProxyPy.  If not, see <http://www.gnu.org/licenses/>.
+"""
+
+__author__ = "James Covey-Crump"
+__cpyright__ = "Copyright 2018, James Covey-Crump"
+__license__ = "LGPLv3"
+
 import sys
 import glob
 import serial
-import VMXProxy
-import logging
 
-#from Tkinter import *
-if (sys.version_info > (3, 0)):
+if sys.version_info > (3, 0):
     import tkinter as tk
     from tkinter import filedialog
     from tkinter import ttk
@@ -14,16 +36,18 @@ else:
     import tkFileDialog as filedialog
     import ttk
 
-class simpleapp_tk(tk.Tk):
+class SimpleApp(tk.Tk):
+    """Simple Application to capture user settings."""
+
     MODE_SSIM = 1
     MODE_NSIM = 2
     MODE_SEC_NSIM = 3
     MODE_PROXY = 4
     MODE_SEC_PROXY = 5
 
-    def __init__(self,parent):
+    def __init__(self, parent):
         """Start the app."""
-        tk.Tk.__init__(self,parent)
+        tk.Tk.__init__(self, parent)
         self.parent = parent
         self.options_valid = False
 
@@ -43,18 +67,28 @@ class simpleapp_tk(tk.Tk):
 
     def initialize(self):
         """Initialize the App by creating all necessary widgets."""
-        self.row=1
+        self.row = 1
         self.mainframe = ttk.Frame(self.parent, padding="10 10 10 10")
         self.mainframe.grid(column=0, row=0, sticky=(tk.N, tk.W, tk.E, tk.S))
         self.mainframe.columnconfigure(0, weight=1)
         self.mainframe.rowconfigure(0, weight=1)
 
         self.mode_label = ttk.Label(self.mainframe, text="Mode:")
-        self.r1 = ttk.Radiobutton(self.mainframe, text="Simulator on Serial Port", variable=self.mode, value=self.MODE_SSIM, command=self.widget_enables_callback)
-        self.r2 = ttk.Radiobutton(self.mainframe, text="Simulator on Network", variable=self.mode, value=self.MODE_NSIM, command=self.widget_enables_callback)
-        self.r3 = ttk.Radiobutton(self.mainframe, text="Secure Simulator on Network", variable=self.mode, value=self.MODE_SEC_NSIM, command=self.widget_enables_callback)
-        self.r4 = ttk.Radiobutton(self.mainframe, text="Network to Serial Proxy", variable=self.mode, value=self.MODE_PROXY, command=self.widget_enables_callback)
-        self.r5 = ttk.Radiobutton(self.mainframe, text="Secure Network to Serial Proxy", variable=self.mode, value=self.MODE_SEC_PROXY, command=self.widget_enables_callback)
+        self.mode_radio1 = ttk.Radiobutton(self.mainframe, text="Simulator on Serial Port",
+                                           variable=self.mode, value=self.MODE_SSIM,
+                                           command=self.widget_enables_callback)
+        self.mode_radio2 = ttk.Radiobutton(self.mainframe, text="Simulator on Network",
+                                           variable=self.mode, value=self.MODE_NSIM,
+                                           command=self.widget_enables_callback)
+        self.mode_radio3 = ttk.Radiobutton(self.mainframe, text="Secure Simulator on Network",
+                                           variable=self.mode, value=self.MODE_SEC_NSIM,
+                                           command=self.widget_enables_callback)
+        self.mode_radio4 = ttk.Radiobutton(self.mainframe, text="Network to Serial Proxy",
+                                           variable=self.mode, value=self.MODE_PROXY,
+                                           command=self.widget_enables_callback)
+        self.mode_radio5 = ttk.Radiobutton(self.mainframe, text="Secure Network to Serial Proxy",
+                                           variable=self.mode, value=self.MODE_SEC_PROXY,
+                                           command=self.widget_enables_callback)
 
         self.empty_label = ttk.Label(self.mainframe, text="")
 
@@ -62,42 +96,49 @@ class simpleapp_tk(tk.Tk):
         self.net_port_widget = ttk.Entry(self.mainframe, width=7, textvariable=self.net_port)
 
         self.serialport_label = ttk.Label(self.mainframe, text="Serial port:")
-        self.serial_port_widget = tk.OptionMenu(self.mainframe, self.serial_port, *self.serial_ports_list)
+        self.serial_port_widget = tk.OptionMenu(self.mainframe, self.serial_port,
+                                                *self.serial_ports_list)
 
         self.baudrate_label = ttk.Label(self.mainframe, text="Baud Rate:")
         self.baud_rate_widget = ttk.Entry(self.mainframe, width=7, textvariable=self.baud_rate)
 
         self.passcode_file_label = ttk.Label(self.mainframe, text="Passcode File:")
-        self.passcode_file_widget = ttk.Entry(self.mainframe, width=32, textvariable=self.passcode_file)
-        self.passcode_file_button = ttk.Button(self.mainframe, text='...', width=3, command=self.askopenfilename)
+        self.passcode_file_widget = ttk.Entry(self.mainframe, width=32,
+                                              textvariable=self.passcode_file)
+        self.passcode_file_button = ttk.Button(self.mainframe, text='...', width=3,
+                                               command=self.askopenfilename)
 
-        self.verbose_checkbutton = ttk.Checkbutton(self.mainframe, text="Verbose", variable=self.verbosity)
+        self.verbose_checkbutton = ttk.Checkbutton(self.mainframe, text="Verbose",
+                                                   variable=self.verbosity)
 
-        self.start_server_button = ttk.Button(self.mainframe, text="Start Server", command=self.start_server)
-        self.exit_button = ttk.Button(self.mainframe, text="Exit", command=self.destroy)
+        self.start_server_button = ttk.Button(self.mainframe, text="Start Server",
+                                              command=self.start_server)
+        self.exit_button = ttk.Button(self.mainframe, text="Exit",
+                                      command=self.destroy)
 
-    def layout_in_row(self, a, b=None, c=None, padding=3):
+    def layout_in_row(self, item1, item2=None, item3=None, padding=3):
         """Layout a row."""
-        if a is not None:
-            a.grid(row=self.row, sticky=tk.E, padx=padding, pady=padding)
-        if b is not None:
-            b.grid(row=self.row, column=1, sticky=tk.W, padx=padding, pady=padding)
-        if c is not None:
-            c.grid(row=self.row, column=2, sticky=tk.W, padx=padding, pady=padding)
+        if item1 is not None:
+            item1.grid(row=self.row, sticky=tk.E, padx=padding, pady=padding)
+        if item2 is not None:
+            item2.grid(row=self.row, column=1, sticky=tk.W, padx=padding, pady=padding)
+        if item3 is not None:
+            item3.grid(row=self.row, column=2, sticky=tk.W, padx=padding, pady=padding)
         self.row += 1
 
     def layout(self):
         """Layout the widgets."""
-        self.layout_in_row(self.mode_label, self.r1, padding=0)
-        self.layout_in_row(None, self.r2, padding=0)
-        self.layout_in_row(None, self.r3, padding=0)
-        self.layout_in_row(None, self.r4, padding=0)
-        self.layout_in_row(None, self.r5, padding=0)
+        self.layout_in_row(self.mode_label, self.mode_radio1, padding=0)
+        self.layout_in_row(None, self.mode_radio2, padding=0)
+        self.layout_in_row(None, self.mode_radio3, padding=0)
+        self.layout_in_row(None, self.mode_radio4, padding=0)
+        self.layout_in_row(None, self.mode_radio5, padding=0)
         self.layout_in_row(self.empty_label, padding=0)
         self.layout_in_row(self.networkport_label, self.net_port_widget)
         self.layout_in_row(self.serialport_label, self.serial_port_widget)
         self.layout_in_row(self.baudrate_label, self.baud_rate_widget)
-        self.layout_in_row(self.passcode_file_label, self.passcode_file_widget, self.passcode_file_button)
+        self.layout_in_row(self.passcode_file_label, self.passcode_file_widget,
+                           self.passcode_file_button)
         self.layout_in_row(None, self.verbose_checkbutton)
         self.layout_in_row(self.start_server_button, self.exit_button, None)
 
@@ -123,7 +164,7 @@ class simpleapp_tk(tk.Tk):
         options['title'] = 'Choose passcodes file'
 
         # get filename
-        filename = tk.filedialog.askopenfilename(**file_opt)
+        filename = filedialog.askopenfilename(**file_opt)
         if filename:
             self.passcode_file.set(filename)
 
@@ -168,15 +209,15 @@ class simpleapp_tk(tk.Tk):
             self.passcode_file_button.configure(state=tk.DISABLED)
 
         if not self.serial_ports_found:
-            self.r1.configure(state=tk.DISABLED)
-            self.r4.configure(state=tk.DISABLED)
-            self.r5.configure(state=tk.DISABLED)
+            self.mode_radio1.configure(state=tk.DISABLED)
+            self.mode_radio4.configure(state=tk.DISABLED)
+            self.mode_radio5.configure(state=tk.DISABLED)
             self.serial_port_widget.configure(state=tk.DISABLED)
             self.baud_rate_widget.configure(state=tk.DISABLED)
         else:
-            self.r1.configure(state=tk.NORMAL)
-            self.r4.configure(state=tk.NORMAL)
-            self.r5.configure(state=tk.NORMAL)
+            self.mode_radio1.configure(state=tk.NORMAL)
+            self.mode_radio4.configure(state=tk.NORMAL)
+            self.mode_radio5.configure(state=tk.NORMAL)
 
         self.start_server_button.configure(state=tk.NORMAL)
 
@@ -191,8 +232,8 @@ class simpleapp_tk(tk.Tk):
             return None
 
         options = {"serial" : None, "baudrate" : None,
-                        "port" : None, "passcodefile" : None,
-                        "verbosity" : False}
+                   "port" : None, "passcodefile" : None,
+                   "verbosity" : False}
 
         if self.verbosity.get() == 1:
             options["verbosity"] = True
@@ -215,7 +256,7 @@ class simpleapp_tk(tk.Tk):
             options["port"] = self.net_port.get()
             options["passcodefile"] = self.passcode_file.get()
 
-        return(options)
+        return options
 
     def find_serial_ports(self):
         """Lists serial ports"""
@@ -235,21 +276,22 @@ class simpleapp_tk(tk.Tk):
         self.serial_ports_list = []
         for port in ports:
             try:
-                s = serial.Serial(port)
-                s.close()
+                sp_handle = serial.Serial(port)
+                sp_handle.close()
                 self.serial_ports_list.append(port)
             except (OSError, serial.SerialException):
                 pass
 
-        if len(self.serial_ports_list) == 0:
+        if not self.serial_ports_list:
             self.serial_ports_list.append("none found")
             self.serial_ports_found = False
         else:
             self.serial_ports_found = True
 
 def start_gui():
-    app = simpleapp_tk(None)
+    """Start GUI by instantiating the SimpleApp Class."""
+    app = SimpleApp(None)
     app.title("VMXProxy")
-    app.resizable(width=False, height=False);
+    app.resizable(width=False, height=False)
     app.mainloop()
     return app.get_options()
