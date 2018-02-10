@@ -70,38 +70,49 @@ and the copy of Roland's VMixer RS232 protocol PDF in the docs directory of this
 
 The heart of VMXProxy is a python script.  It accepts command line parameters.
 
-    $ python vmxproxypy -h
-    Usage: vmxproxypy [options]
+
+    $ python -m VMXProxy -h
+    usage: VMXProxy [-h] [-q] [-v] [-s PORT] [-b BAUD] [-n PORT] [-p FILE] [-z MS]
+                    [-x X] [--version] [-g]
 
     Roland VMixer interface adaptor.  It can run in three modes.
 
-     1. Provide a network serial interface, specifically to handle the Roland
-        VMixer protocol  (--serial and --net options supplied)
-     2. Provide an emulation of a VMixer over the network  (if no --serial option)
-     3. Provide an emulation of a VMixer over serial  (if no --net option)
+     1. Simulation of VMX Proxy over a network  (if no --serial option)
+     2. Simulation of a VMixer itself over serial  (if no --net option)
+     3. VMX Proxy - provide a bridge, specifically to handle the Roland VMixer protocol
+        from network to serial port  (--serial and --net options supplied)
 
-    Options:
+    optional arguments:
       -h, --help            show this help message and exit
       -q, --quiet           quiet mode
       -v, --verbose         show debug
-      -s PORT, --serial=PORT
+      -s PORT, --serial PORT
                             use serial port as proxy
-      -b BAUD, --baud=BAUD  serial port baud rate
-      -n PORT, --net=PORT   set host_port_number for network
-      -p FILE, --passcodefile=FILE
+      -b BAUD, --baud BAUD  serial port baud rate
+      -n PORT, --net PORT   set host_port_number for network
+      -p FILE, --passcodefile FILE
                             use passcode authentication
-      -z MS, --delay=MS     (debug) set random delay
-      -x X, --discard=X     (debug) set discard rate
+      -z MS, --delay MS     (debug) set random delay
+      -x X, --discard X     (debug) set discard rate
       --version             show version
+      -g, --gui             show GUI for altering configuration
 
-Windows users can use a compiled version of the script, to avoid needing to install python.
+The script is compatible with both Python 2.7 and Python 3.6.
 
+The -g option will present a GUI for providing the configuration or altering options already
+provided on the command line.
+
+Windows users can use a compiled version of the script, to avoid needing to install python.  By
+default it start the GUI.
 
 
 ## Initialisation Files
 
 There are two initialisation files read by VMXProxy on startup - passcodes.txt, and simrc.txt.
 The location of these files are important, so don't move them.
+
+These files are stored in the root of the project.  For windows this is C:/Program Files/VMXProxy
+and users may need admin privaledges to alter these files.
 
 
 ### Access Control - passcodes.txt
@@ -140,22 +151,23 @@ I recommend keeping a copy of the original simrc.txt.
 ## Prebuilt Executable for Windows
 
 For windows you don't need to install Python, you can use a prebuilt executable, distributed as a
-zip file.  Just unzip to a directory in a suitable place.  Uninstalling just involves deleting
-the directory.
+MSI file (windows installer).  Just double click to install, and an icon will be placed on your
+desktop.
 
-The zip fle can be found on the website, with details of how to run it...
+The installer can be found on the website, with details of how to run it...
 <https://sites.google.com/site/vmxserialremote/vmxproxy>
 
-The batch files start_proxy.bat, start_proxy_secure.bat, and start_sim.bat are there so that you
-can start the simulator by double click the relevant file.
+In the installation there are additional batch files that can be used to start the server without
+the use of the GUI.  Just double click the relevent batch file.  Edit them if necessary to change
+any key settings (such as the serial port).
 
-Alternatively, you can also run the python script "normally", just install Python 2.7, unzip the
-zip archive, start a windows console, cd to the directory you create (with this readme.md file) and
-type...
+Alternatively, you can also run the python script "normally", just install Python 3.6, download
+VMXProxy from github, start a windows console, cd to the directory you create (with this readme.md
+file) and type...
 
-    python VMXProxy --help
+    python -m VMXProxy --help
 
-Note VMXProxy has a dependency on pyserial - https://pypi.python.org/pypi/pyserial (pyserial-2.7.win32.exe)
+Note VMXProxy has a dependency on pyserial - https://pypi.python.org/pypi/pyserial
 
 
 ### Automatic Discovery
@@ -207,7 +219,7 @@ installed as part of python, but you can check (and install) by...
 You can now run the script using...
 
     cd vmxproxypy
-    python2 VMXProxy --help
+    python3 -m VMXProxy --help
 
 You must run the script from this directory (where this readme file is), as VMXProxy expects to
 find simrc.txt in the current directory.
@@ -233,7 +245,7 @@ third simulating the mixer (with passcode access control).
 
 To remind yourself of the options type...
 
-    python2 VMXProxy --help
+    python3 -m VMXProxy --help
 
 Once you have run the above install command, to save you rebooting, start the service manually to
 see if all is well...
@@ -298,5 +310,6 @@ and pull in the latest vmxproxy...
 Then copy back any files that have changed.  It is wise to check what you are overwriting
 looks similar (in case the upgrade as change the format of those files).
 
+
 ---
-JamesCC @ 14jun15
+JamesCC @ 10feb2018

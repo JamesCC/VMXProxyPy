@@ -17,10 +17,10 @@ def main():
                                      description="""\
 Roland VMixer interface adaptor.  It can run in three modes.\n
 
- 1. Provide a network serial interface, specifically to handle the Roland
-    VMixer protocol  (--serial and --net options supplied)
- 2. Provide an emulation of a VMixer over the network  (if no --serial option)
- 3. Provide an emulation of a VMixer over serial  (if no --net option)""")
+ 1. Simulation of VMX Proxy over a network  (if no --serial option)
+ 2. Simulation of a VMixer itself over serial  (if no --net option)
+ 3. VMX Proxy - provide a bridge, specifically to handle the Roland VMixer protocol
+    from network to serial port  (--serial and --net options supplied)""")
 
     parser.add_argument("-q", "--quiet", dest="quiet", action="store_true",
                       help="quiet mode", default=False)
