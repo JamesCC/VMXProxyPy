@@ -16,9 +16,9 @@
 
 .PHONY: all help examples
 .PHONY: install_proxy install_sim install_status uninstall
-.PHONY: lint dist 
-.PHONY: test testUNIT testTAP 
-.PHONY: clean_lint clean_test clean mrproper
+.PHONY: dist
+.PHONY: test
+.PHONY: clean_test clean mrproper
 
 all: help
 
@@ -26,11 +26,10 @@ help:
 	@echo
 	@echo "Make targets:"
 	@echo "    examples                     - example usage"
-	@echo "    lint                         - pylint"
 	@echo "    test                         - unittest"
 	@echo "    dist                         - create windows binaries"
-	@echo "    clean clean_lint clean_test  - clean"
-	@echo "    mrproper                     - clean, remove dist32 dist64"
+	@echo "    clean clean_test             - clean"
+	@echo "    mrproper                     - clean, remove dist"
 	@echo "    install uninstall            - install/remove startup service for linux"
 	@echo
 
@@ -85,15 +84,9 @@ endif
 
 
 ###############################################################################
-# lint
-lint:
-	pylint --rcfile=pylint.rcfile -f parseable VMXProxy --ignore=pybonjour.py,test | tee pylint.out
-
-
-###############################################################################
-# py2exe
+# cx_freeze
 dist:
-	python setup.py py2exe
+	python setup.py bdist_msi
 
 
 ###############################################################################
@@ -107,17 +100,15 @@ test: clean_test
 
 ###############################################################################
 # clean
-clean_lint:
-	-rm -f pylint.out
-
 clean_test:
 	coverage erase
 	-rm -rf htmlcov
 	-rm -rf test-reports
-	-rm -f nosetests.xml coverage.xml
+	-rm -f coverage.xml
 
-clean: clean_test clean_lint
-	-rm -f VMXProxy/*.pyc VMXProxy/test/*.pyc
+clean: clean_test
+	-rm -f VMXProxy/*.pyc test/*.pyc
+	-rm -rf VMXProxy/__pycache__ test/__pycache__
 	-rm -rf build
 
 mrproper: clean
