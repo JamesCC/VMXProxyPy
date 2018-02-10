@@ -2,14 +2,14 @@
 
 import os
 import logging
-import optparse
+import argparse
 from . import __version__
 from .VMXProxy import vmx_proxy
 from .VMXProxyGUI import start_gui
 
 def main():
     """Main entry point, handles parameter parsing."""
-    parser = optparse.OptionParser(usage="""\
+    parser = argparse.ArgumentParser(usage="""\
 %prog [options]
 
 Roland VMixer interface adaptor.  It can run in three modes.
@@ -19,58 +19,58 @@ Roland VMixer interface adaptor.  It can run in three modes.
  2. Provide an emulation of a VMixer over the network  (if no --serial option)
  3. Provide an emulation of a VMixer over serial  (if no --net option)""")
 
-    parser.add_option("-q", "--quiet", dest="quiet", action="store_true",
+    parser.add_argument("-q", "--quiet", dest="quiet", action="store_true",
                       help="quiet mode", default=False)
 
-    parser.add_option("-v", "--verbose", dest="verbosity", action="store_true",
+    parser.add_argument("-v", "--verbose", dest="verbosity", action="store_true",
                       help="show debug", default=False)
 
-    parser.add_option("-s", "--serial", dest="serial",
+    parser.add_argument("-s", "--serial", dest="serial",
                       help="use serial port as proxy", default=None, metavar="PORT")
 
-    parser.add_option("-b", "--baud", dest="baud",
+    parser.add_argument("-b", "--baud", dest="baud",
                       help="serial port baud rate", default=115200, metavar="BAUD")
 
-    parser.add_option("-n", "--net", dest="port",
+    parser.add_argument("-n", "--net", dest="port",
                       help="set host_port_number for network", default=None, metavar="PORT")
 
-    parser.add_option("-p", "--passcodefile", dest="passcodefile",
+    parser.add_argument("-p", "--passcodefile", dest="passcodefile",
                       help="use passcode authentication", default=None, metavar="FILE")
 
-    parser.add_option("-z", "--delay", dest="debug_cmd_delay",
+    parser.add_argument("-z", "--delay", dest="debug_cmd_delay",
                       help="(debug) set random delay", default=None, metavar="MS")
 
-    parser.add_option("-x", "--discard", dest="debug_discard_rate",
+    parser.add_argument("-x", "--discard", dest="debug_discard_rate",
                       help="(debug) set discard rate", default=None, metavar="X")
 
-    parser.add_option("--version", dest="version", action="store_true",
+    parser.add_argument("--version", dest="version", action="store_true",
                       help="show version", default=False)
 
-    parser.add_option("-g", "--gui", dest="gui", action="store_true",
+    parser.add_argument("-g", "--gui", dest="gui", action="store_true",
                       help="show GUI for altering configuration", default=False)
 
-    (options, args) = parser.parse_args()
+    args = parser.parse_args()
 
-    if options.version:
+    if args.version:
         print(__version__)
         os._exit(0)
 
-    if options.gui:
-        updated_options = start_gui(options)
+    if args.gui:
+        updated_options = start_gui(args)
         if not updated_options:
             os._exit(0)
 
-    if options.quiet:           # just warnings and errors
+    if args.quiet:           # just warnings and errors
         verbosity = logging.WARNING
-    elif options.verbosity:     # debug output
+    elif args.verbosity:     # debug output
         verbosity = logging.DEBUG
     else:                       # normal output
         verbosity = logging.INFO
 
     # Start VMXProxy
-    vmx_proxy(serial_port_name=options.serial, baudrate=options.baud,
-              host_port_number=options.port, server_passcodefile=options.passcodefile,
-              debug_cmd_delay=options.debug_cmd_delay, debug_discard_rate=options.debug_discard_rate,
+    vmx_proxy(serial_port_name=args.serial, baudrate=args.baud,
+              host_port_number=args.port, server_passcodefile=args.passcodefile,
+              debug_cmd_delay=args.debug_cmd_delay, debug_discard_rate=args.debug_discard_rate,
               verbosity=verbosity)
 
     os._exit(0)
