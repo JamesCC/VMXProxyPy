@@ -1,3 +1,6 @@
+#! /usr/bin/env python
+# -*- coding: utf-8 -*-
+
 """Main entry point for zip and directory usage of python interpretor startup."""
 
 import os
@@ -9,10 +12,10 @@ from .VMXProxyGUI import start_gui
 
 def main():
     """Main entry point, handles parameter parsing."""
-    parser = argparse.ArgumentParser(usage="""\
-%prog [options]
-
-Roland VMixer interface adaptor.  It can run in three modes.
+    parser = argparse.ArgumentParser(prog="VMXProxy", 
+                                     formatter_class=argparse.RawDescriptionHelpFormatter,
+                                     description="""\
+Roland VMixer interface adaptor.  It can run in three modes.\n
 
  1. Provide a network serial interface, specifically to handle the Roland
     VMixer protocol  (--serial and --net options supplied)

@@ -1,8 +1,6 @@
 @echo off
 set DIST_PATH=dist
 
-if "%1"=="" goto end
-
 echo Your IP address(es):
 ipconfig | findstr /R /b /C:" *IP.*"
 echo.
@@ -23,7 +21,7 @@ for /d %%F in ( "C:\Python*"
 
 if exist "%PYTHONINSTALLDIR%\python.exe" (
     echo Python found in directory %PYTHONINSTALLDIR%
-    "%PYTHONINSTALLDIR%\python.exe" VMXProxy %*
+    "%PYTHONINSTALLDIR%\python.exe" start_VMXProxy.py %*
     goto end
 ) else (
     echo Unable to find python
