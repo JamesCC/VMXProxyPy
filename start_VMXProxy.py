@@ -55,7 +55,6 @@ DEFAULT_OPTIONS = "VMXProxy --net=10000"                                   # sim
 
 # if no command arguments (call in a default configuration)
 if len(sys.argv) == 1:
-    print("No parameters have been given so DEFAULT_OPTIONS from %s are being used." % __file__)
     sys.argv = DEFAULT_OPTIONS.split()
     if START_GUI_IF_NO_OPTIONS:
         sys.argv.append("-g")

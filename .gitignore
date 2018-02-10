@@ -4,3 +4,4 @@
 htmlcov/
 pylint.out
 .spyproject/
+build/

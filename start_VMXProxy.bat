@@ -1,13 +1,12 @@
 @echo off
-set DIST_PATH=dist
 
 echo Your IP address(es):
 ipconfig | findstr /R /b /C:" *IP.*"
 echo.
 
-rem py2exe version
-if exist %DIST_PATH%\NUL (
-    %DIST_PATH%\VMXProxy %*
+rem cx_freeze version
+if exist start_VMXProxy.exe (
+    start_VMXProxy %* || pause
     goto end
 )
 
@@ -21,12 +20,12 @@ for /d %%F in ( "C:\Python*"
 
 if exist "%PYTHONINSTALLDIR%\python.exe" (
     echo Python found in directory %PYTHONINSTALLDIR%
-    "%PYTHONINSTALLDIR%\python.exe" start_VMXProxy.py %*
+    "%PYTHONINSTALLDIR%\python.exe" start_VMXProxy.py %* || pause
     goto end
 ) else (
     echo Unable to find python
     echo Add python install dir to for loop in %~dp0\start_VMXProxy.bat
+    pause
 )
 
 :end
-pause
