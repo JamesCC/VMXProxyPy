@@ -33,8 +33,8 @@ import logging
 import random
 import time
 
-from VMXParser import VMXParser
-from VMXStateMonitor import VMXStateMonitor
+from .VMXParser import VMXParser
+from .VMXStateMonitor import VMXStateMonitor
 
 class VMXProcessor(object):
     """The Command Processor.  Accepts one or more commands, processes them

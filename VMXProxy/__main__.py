@@ -1,4 +1,6 @@
 """Main entry point for zip and directory usage of python interpretor startup."""
 
-import VMXProxy
-VMXProxy.main()
+from .VMXProxy import main
+
+if __name__ == "__main__":
+    main()

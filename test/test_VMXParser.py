@@ -24,7 +24,7 @@ __cpyright__ = "Copyright 2018, James Covey-Crump"
 __license__ = "LGPLv3"
 
 import unittest
-from VMXParser import VMXParser
+from VMXProxy.VMXParser import VMXParser
 
 class TestVMXParser(unittest.TestCase):
     """Unittests for VMXParser."""

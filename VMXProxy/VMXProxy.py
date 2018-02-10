@@ -39,14 +39,14 @@ else:
     # rename for benefit of python2 code
     import SocketServer as socketserver
 
-from version import __version__
+from . import __version__
 
-from VMXSimFileParser import VMXSimFileParser
-from VMXSerialPort import VMXSerialPort
-from VMXProcessor import VMXProcessor
-from VMXParser import VMXParser
-from VMXPasscodeParser import VMXPasscodeParser
-from VMXProxyGUI import start_gui
+from .VMXSimFileParser import VMXSimFileParser
+from .VMXSerialPort import VMXSerialPort
+from .VMXProcessor import VMXProcessor
+from .VMXParser import VMXParser
+from .VMXPasscodeParser import VMXPasscodeParser
+from .VMXProxyGUI import start_gui
 
 class ThreadedTCPRequestHandler(socketserver.BaseRequestHandler):
     """Handler container for incoming TCP connections"""

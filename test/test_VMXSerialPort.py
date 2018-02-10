@@ -25,7 +25,7 @@ __license__ = "LGPLv3"
 
 import unittest
 import time
-from VMXSerialPort import VMXSerialPort
+from VMXProxy.VMXSerialPort import VMXSerialPort
 
 SERIAL = None
 #SERIAL = "/dev/ttyUSB0"

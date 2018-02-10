@@ -25,7 +25,7 @@ __license__ = "LGPLv3"
 
 import os
 import unittest
-from VMXPasscodeParser import VMXPasscodeParser
+from VMXProxy.VMXPasscodeParser import VMXPasscodeParser
 
 TESTDIR = os.path.dirname(os.path.realpath(__file__))
 

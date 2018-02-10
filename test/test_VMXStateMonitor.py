@@ -24,7 +24,7 @@ __cpyright__ = "Copyright 2018, James Covey-Crump"
 __license__ = "LGPLv3"
 
 import unittest
-from VMXStateMonitor import VMXStateMonitor
+from VMXProxy.VMXStateMonitor import VMXStateMonitor
 
 class TestVMXStateMonitor(unittest.TestCase):
     """Unittests for VMXStateMonitor"""

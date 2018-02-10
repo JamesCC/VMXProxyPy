@@ -25,7 +25,7 @@ __license__ = "LGPLv3"
 
 import os
 import unittest
-from VMXSimFileParser import VMXSimFileParser
+from VMXProxy.VMXSimFileParser import VMXSimFileParser
 
 TESTDIR = os.path.dirname(os.path.realpath(__file__))
 

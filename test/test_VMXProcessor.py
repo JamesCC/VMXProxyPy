@@ -24,7 +24,7 @@ __cpyright__ = "Copyright 2018, James Covey-Crump"
 __license__ = "LGPLv3"
 
 import unittest
-from VMXProcessor import VMXProcessor
+from VMXProxy.VMXProcessor import VMXProcessor
 
 class TestVMXProcessor(unittest.TestCase):
     """Unittests for VMXProcessor."""
