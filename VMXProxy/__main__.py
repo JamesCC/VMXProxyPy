@@ -12,7 +12,7 @@ from .VMXProxyGUI import start_gui
 
 def main():
     """Main entry point, handles parameter parsing."""
-    parser = argparse.ArgumentParser(prog="VMXProxy", 
+    parser = argparse.ArgumentParser(prog="VMXProxy",
                                      formatter_class=argparse.RawDescriptionHelpFormatter,
                                      description="""\
 Roland VMixer interface adaptor.  It can run in three modes.\n
