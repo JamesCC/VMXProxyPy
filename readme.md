@@ -76,11 +76,11 @@ The heart of VMXProxy is a python script.  It accepts command line parameters.
                     [-x X] [--version] [-g]
 
     Roland VMixer interface adaptor.  It can run in three modes.
-
-     1. Simulation of VMX Proxy over a network  (if no --serial option)
-     2. Simulation of a VMixer itself over serial  (if no --net option)
-     3. VMX Proxy - provide a bridge, specifically to handle the Roland VMixer protocol
-        from network to serial port  (--serial and --net options supplied)
+    
+     1. Simulation of VMX Proxy over a network        (if --serial without --net)
+     2. Simulation of a VMixer itself over serial     (if --net without --serial)
+     3. VMX Proxy - provide a bridge, specifically to handle the Roland VMixer
+          protocol from network to a serial port      (if both --serial and --net)
 
     optional arguments:
       -h, --help            show this help message and exit
