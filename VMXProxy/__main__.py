@@ -3,12 +3,21 @@
 
 """Main entry point for zip and directory usage of python interpretor startup."""
 
+from __future__ import print_function
+
 import os
+import sys
 import logging
 import argparse
 from . import __version__
 from .VMXProxy import vmx_proxy
-from .VMXProxyGUI import start_gui
+
+try:
+    from .VMXProxyGUI import start_gui
+except ImportError:
+    def start_gui(options):
+        print("GUI not supported on this platform (perhaps missing tkinter?)", file=sys.stderr)
+        return False
 
 def main():
     """Main entry point, handles parameter parsing."""
