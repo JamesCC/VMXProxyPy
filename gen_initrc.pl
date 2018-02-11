@@ -4,6 +4,7 @@ die "Please supply OPTIONS" unless scalar(@ARGV);
 
 while(<DATA>)
 {
+    s/__USER__/$ENV{'SUDO_USER'}/;
     s/__INSTALL_DIR__/$ENV{'PWD'}/;
     s/__ARGS__/@ARGV/;
     print;
@@ -25,22 +26,23 @@ __DATA__
 ### END INIT INFO
 
 # If you want a command to always run, put it here
-
+if [ $(id -u) = 0 ]; then
+   RUNUSER="runuser -u __USER__ --"
+else
+   RUNUSER=""
+fi
 
 # Carry out specific functions when asked to by the system
 case "$1" in
   start)
     echo "Starting VMXProxy"
     echo "Supplied options: __ARGS__"
-    screen -dmS VMXProxyProxy __INSTALL_DIR__/start_VMXProxy.sh __ARGS__
+    pkill -f VMXProxy.py && echo "Stopped existing VMXProxy"
+    $RUNUSER __INSTALL_DIR__/start_VMXProxy.sh __ARGS__ 2>&1 | logger -t VMXProxy.py &
     ;;
 
   stop)
-    echo "Stopping VMXProxy"
-    for session in $(screen -ls VMXProxy | grep -o '[0-9]\{4\}');
-    do 
-        screen -S ${session} -X quit
-    done
+    pkill -f VMXProxy.py && echo "Stopped VMXProxy"
     ;;
 
   restart)
@@ -49,9 +51,7 @@ case "$1" in
     ;;
 
   status)
-    screen -ls VMXProxy
-    echo "Connect using... sudo screen -r <number>"
-    echo "(CTRL-A CTRL-D will detach)"
+    pgrep -fa start_VMXProxy.py && (grep VMXProxy.py /var/log/messages | tail)
     ;;
 
   *)

@@ -61,7 +61,7 @@ ifeq ($(USER),root)
 	perl gen_initrc.pl $(OPTIONS) > /etc/init.d/VMXProxyStartup
 	chmod 755 /etc/init.d/VMXProxyStartup
 	update-rc.d VMXProxyStartup defaults
-	@echo "type...  sudo /etc/init.d/VMXProxyStartup start to start service now."
+	@echo "type...  /etc/init.d/VMXProxyStartup start  to start service now."
 else
 	@echo Please run as root or using sudo
 endif
