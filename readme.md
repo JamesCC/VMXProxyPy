@@ -1,6 +1,6 @@
 # VMXProxy
 
-<https://bitbucket.org/JamesCC/vmxproxypy>
+<https://github.com/JamesCC/VMXProxyPy>
 <https://sites.google.com/site/vmxserialremote/>
 
 
@@ -9,7 +9,8 @@
 A network to serial terminal server optimised for connection to Roland V-Mixer mixing consoles.
 Intended to be used with VMX Serial Remote Android App.
 
-It is python script, runs under Linux, Windows and (potentially) OSX.
+It is python script, runs under Linux, Windows and (potentially) OSX.  There is a graphical
+user interface to aid setting up.
 
 There are three modes of operation...
 
@@ -103,7 +104,7 @@ The -g option will present a GUI for providing the configuration or altering opt
 provided on the command line.
 
 Windows users can use a compiled version of the script, to avoid needing to install python.  By
-default it start the GUI.
+default it starts the GUI.
 
 
 ## Initialisation Files
@@ -158,8 +159,10 @@ The installer can be found on the website, with details of how to run it...
 <https://sites.google.com/site/vmxserialremote/vmxproxy>
 
 In the installation there are additional batch files that can be used to start the server without
-the use of the GUI.  Just double click the relevent batch file.  Edit them if necessary to change
-any key settings (such as the serial port).
+the use of the GUI.  Just double click the relevant batch file.  Edit them if necessary to change
+any key settings (such as the serial port), and drop a short cut to them on your desktop to 
+quickly execute them.
+
 
 Alternatively, you can also run the python script "normally", just install Python 3.6, download
 VMXProxy from github, start a windows console, cd to the directory you create (with this readme.md
@@ -191,30 +194,36 @@ independently.
 
 ### Basic environment
 
-You will need root privaledges.  For Fedora replace `apt-get` with `yum`
+You will need root privileges.  For Fedora replace `apt-get` with `yum`
 
     sudo apt-get update
     sudo apt-get install git
-    sudo apt-get install python2.7
+    sudo apt-get install python3
+    sudo apt-get install python3-pip
 
-python is very likely to already be installed on your system.
+    python --version            # reported Python 2.7.13
+    python3 --version           # reported Python 3.5.3
+    
+python is very likely to already be installed on your system.  It is recommended to use python3
+where possible, although the script will work with python 2.7.
 
-(Optional, but recommended) If you wish to use avahi (bonjour) for advertising the server so that
-you can do automatic discovery of the ip address and port for VMXProxy...
+(Optional) If you wish to use avahi (bonjour) for advertising the server so that you can do 
+automatic discovery of the ip address and port for VMXProxy...
 
     sudo apt-get install avahi-daemon avahi-utils
-    sudo update-rc.d avahi-daemon defaults
-    sudo /etc/init.d/avahi-daemon restart
+    sudo update-rc.d avahi-daemon defaults      # silent
+    sudo /etc/init.d/avahi-daemon restart       # [ok]
 
-Get the VMXProxy code itself...
+
+Now you have the environment setup, get the VMXProxy code itself...
 
     cd $HOME
-    git clone https://bitbucket.org/JamesCC/vmxproxypy.git
+    git clone https://github.com/JamesCC/VMXProxyPy
 
 VMXProxy has a python module dependency on pyserial.  In most cases this will have already been
 installed as part of python, but you can check (and install) by...
 
-    pip install pyserial
+    pip3 install pyserial
 
 You can now run the script using...
 
@@ -227,13 +236,9 @@ find simrc.txt in the current directory.
 
 ### Installing as a Linux service (to start at bootup)
 
-An initrc file is used, in conjunction with `screen` to create a service which will run (in the
-background) at bootup.  Whilst it could be made to work without screen, screen is useful for
-debugging any problems you may get starting or running the service.
+A sysV init script is used to create a service that will automatically run when the system boots.
 
-    sudo apt-get install screen
-
-To install the service use make install with OPTIONS set to the required arguments for when
+To install the service use `make install` with OPTIONS set to the required arguments for when
 starting VMXProxy.  For example, choose one of the following...
 
     sudo make install OPTIONS="--serial /dev/ttyUSB0 --net 10000"
@@ -255,12 +260,6 @@ see if all is well...
 You can query the state of the service...
 
     sudo make install_status
-
-And attach to the listed screen sessions for purposes of checking VMXProxy started correctly...
-
-    sudo screen -r <NUMBER_PREFIX_FROM_STATUS_LIST>
-
-Once attached... Ctrl A, Ctrl D detaches leaving it running, or Ctrl A, Ctrl K kills it.
 
 Lastly, you can remove (uninstall) the service just by...
 
@@ -308,7 +307,7 @@ and pull in the latest vmxproxy...
     git pull
 
 Then copy back any files that have changed.  It is wise to check what you are overwriting
-looks similar (in case the upgrade as change the format of those files).
+looks similar (in case the format of the files has changed during the upgrade).
 
 
 ---
