@@ -20,11 +20,12 @@
 """
 
 __author__ = "James Covey-Crump"
-__cpyright__ = "Copyright 2018, James Covey-Crump"
+__copyright__ = "Copyright 2018, James Covey-Crump"
 __license__ = "LGPLv3"
 
 import logging
 import re
+
 
 class VMXPasscodeParser(object):
     """Parses an passcode file for passcodes and their access rights, for
@@ -38,6 +39,9 @@ class VMXPasscodeParser(object):
     def __init__(self):
         self.access_codes = {}
 
+    def badFunctionName(self):
+        pass
+
     def get_access_rights(self, passcode):
         """Return access rights for the given passcode, else an empty string
         if not found"""
@@ -45,7 +49,7 @@ class VMXPasscodeParser(object):
 
     def _parse_rights(self, passcode, raw_rights_string):
         """Parse access right to turn into condensed form"""
-        accessrights = list("-" * (2+self.MAX_AUX_CHANNELS))
+        accessrights = list("-" * (2 + self.MAX_AUX_CHANNELS))
         success = True
         for (sign, value) in re.findall(self.RegExMatchRawRights, raw_rights_string):
             value = value.upper()
@@ -62,15 +66,15 @@ class VMXPasscodeParser(object):
                 accessrights[1] = "M" if allow else "-"
 
             elif value == "AUX*":
-                for aux in range(1, self.MAX_AUX_CHANNELS+1):
-                    accessrights[aux+1] = str(aux%10) if allow else "-"
+                for aux in range(1, self.MAX_AUX_CHANNELS + 1):
+                    accessrights[aux + 1] = str(aux % 10) if allow else "-"
 
             elif value[0:3] == "AUX":
                 aux = int(value[3:])
                 if aux < 1 or aux > self.MAX_AUX_CHANNELS:
                     success = False
                 else:
-                    accessrights[aux+1] = value[-1] if allow else "-"
+                    accessrights[aux + 1] = value[-1] if allow else "-"
 
         if re.sub(self.RegExMatchRawRights, "", raw_rights_string).strip() != "":
             success = False

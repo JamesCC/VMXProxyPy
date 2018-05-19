@@ -20,7 +20,7 @@
 """
 
 __author__ = "James Covey-Crump"
-__cpyright__ = "Copyright 2018, James Covey-Crump"
+__copyright__ = "Copyright 2018, James Covey-Crump"
 __license__ = "LGPLv3"
 
 import os
@@ -29,11 +29,14 @@ from VMXProxy.VMXSimFileParser import VMXSimFileParser
 
 TESTDIR = os.path.dirname(os.path.realpath(__file__))
 
+
 class MockCommandProcessor:
     """Mock command processor to respond ACK to all issued commands."""
+
     def process(self, string):
         """Simpy return ack to everything asked to process."""
         return chr(6)
+
 
 class TestVMXSimFileParser(unittest.TestCase):
     """Unittests for VMXSimFileParser"""
@@ -41,6 +44,7 @@ class TestVMXSimFileParser(unittest.TestCase):
     def test_parser(self):
         """Test reading of simulation initialisation file for issuing commands."""
         sfp = VMXSimFileParser(MockCommandProcessor())
-        successful_commands, commands = sfp.read_file(TESTDIR+"/test_VMXSimFileParser-parser.txt")
+        successful_commands, commands = sfp.read_file(TESTDIR +
+                                                      "/test_VMXSimFileParser-parser.txt")
         self.assertEqual(successful_commands, 575)
         self.assertEqual(commands, 577)

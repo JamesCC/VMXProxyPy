@@ -20,7 +20,7 @@
 """
 
 __author__ = "James Covey-Crump"
-__cpyright__ = "Copyright 2018, James Covey-Crump"
+__copyright__ = "Copyright 2018, James Covey-Crump"
 __license__ = "LGPLv3"
 
 import logging
@@ -28,18 +28,21 @@ import time
 import re
 import sys
 
+
 class CacheEntry(object):
     """A Cache Entry slot with timeout"""
+
     def __init__(self, response):
         self.__response = response
         self.__timestamp = time.time()
 
     def get_response(self, timeout=float("inf")):
         """Return response for this cache entry if within timeout, else None"""
-        if time.time()-self.__timestamp < timeout:
+        if time.time() - self.__timestamp < timeout:
             return self.__response
         else:
             return None
+
 
 class VMXStateMonitor(object):
     """Monitors traffic to/from the mixer recording its state.  In simulator mode,
@@ -50,7 +53,7 @@ class VMXStateMonitor(object):
 
     __STX_CHR = chr(2)
     __ACK_CHR = chr(6)
-    __RegExCmdValidate = re.compile(r"^"+__STX_CHR+r"([A-Z][A-Z])([CSQq])(.*);$")
+    __RegExCmdValidate = re.compile(r"^" + __STX_CHR + r"([A-Z][A-Z])([CSQq])(.*);$")
 
     # For each command, the number of parameters required to fully qualify
     # the attribute (database key).  All commands must be listed here to be
@@ -105,7 +108,7 @@ class VMXStateMonitor(object):
         """See if a query can be answered from the Cache.  Returns None if not."""
         cached_response = None
         if self.__get_command_action(command) == 'q':
-            command = command[0:4].upper()+command[4:]      # uppercase the q
+            command = command[0:4].upper() + command[4:]      # uppercase the q
             entry = self.__cache.get(command)
             if entry:
                 cached_response = entry.get_response(self.CACHE_TIMEOUT)

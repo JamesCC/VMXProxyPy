@@ -25,7 +25,7 @@
 """
 
 __author__ = "James Covey-Crump"
-__cpyright__ = "Copyright 2018, James Covey-Crump"
+__copyright__ = "Copyright 2018, James Covey-Crump"
 __license__ = "LGPLv3"
 
 import threading
@@ -35,6 +35,7 @@ import time
 
 from .VMXParser import VMXParser
 from .VMXStateMonitor import VMXStateMonitor
+
 
 class VMXProcessor(object):
     """The Command Processor.  Accepts one or more commands, processes them
@@ -76,7 +77,7 @@ class VMXProcessor(object):
         the .set_mixer_interface() method."""
         self.__lock.acquire()
 
-        #logging.debug("> %s", VMXParser.safeprint(command))
+        #logging.debug("> %s", VMXPoarser.safeprint(command))
 
         # parse stage1 output to split up any concatenated commands
         output_stage2 = self.__stage2_parser.process(command)
@@ -107,7 +108,7 @@ class VMXProcessor(object):
 
                 # cmd delay is a debug feature
                 if self.__cmd_delay is not None:
-                    time.sleep(random.random()*self.__cmd_delay)
+                    time.sleep(random.random() * self.__cmd_delay)
 
                 state_monitor_output = self.__state_monitor.process(output_stage2, mixer_reply)
                 logging.debug("<< %s", VMXParser.safeprint(state_monitor_output))

@@ -20,7 +20,7 @@
 """
 
 __author__ = "James Covey-Crump"
-__cpyright__ = "Copyright 2018, James Covey-Crump"
+__copyright__ = "Copyright 2018, James Covey-Crump"
 __license__ = "LGPLv3"
 
 import unittest
@@ -29,6 +29,7 @@ from VMXProxy.VMXSerialPort import VMXSerialPort
 
 SERIAL = None
 #SERIAL = "/dev/ttyUSB0"
+
 
 class TestVMXSerialPort(unittest.TestCase):
     """Unittests for VMXSerialPort (requires a loopback dongle)."""
@@ -40,12 +41,12 @@ class TestVMXSerialPort(unittest.TestCase):
         serial_port = VMXSerialPort(SERIAL, 115200)
         start_time = time.time()
         reply = serial_port.process("Hello;")
-        delta_time = time.time()-start_time
+        delta_time = time.time() - start_time
         self.assertEqual(reply, "Hello;")
         self.assertLess(delta_time, 1)
         start_time = time.time()
         reply = serial_port.process()
-        delta_time = time.time()-start_time
+        delta_time = time.time() - start_time
         self.assertEqual(reply, "")
         self.assertGreater(delta_time, 3)
         self.assertLess(delta_time, 4)
@@ -57,13 +58,13 @@ class TestVMXSerialPort(unittest.TestCase):
         serial_port = VMXSerialPort(SERIAL, 115200)
         start_time = time.time()
         reply = serial_port.process("Hel")
-        delta_time = time.time()-start_time
+        delta_time = time.time() - start_time
         self.assertEqual(reply, "Hel")
         self.assertGreater(delta_time, 3)
         self.assertLess(delta_time, 4)
         start_time = time.time()
         reply = serial_port.process("lo;")
-        delta_time = time.time()-start_time
+        delta_time = time.time() - start_time
         self.assertEqual(reply, "lo;")
         self.assertLess(delta_time, 1)
 
@@ -74,6 +75,6 @@ class TestVMXSerialPort(unittest.TestCase):
         serial_port = VMXSerialPort(SERIAL, 115200)
         start_time = time.time()
         reply = serial_port.process(chr(6))
-        delta_time = time.time()-start_time
+        delta_time = time.time() - start_time
         self.assertEqual(reply, chr(6))
         self.assertLess(delta_time, 1)

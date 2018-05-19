@@ -1,7 +1,8 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-""" A program to provide a simulator and networked proxy service for Roland's V-Mixer serial protocol.
+""" A program to provide a simulator and networked proxy service for Roland's
+    V-Mixer serial protocol.
 
     This file is part of VMXProxyPy.
 
@@ -20,7 +21,7 @@
 """
 
 __author__ = "James Covey-Crump"
-__cpyright__ = "Copyright 2018, James Covey-Crump"
+__copyright__ = "Copyright 2018, James Covey-Crump"
 __license__ = "LGPLv3"
 
 import sys
@@ -38,36 +39,36 @@ else:
     # rename for benefit of python2 code
     import SocketServer as socketserver
 
-
 from .VMXSimFileParser import VMXSimFileParser
 from .VMXSerialPort import VMXSerialPort
 from .VMXProcessor import VMXProcessor
 from .VMXParser import VMXParser
 from .VMXPasscodeParser import VMXPasscodeParser
 
+
 class ThreadedTCPRequestHandler(socketserver.BaseRequestHandler):
     """Handler container for incoming TCP connections"""
 
-    BAD_SYNTAX_RESPONSE = chr(2)+"ERR:0;"
-    NOT_AUTENTICATED_RESPONSE = chr(2)+"ERR:6;"
+    BAD_SYNTAX_RESPONSE = chr(2) + "ERR:0;"
+    NOT_AUTENTICATED_RESPONSE = chr(2) + "ERR:6;"
 
     def process_directive(self, command, authenticated):
         """Process special directive commands, not intended for mixer."""
-        if command.startswith(chr(2)+"###PWD:"):
+        if command.startswith(chr(2) + "###PWD:"):
             if self.server.passcode_parser is None:
                 logging.warning("Passcode sent, but authentication not required")
                 response = chr(6)
             else:
                 rights = self.server.passcode_parser.get_access_rights(command[8:-1])
                 if rights:
-                    response = chr(2)+"###PWD:\""+rights+"\";"
-                    logging.debug("Authenticated - "+ command[7:])
+                    response = chr(2) + "###PWD:\"" + rights + "\";"
+                    logging.debug("Authenticated - " + command[7:])
                     authenticated = 1
                 else:
-                    logging.warning("Not Authenticated - "+ command[7:])
+                    logging.warning("Not Authenticated - " + command[7:])
                     response = self.NOT_AUTENTICATED_RESPONSE
 
-        elif command.startswith(chr(2)+"###CFA"):
+        elif command.startswith(chr(2) + "###CFA"):
             # We support the Cache Feature
             logging.debug("Supporting requested caching feature")
             response = chr(6)
@@ -91,7 +92,7 @@ class ThreadedTCPRequestHandler(socketserver.BaseRequestHandler):
             while data:
                 command = tcp_input_gatherer.process(data)
                 while command:
-                    if command.startswith(chr(2)+"###"):
+                    if command.startswith(chr(2) + "###"):
                         response, authenticated = self.process_directive(command, authenticated)
 
                     elif authenticated:
@@ -134,9 +135,11 @@ def try_announce_service(host_port_number):
 
     try:
         if platform.system() == "Windows":
-            subprocess.Popen(["dns-sd", "-R", "vmxproxy", "_telnet._tcp", "local", host_port_number, "vmxproxy=1"])
+            subprocess.Popen(["dns-sd", "-R", "vmxproxy", "_telnet._tcp", "local",
+                              host_port_number, "vmxproxy=1"])
         elif platform.system() == "Linux":
-            subprocess.Popen(["avahi-publish", "-s", "vmxproxy", "_telnet._tcp", host_port_number, "vmxproxy=1"])
+            subprocess.Popen(["avahi-publish", "-s", "vmxproxy", "_telnet._tcp",
+                              host_port_number, "vmxproxy=1"])
     except:
         pass
 
@@ -144,7 +147,7 @@ def try_announce_service(host_port_number):
 def vmx_proxy(serial_port_name=None, baudrate=115200,
               host_ip="", host_port_number=None, server_passcodefile=None,
               debug_cmd_delay=None, debug_discard_rate=None,
-              simfilerc=os.path.abspath(os.getcwd())+"/simrc.txt", verbosity=logging.INFO):
+              simfilerc=os.path.abspath(os.getcwd()) + "/simrc.txt", verbosity=logging.INFO):
     """Start the vmx_proxy server / simulator"""
 
     logging.basicConfig(format='%(asctime)s.%(msecs)03d:%(threadName)s:%(levelname)s - %(message)s',
@@ -185,7 +188,8 @@ def vmx_proxy(serial_port_name=None, baudrate=115200,
 
         # Start a thread with the server -- that thread will then start one
         # more thread for each request
-        server_thread = threading.Thread(target=server.start_server, args=(cmd_processor, passcode_parser))
+        server_thread = threading.Thread(target=server.start_server,
+                                         args=(cmd_processor, passcode_parser))
         # Exit the server thread when the main thread terminates
         server_thread.daemon = True
         server_thread.start()
@@ -230,4 +234,3 @@ def vmx_proxy(serial_port_name=None, baudrate=115200,
 
     else:
         logging.error("Invalid mode.  Need either or both -s or -n options.")
-

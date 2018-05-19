@@ -20,8 +20,9 @@
 """
 
 __author__ = "James Covey-Crump"
-__cpyright__ = "Copyright 2018, James Covey-Crump"
+__copyright__ = "Copyright 2018, James Covey-Crump"
 __license__ = "LGPLv3"
+
 
 class VMXParser(object):
     """Parses an (potential fragmented) input stream constructing whole

@@ -20,11 +20,12 @@
 """
 
 __author__ = "James Covey-Crump"
-__cpyright__ = "Copyright 2018, James Covey-Crump"
+__copyright__ = "Copyright 2018, James Covey-Crump"
 __license__ = "LGPLv3"
 
 import unittest
 from VMXProxy.VMXProcessor import VMXProcessor
+
 
 class TestVMXProcessor(unittest.TestCase):
     """Unittests for VMXProcessor."""
@@ -33,15 +34,15 @@ class TestVMXProcessor(unittest.TestCase):
         """Test we can process a global (non input channel specific) command and get the correct
         responses."""
         vmxsim = VMXProcessor()
-        output = vmxsim.process(chr(2)+"VRC:1.010,1.010,1.010;")
+        output = vmxsim.process(chr(2) + "VRC:1.010,1.010,1.010;")
         self.assertEqual(output, chr(6))
-        output = vmxsim.process(chr(2)+"VRQ;")
-        self.assertEqual(output, chr(2)+"VRS:1.010,1.010,1.010;")
+        output = vmxsim.process(chr(2) + "VRQ;")
+        self.assertEqual(output, chr(2) + "VRS:1.010,1.010,1.010;")
 
     def test_ptc_ptq(self):
         """Test we can process an input channel specific command and get the correct responses."""
         vmxsim = VMXProcessor()
-        output = vmxsim.process(chr(2)+"PTC:I1,1;")
+        output = vmxsim.process(chr(2) + "PTC:I1,1;")
         self.assertEqual(output, chr(6))
-        output = vmxsim.process(chr(2)+"PTQ:I1;")
-        self.assertEqual(output, chr(2)+"PTS:I1,1;")
+        output = vmxsim.process(chr(2) + "PTQ:I1;")
+        self.assertEqual(output, chr(2) + "PTS:I1,1;")

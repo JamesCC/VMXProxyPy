@@ -20,7 +20,7 @@
 """
 
 __author__ = "James Covey-Crump"
-__cpyright__ = "Copyright 2018, James Covey-Crump"
+__copyright__ = "Copyright 2018, James Covey-Crump"
 __license__ = "LGPLv3"
 
 import sys
@@ -35,6 +35,7 @@ else:
     import Tkinter as tk
     import tkFileDialog as filedialog
     import ttk
+
 
 class SimpleApp(tk.Tk):
     """Simple Application to capture user settings."""
@@ -262,7 +263,6 @@ class SimpleApp(tk.Tk):
             else:
                 self.mode.set(self.MODE_SEC_NSIM)
 
-
     def update_options(self, options):
         """Return options dictionary if start server button pressed else None."""
         if not self.options_valid:
@@ -322,6 +322,7 @@ class SimpleApp(tk.Tk):
             self.serial_ports_found = False
         else:
             self.serial_ports_found = True
+
 
 def start_gui(options):
     """Start GUI by instantiating the SimpleApp Class."""

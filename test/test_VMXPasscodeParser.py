@@ -20,7 +20,7 @@
 """
 
 __author__ = "James Covey-Crump"
-__cpyright__ = "Copyright 2018, James Covey-Crump"
+__copyright__ = "Copyright 2018, James Covey-Crump"
 __license__ = "LGPLv3"
 
 import os
@@ -28,6 +28,7 @@ import unittest
 from VMXProxy.VMXPasscodeParser import VMXPasscodeParser
 
 TESTDIR = os.path.dirname(os.path.realpath(__file__))
+
 
 class TestVMXPasscodeParser(unittest.TestCase):
     """Unittests for VMXPasscodeParser."""

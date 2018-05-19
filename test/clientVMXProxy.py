@@ -3,6 +3,7 @@ import sys
 import time
 import random
 
+
 class bcolors:
     HEADER = '\033[95m'
     OKBLUE = '\033[94m'
@@ -16,7 +17,8 @@ class bcolors:
 
 def sendAssertReply(command, expectedReply):
     reply = sendGetReply(command)
-    assert reply == chr(2)+expectedReply+";"
+    assert reply == chr(2) + expectedReply + ";"
+
 
 def sendGetReply(command):
     reply = ''
@@ -49,12 +51,12 @@ reply_dict = {}
 for loop in range(100, 0, -1):
 
     for i in range(32):
-        inputID = "I"+str(i+1)
+        inputID = "I" + str(i + 1)
         command = ""
-        command += "CNq:"+inputID+"&"
-        command += "PIq:"+inputID+"&"
-        command += "MUq:"+inputID+"&"
-        command += "FDq:"+inputID
+        command += "CNq:" + inputID + "&"
+        command += "PIq:" + inputID + "&"
+        command += "MUq:" + inputID + "&"
+        command += "FDq:" + inputID
 
         reply = sendGetReply(command)
         expectedReply = reply_dict.get(inputID, "")
@@ -69,8 +71,8 @@ for loop in range(100, 0, -1):
 
     command = ""
     for i in range(8):
-        inputID = "AX"+str(i+1)
-        command += "CNq:"+inputID+"&"
+        inputID = "AX" + str(i + 1)
+        command += "CNq:" + inputID + "&"
     command += "SCq"
     reply = sendGetReply(command)
     expectedReply = reply_dict.get(inputID, "")

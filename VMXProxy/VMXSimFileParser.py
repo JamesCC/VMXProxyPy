@@ -20,11 +20,12 @@
 """
 
 __author__ = "James Covey-Crump"
-__cpyright__ = "Copyright 2018, James Covey-Crump"
+__copyright__ = "Copyright 2018, James Covey-Crump"
 __license__ = "LGPLv3"
 
 import logging
 import re
+
 
 class VMXSimFileParser(object):
     """An object to read and parse a file to issue commands to the supplied
@@ -48,7 +49,7 @@ class VMXSimFileParser(object):
         response = self.__cmd_processor.process(command_out)
         response = response.replace(chr(2), "<stx>").replace(chr(6), "<ack>")
         if response != expected_reply:
-            logging.warning("Response to " + command + " was " + response + \
+            logging.warning("Response to " + command + " was " + response +
                             " not " + expected_reply)
         else:
             self.__successful_cmd_count += 1
@@ -70,12 +71,11 @@ class VMXSimFileParser(object):
                         self.issue_sim_command(modified_command, expected_reply)
                 else:
                     self.issue_sim_command(command, expected_reply)
-            else: # no match report failure
+            else:   # no match report failure
                 self.__cmd_count += 1
                 return False
         # report success
         return True
-
 
     def read_file(self, filename):
         """Read a file, parsing the lines, and issuing commands to the command

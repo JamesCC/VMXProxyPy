@@ -20,10 +20,11 @@
 """
 
 __author__ = "James Covey-Crump"
-__cpyright__ = "Copyright 2018, James Covey-Crump"
+__copyright__ = "Copyright 2018, James Covey-Crump"
 __license__ = "LGPLv3"
 
 import serial
+
 
 class VMXSerialPort(object):
     """An instance of pyserial's Serial class.  It is specific to the VMixer

@@ -3,6 +3,11 @@
 
 """Main entry point for zip and directory usage of python interpretor startup."""
 
+__author__ = "James Covey-Crump"
+__copyright__ = "Copyright 2018, James Covey-Crump"
+__license__ = "LGPLv3"
+__version__ = "3.0.0"
+
 from __future__ import print_function
 
 import os
@@ -19,6 +24,7 @@ except ImportError:
         print("GUI not supported on this platform (perhaps missing tkinter?)", file=sys.stderr)
         return False
 
+
 def main():
     """Main entry point, handles parameter parsing."""
     parser = argparse.ArgumentParser(prog="VMXProxy",
@@ -29,37 +35,37 @@ Roland VMixer interface adaptor.  It can run in three modes.
  1. Simulation of VMX Proxy over a network        (if --serial without --net)
  2. Simulation of a VMixer itself over serial     (if --net without --serial)
  3. VMX Proxy - provide a bridge, specifically to handle the Roland VMixer
-      protocol from network to a serial port      (if both --serial and --net)""")
+            protocol from network to a serial port      (if both --serial and --net)""")
 
     parser.add_argument("-q", "--quiet", dest="quiet", action="store_true",
-                      help="quiet mode", default=False)
+                        help="quiet mode", default=False)
 
     parser.add_argument("-v", "--verbose", dest="verbosity", action="store_true",
-                      help="show debug", default=False)
+                        help="show debug", default=False)
 
     parser.add_argument("-s", "--serial", dest="serial",
-                      help="use serial port as proxy", default=None, metavar="PORT")
+                        help="use serial port as proxy", default=None, metavar="PORT")
 
     parser.add_argument("-b", "--baud", dest="baud",
-                      help="serial port baud rate", default=115200, metavar="BAUD")
+                        help="serial port baud rate", default=115200, metavar="BAUD")
 
     parser.add_argument("-n", "--net", dest="port",
-                      help="set host_port_number for network", default=None, metavar="PORT")
+                        help="set host_port_number for network", default=None, metavar="PORT")
 
     parser.add_argument("-p", "--passcodefile", dest="passcodefile",
-                      help="use passcode authentication", default=None, metavar="FILE")
+                        help="use passcode authentication", default=None, metavar="FILE")
 
     parser.add_argument("-z", "--delay", dest="debug_cmd_delay",
-                      help="(debug) set random delay", default=None, metavar="MS")
+                        help="(debug) set random delay", default=None, metavar="MS")
 
     parser.add_argument("-x", "--discard", dest="debug_discard_rate",
-                      help="(debug) set discard rate", default=None, metavar="X")
+                        help="(debug) set discard rate", default=None, metavar="X")
 
     parser.add_argument("--version", dest="version", action="store_true",
-                      help="show version", default=False)
+                        help="show version", default=False)
 
     parser.add_argument("-g", "--gui", dest="gui", action="store_true",
-                      help="show GUI for altering configuration", default=False)
+                        help="show GUI for altering configuration", default=False)
 
     args = parser.parse_args()
 
@@ -86,6 +92,7 @@ Roland VMixer interface adaptor.  It can run in three modes.
               verbosity=verbosity)
 
     os._exit(0)
+
 
 if __name__ == "__main__":
     main()
