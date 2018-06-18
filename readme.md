@@ -17,12 +17,13 @@ There are three modes of operation...
   1. Network Simulation Mode - where VMXProxy pretends to be connected to a V-Mixer mixing
      console, but does not use a serial port.  Useful for testing the Android application.
 
-  2. Serial Port Simulation Mode - where VMXProxy pretends to be a V-Mixer console.
+  2. Proxy Mode - where VMXProxy does its primary purpose which is to forward on network
 
-  3. Proxy Mode - where VMXProxy does its primary purpose which is to forward on network
      traffic to the serial port (connected to a V-Mixer console) and echo the responses back.
 
-VMixer mixing consoles have strict handshake protocol which is fine over a serial connection,
+  3. Serial Port Simulation Mode - where VMXProxy pretends to be a V-Mixer console.
+
+V-Mixer mixing consoles have strict handshake protocol which is fine over a serial connection,
 but over network traffic the long round trip delays can make the protocol very slow.
 
 VMXProxy dramatically improves performance for the android app, as we are able to concatenate
@@ -236,7 +237,7 @@ find simrc.txt in the current directory.
 
 ### Installing as a Linux service (to start at bootup)
 
-A sysV init script is used to create a service that will automatically run when the system boots.
+A sysV init script is used to create a service that will automatically run when the system boots.  One day I'll get with the times and create a systemd service file, but the below is still working fine.
 
 To install the service use `make install` with OPTIONS set to the required arguments for when
 starting VMXProxy.  For example, choose one of the following...
@@ -252,7 +253,9 @@ To remind yourself of the options type...
 
     python3 -m VMXProxy --help
 
-Once you have run the above install command, to save you rebooting, start the service manually to
+This command creates a file `/etc/init.d/VMXProxyStartup ` which will start VMXProxy with the the options you've supplied above.
+
+Once you have run the above install command, to save you rebooting, you can start the service manually to
 see if all is well...
 
     sudo /etc/init.d/VMXProxyStartup start      # start service
@@ -261,7 +264,7 @@ You can query the state of the service...
 
     sudo make install_status
 
-Lastly, you can remove (uninstall) the service just by...
+The service will automatically start at boot.  Lastly, you can remove (uninstall) the service just by...
 
     sudo make uninstall
 
@@ -269,17 +272,24 @@ Lastly, you can remove (uninstall) the service just by...
 ### Installing on a Raspberry Pi
 
 I have had great success in following the above instructions for a standard Raspberry Pi Linux
-install.  The original Raspberry Pi is more than powerful enough.
+install.  The original Raspberry Pi is more than powerful enough - I've tried this on a Raspberry Pi 1 Model B, and a Raspberry Pi 2, but others should work fine.
 
 This is a very cheap (~£30) mini computer which runs Linux.  With a serial port adapter and a USB
 power supply it becomes your very own terminal adapter for the V-Mixer.  Unless you buy a WiFi
-dongle, you will need to connect it to your wireless router via an Ethernet cable.
+dongle (or get a Raspberry Pi 3), you will need to connect it to your wireless router via an Ethernet cable.
 
-See <http://www.raspberrypi.org/> for more info.
+See <http://www.raspberrypi.org/> for more info.  Ethernet is just plug and play (if you're happy with DHCP), but otherwise setting up networking is beyond the scope of this readme (but there is plenty of guidance on the website for you).
 
-I used the Raspbian "Wheezy" Linux install.  Once that is in place you can just follow the
-instructions for Linux above to install and get a service running (you won't need to install
-git or python as they will already be installed).
+I've used RASPBIAN STRETCH LITE successfully <https://www.raspberrypi.org/downloads/raspbian/> (non desktop), but any version of raspbian should be okay.
+
+- <https://downloads.raspberrypi.org/raspbian_lite_latest>
+- unzipped
+
+I use Etcher to create SD image - <https://etcher.io/>
+
+- Used 8GB SD Card (but only 2G is needed)
+
+Once that is in place, boot it, and you can just follow the instructions for Linux above to install and get a service running (you won't need to install git or python as they will already be installed).
 
 The Raspberry Pi boots within 20 seconds, and needs no user interaction, so can be boxed and left
 to be powered up and down with the mixer.
