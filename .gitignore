@@ -1,1 +1,8 @@
 *.pyc
+*.bak
+.coverage
+htmlcov/
+pylint.out
+.spyproject/
+build/
+dist/

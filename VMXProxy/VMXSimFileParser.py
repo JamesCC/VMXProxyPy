@@ -1,26 +1,31 @@
 #! /usr/bin/env python
+# -*- coding: utf-8 -*-
 
-"""Reads a file and issues commands to the supplied VMX command parser
-(VMXProcessor) object."""
+""" Reads a file and issues commands to the supplied VMX command parser (VMXProcessor) object.
 
-#    This file is part of VMXProxyPy.
-#
-#    VMXProxyPy is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU Lesser General Public License as published
-#    by the Free Software Foundation, either version 3 of the License, or
-#    (at your option) any later version.
-#
-#    VMXProxyPy is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU Lesser General Public License for more details.
-#
-#    You should have received a copy of the GNU Less General Public License
-#    along with VMXProxyPy.  If not, see <http://www.gnu.org/licenses/>.
-#
+    This file is part of VMXProxyPy.
+
+    VMXProxyPy is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published
+    by the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    VMXProxyPy is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Less General Public License
+    along with VMXProxyPy.  If not, see <http://www.gnu.org/licenses/>.
+"""
+
+__author__ = "James Covey-Crump"
+__copyright__ = "Copyright 2018, James Covey-Crump"
+__license__ = "LGPLv3"
 
 import logging
 import re
+
 
 class VMXSimFileParser(object):
     """An object to read and parse a file to issue commands to the supplied
@@ -44,7 +49,8 @@ class VMXSimFileParser(object):
         response = self.__cmd_processor.process(command_out)
         response = response.replace(chr(2), "<stx>").replace(chr(6), "<ack>")
         if response != expected_reply:
-            logging.warning("Response to " + command + " was " + response + " not " + expected_reply)
+            logging.warning("Response to " + command + " was " + response +
+                            " not " + expected_reply)
         else:
             self.__successful_cmd_count += 1
         self.__cmd_count += 1
@@ -65,12 +71,11 @@ class VMXSimFileParser(object):
                         self.issue_sim_command(modified_command, expected_reply)
                 else:
                     self.issue_sim_command(command, expected_reply)
-            else: # no match report failure
+            else:   # no match report failure
                 self.__cmd_count += 1
                 return False
         # report success
         return True
-
 
     def read_file(self, filename):
         """Read a file, parsing the lines, and issuing commands to the command
@@ -81,7 +86,7 @@ class VMXSimFileParser(object):
             for line in file_hdl:
                 line_number += 1
                 if not self.parse_line(line):
-                    logging.warning(filename +":%d bad format: %s", line_number, line)
+                    logging.warning("%s:%d bad format: %s", filename, line_number, line)
 
         if self.__successful_cmd_count == self.__cmd_count:
             logging.info("Simulator Setup Complete")
@@ -90,4 +95,3 @@ class VMXSimFileParser(object):
         logging.debug("Executed %d of %d simulation commands successfully",
                       self.__successful_cmd_count, self.__cmd_count)
         return self.__successful_cmd_count, self.__cmd_count
-

@@ -1,26 +1,31 @@
 #! /usr/bin/env python
+# -*- coding: utf-8 -*-
 
-"""Reads an passcode file and creates a dictionary of access rights indexed
-by passcode."""
+""" Reads an passcode file and creates a dictionary of access rights indexed by passcode.
 
-#    This file is part of VMXProxyPy.
-#
-#    VMXProxyPy is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU Lesser General Public License as published
-#    by the Free Software Foundation, either version 3 of the License, or
-#    (at your option) any later version.
-#
-#    VMXProxyPy is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU Lesser General Public License for more details.
-#
-#    You should have received a copy of the GNU Less General Public License
-#    along with VMXProxyPy.  If not, see <http://www.gnu.org/licenses/>.
-#
+    This file is part of VMXProxyPy.
+
+    VMXProxyPy is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published
+    by the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    VMXProxyPy is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Less General Public License
+    along with VMXProxyPy.  If not, see <http://www.gnu.org/licenses/>.
+"""
+
+__author__ = "James Covey-Crump"
+__copyright__ = "Copyright 2018, James Covey-Crump"
+__license__ = "LGPLv3"
 
 import logging
 import re
+
 
 class VMXPasscodeParser(object):
     """Parses an passcode file for passcodes and their access rights, for
@@ -34,6 +39,9 @@ class VMXPasscodeParser(object):
     def __init__(self):
         self.access_codes = {}
 
+    def badFunctionName(self):
+        pass
+
     def get_access_rights(self, passcode):
         """Return access rights for the given passcode, else an empty string
         if not found"""
@@ -41,7 +49,7 @@ class VMXPasscodeParser(object):
 
     def _parse_rights(self, passcode, raw_rights_string):
         """Parse access right to turn into condensed form"""
-        accessrights = list("-" * (2+self.MAX_AUX_CHANNELS))
+        accessrights = list("-" * (2 + self.MAX_AUX_CHANNELS))
         success = True
         for (sign, value) in re.findall(self.RegExMatchRawRights, raw_rights_string):
             value = value.upper()
@@ -58,15 +66,15 @@ class VMXPasscodeParser(object):
                 accessrights[1] = "M" if allow else "-"
 
             elif value == "AUX*":
-                for aux in range(1, self.MAX_AUX_CHANNELS+1):
-                    accessrights[aux+1] = str(aux%10) if allow else "-"
+                for aux in range(1, self.MAX_AUX_CHANNELS + 1):
+                    accessrights[aux + 1] = str(aux % 10) if allow else "-"
 
             elif value[0:3] == "AUX":
                 aux = int(value[3:])
                 if aux < 1 or aux > self.MAX_AUX_CHANNELS:
                     success = False
                 else:
-                    accessrights[aux+1] = value[-1] if allow else "-"
+                    accessrights[aux + 1] = value[-1] if allow else "-"
 
         if re.sub(self.RegExMatchRawRights, "", raw_rights_string).strip() != "":
             success = False
@@ -97,8 +105,9 @@ class VMXPasscodeParser(object):
                 for line in file_hdl:
                     line_number += 1
                     if not self.parse_line(line):
-                        logging.warning(filename + ":%d bad format: %s", line_number, line.strip())
-                logging.info("Access Code Parsing Complete - %d valid access codes", len(self.access_codes))
+                        logging.warning("%s:%d bad format: %s", filename, line_number, line.strip())
+                logging.info("Access Code Parsing Complete - %d valid access codes",
+                             len(self.access_codes))
 
         except IOError:
-            logging.info("Unable to open Access Code file - "+filename+" (server is locked down)")
+            logging.info("Unable to open Access Code file - %s (server is locked down)", filename)

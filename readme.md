@@ -1,32 +1,34 @@
 # VMXProxy
 
-<https://bitbucket.org/JamesCC/vmxproxypy>
+<https://github.com/JamesCC/VMXProxyPy>
 <https://sites.google.com/site/vmxserialremote/>
 
 
 ## Introduction
 
-A network to serial terminal server optimised for connection to Roland V-Mixer mixing consoles.  
+A network to serial terminal server optimised for connection to Roland V-Mixer mixing consoles.
 Intended to be used with VMX Serial Remote Android App.
 
-It is python script, runs under Linux, Windows and (potentially) OSX.
+It is python script, runs under Linux, Windows and (potentially) OSX.  There is a graphical
+user interface to aid setting up.
 
 There are three modes of operation...
 
-  1. Network Simulation Mode - where VMXProxy pretends to be connected to a V-Mixer mixing 
+  1. Network Simulation Mode - where VMXProxy pretends to be connected to a V-Mixer mixing
      console, but does not use a serial port.  Useful for testing the Android application.
 
-  2. Serial Port Simulation Mode - where VMXProxy pretends to be a V-Mixer console.
+  2. Proxy Mode - where VMXProxy does its primary purpose which is to forward on network
 
-  3. Proxy Mode - where VMXProxy does its primary purpose which is to forward on network 
      traffic to the serial port (connected to a V-Mixer console) and echo the responses back.
 
-VMixer mixing consoles have strict handshake protocol which is fine over a serial connection, 
+  3. Serial Port Simulation Mode - where VMXProxy pretends to be a V-Mixer console.
+
+V-Mixer mixing consoles have strict handshake protocol which is fine over a serial connection,
 but over network traffic the long round trip delays can make the protocol very slow.
 
 VMXProxy dramatically improves performance for the android app, as we are able to concatenate
-query commands and their responses minimising that round trip delay.  It also can handle 
-multiple clients (apps) connecting to the mixer, and provides some caching to limit the 
+query commands and their responses minimising that round trip delay.  It also can handle
+multiple clients (apps) connecting to the mixer, and provides some caching to limit the
 traffic going to the mixer serial port.
 
 
@@ -37,7 +39,7 @@ V-Mixer commands allow adjustment of a variety of controls, over the serial port
 
 These commands take the form... `$CMD:I1,p1,p2;`
 
-    Where $ is the ASCII character code 0x02 (STX), 
+    Where $ is the ASCII character code 0x02 (STX),
     CMD is a three letter command code,
     I1 represents the input,
     p1, p2 are two parameters (exact number depends on the cmd),
@@ -54,7 +56,7 @@ an ACK character code 0x06 (if no response information is needed).
 
 VMXProxy forwards on these commands from a network socket to the serial port, and returns back the
 responses.  It also allows concatenated commands by use of an & ampersand in place of the semicolon.
-When it sees an ampersand it breaks up the command into a series of serial port commands, 
+When it sees an ampersand it breaks up the command into a series of serial port commands,
 concatenating the results before sending the results back en-mass.  This improves performance
 significantly, important when we are already using a slow interface such as a serial port.
 
@@ -70,32 +72,40 @@ and the copy of Roland's VMixer RS232 protocol PDF in the docs directory of this
 
 The heart of VMXProxy is a python script.  It accepts command line parameters.
 
-    $ python vmxproxypy -h
-    Usage: vmxproxypy [options]
+
+    $ python -m VMXProxy -h
+    usage: VMXProxy [-h] [-q] [-v] [-s PORT] [-b BAUD] [-n PORT] [-p FILE] [-z MS]
+                    [-x X] [--version] [-g]
 
     Roland VMixer interface adaptor.  It can run in three modes.
+    
+     1. Simulation of VMX Proxy over a network        (if --serial without --net)
+     2. Simulation of a VMixer itself over serial     (if --net without --serial)
+     3. VMX Proxy - provide a bridge, specifically to handle the Roland VMixer
+          protocol from network to a serial port      (if both --serial and --net)
 
-     1. Provide a network serial interface, specifically to handle the Roland
-        VMixer protocol  (--serial and --net options supplied)
-     2. Provide an emulation of a VMixer over the network  (if no --serial option)
-     3. Provide an emulation of a VMixer over serial  (if no --net option)
-
-    Options:
+    optional arguments:
       -h, --help            show this help message and exit
       -q, --quiet           quiet mode
       -v, --verbose         show debug
-      -s PORT, --serial=PORT
+      -s PORT, --serial PORT
                             use serial port as proxy
-      -b BAUD, --baud=BAUD  serial port baud rate
-      -n PORT, --net=PORT   set host_port_number for network
-      -p FILE, --passcodefile=FILE
+      -b BAUD, --baud BAUD  serial port baud rate
+      -n PORT, --net PORT   set host_port_number for network
+      -p FILE, --passcodefile FILE
                             use passcode authentication
-      -z MS, --delay=MS     (debug) set random delay
-      -x X, --discard=X     (debug) set discard rate
+      -z MS, --delay MS     (debug) set random delay
+      -x X, --discard X     (debug) set discard rate
       --version             show version
+      -g, --gui             show GUI for altering configuration
 
-Windows users can use a compiled version of the script, to avoid needing to install python.
+The script is compatible with both Python 2.7 and Python 3.6.
 
+The -g option will present a GUI for providing the configuration or altering options already
+provided on the command line.
+
+Windows users can use a compiled version of the script, to avoid needing to install python.  By
+default it starts the GUI.
 
 
 ## Initialisation Files
@@ -103,11 +113,14 @@ Windows users can use a compiled version of the script, to avoid needing to inst
 There are two initialisation files read by VMXProxy on startup - passcodes.txt, and simrc.txt.
 The location of these files are important, so don't move them.
 
+These files are stored in the root of the project.  For windows this is C:/Program Files/VMXProxy
+and users may need admin privaledges to alter these files.
+
 
 ### Access Control - passcodes.txt
 
-When you start the server with the --passcodefile option (using start_proxy_secure.bat) you can 
-impose access restrictions to the server and what facilities can be controlled on the mixer by 
+When you start the server with the --passcodefile option (using start_proxy_secure.bat) you can
+impose access restrictions to the server and what facilities can be controlled on the mixer by
 the App. The file passcodes.txt is an example which is used by start_proxy_secure.bat.
 
 The syntax is explained in the file, but in summary access control means:
@@ -119,57 +132,62 @@ The syntax is explained in the file, but in summary access control means:
         - Allow or Disallow access to Main Faders - MAIN
         - Allow or Disallow access to specific AUX channels (or them all) - AUX
 
-The main purpose of this is to prevent accidental adjustment of the wrong feeds by the wrong 
+The main purpose of this is to prevent accidental adjustment of the wrong feeds by the wrong
 people. For example you don't want your musicians accidentally altering the Main Faders.
 
 
 ### Simulator Setup - simrc.txt
 
 Only interesting if you are testing the app.  This file is used for setting up the simulator, and
-can be fun to play with to set-up the simulator with sensible names and levels for the various 
+can be fun to play with to set-up the simulator with sensible names and levels for the various
 channels.  You don't need to adjust this file, there are already some default values in it.
 
-The simulator will validate the responses, so the commands on the left must correspond to the 
-expected responses on the right.  If you get it wrong, nothing disastrous will happen - when the 
-server is started (start_sim.bat) it will issue warnings, and the android app may struggle to 
+The simulator will validate the responses, so the commands on the left must correspond to the
+expected responses on the right.  If you get it wrong, nothing disastrous will happen - when the
+server is started (start_sim.bat) it will issue warnings, and the android app may struggle to
 remain connected (since it might not get a needed input setting).
 
-I recommend keeping a copy of the original simrc.txt. 
+I recommend keeping a copy of the original simrc.txt.
 
 
 ## Prebuilt Executable for Windows
 
-For windows you don't need to install Python, you can use a prebuilt executable, distributed as a 
-zip file.  Just unzip to a directory in a suitable place.  Uninstalling just involves deleting
-the directory.
+For windows you don't need to install Python, you can use a prebuilt executable, distributed as a
+MSI file (windows installer).  Just double click to install, and an icon will be placed on your
+desktop.
 
-The zip fle can be found on the website, with details of how to run it...  
+The installer can be found on the website, with details of how to run it...
 <https://sites.google.com/site/vmxserialremote/vmxproxy>
 
-The batch files start_proxy.bat, start_proxy_secure.bat, and start_sim.bat are there so that you
-can start the simulator by double click the relevant file.
+In the installation there are additional batch files that can be used to start the server without
+the use of the GUI.  Just double click the relevant batch file.  Edit them if necessary to change
+any key settings (such as the serial port), and drop a short cut to them on your desktop to 
+quickly execute them.
 
-Alternatively, you can also run the python script "normally", just install Python 2.7, unzip the
-zip archive, start a windows console, cd to the directory you create (with this readme.md file) and
-type...
 
-    python VMXProxy --help
+Alternatively, you can also run the python script "normally", just install Python 3.6, download
+VMXProxy from github, start a windows console, cd to the directory you create (with this readme.md
+file) and type...
+
+    python -m VMXProxy --help
+
+Note VMXProxy has a dependency on pyserial - https://pypi.python.org/pypi/pyserial
 
 
 ### Automatic Discovery
 
-If you use the "Search for Server" option in the VMX Serial Remote App, you will need to install 
-Apple's Bonjour (if running in Windows).  Linux systems use the equivalent called avahi.  This 
+If you use the "Search for Server" option in the VMX Serial Remote App, you will need to install
+Apple's Bonjour (if running in Windows).  Linux systems use the equivalent called avahi.  This
 allows VMXProxy to advertise its ip address and port number.
 
-Bonjour is used in a wide variety of places, not just Apple products.  If you don't have it 
-installed (check Control Panel / Program and Features), the simplest method is to get it is to 
+Bonjour is used in a wide variety of places, not just Apple products.  If you don't have it
+installed (check Control Panel / Program and Features), the simplest method is to get it is to
 install iTunes.
 
 I full understand if you might not want to do that.  You can install just Bonjour by itself by
-downloading the itunes installer from http://www.apple.com/uk/itunes/ and using winrar or 7zip 
-to unpack the executable (yes you can do that).  Look for... .rsrc/RCDATA/CABINET and repeat 
-the unpack operation.  In there  you'll find Bonjour.msi.  Double click to install this 
+downloading the itunes installer from http://www.apple.com/uk/itunes/ and using winrar or 7zip
+to unpack the executable (yes you can do that).  Look for... .rsrc/RCDATA/CABINET and repeat
+the unpack operation.  In there  you'll find Bonjour.msi.  Double click to install this
 independently.
 
 
@@ -177,49 +195,51 @@ independently.
 
 ### Basic environment
 
-You will need root privaledges.  For Fedora replace `apt-get` with `yum`
+You will need root privileges.  For Fedora replace `apt-get` with `yum`
 
     sudo apt-get update
     sudo apt-get install git
-    sudo apt-get install python2.7
+    sudo apt-get install python3
+    sudo apt-get install python3-pip
 
-python is very likely to already be installed on your system.
+    python --version            # reported Python 2.7.13
+    python3 --version           # reported Python 3.5.3
+    
+python is very likely to already be installed on your system.  It is recommended to use python3
+where possible, although the script will work with python 2.7.
 
-(Optional, but recommended) If you wish to use avahi (bonjour) for advertising the server so that
-you can do automatic discovery of the ip address and port for VMXProxy...
+(Optional) If you wish to use avahi (bonjour) for advertising the server so that you can do 
+automatic discovery of the ip address and port for VMXProxy...
 
     sudo apt-get install avahi-daemon avahi-utils
-    sudo update-rc.d avahi-daemon defaults
-    sudo /etc/init.d/avahi-daemon restart
+    sudo update-rc.d avahi-daemon defaults      # silent
+    sudo /etc/init.d/avahi-daemon restart       # [ok]
 
-Get the VMXProxy code itself...
+
+Now you have the environment setup, get the VMXProxy code itself...
 
     cd $HOME
-    git clone https://bitbucket.org/JamesCC/vmxproxypy.git
- 
-VMXProxy has a python module dependency on pyserial.  In most cases this will have already been 
+    git clone https://github.com/JamesCC/VMXProxyPy
+
+VMXProxy has a python module dependency on pyserial.  In most cases this will have already been
 installed as part of python, but you can check (and install) by...
 
-    pip install pyserial
-    
+    pip3 install pyserial
+
 You can now run the script using...
 
     cd vmxproxypy
-    python2 VMXProxy --help
+    python3 -m VMXProxy --help
 
-You must run the script from this directory (where this readme file is), as VMXProxy expects to 
+You must run the script from this directory (where this readme file is), as VMXProxy expects to
 find simrc.txt in the current directory.
 
 
 ### Installing as a Linux service (to start at bootup)
 
-An initrc file is used, in conjunction with `screen` to create a service which will run (in the
-background) at bootup.  Whilst it could be made to work without screen, screen is useful for
-debugging any problems you may get starting or running the service.
+A sysV init script is used to create a service that will automatically run when the system boots.  One day I'll get with the times and create a systemd service file, but the below is still working fine.
 
-    sudo apt-get install screen
-
-To install the service use make install with OPTIONS set to the required arguments for when 
+To install the service use `make install` with OPTIONS set to the required arguments for when
 starting VMXProxy.  For example, choose one of the following...
 
     sudo make install OPTIONS="--serial /dev/ttyUSB0 --net 10000"
@@ -231,9 +251,11 @@ third simulating the mixer (with passcode access control).
 
 To remind yourself of the options type...
 
-    python2 VMXProxy --help
+    python3 -m VMXProxy --help
 
-Once you have run the above install command, to save you rebooting, start the service manually to
+This command creates a file `/etc/init.d/VMXProxyStartup ` which will start VMXProxy with the the options you've supplied above.
+
+Once you have run the above install command, to save you rebooting, you can start the service manually to
 see if all is well...
 
     sudo /etc/init.d/VMXProxyStartup start      # start service
@@ -242,13 +264,7 @@ You can query the state of the service...
 
     sudo make install_status
 
-And attach to the listed screen sessions for purposes of checking VMXProxy started correctly...
-   
-    sudo screen -r <NUMBER_PREFIX_FROM_STATUS_LIST>
-
-Once attached... Ctrl A, Ctrl D detaches leaving it running, or Ctrl A, Ctrl K kills it.
-
-Lastly, you can remove (uninstall) the service just by...
+The service will automatically start at boot.  Lastly, you can remove (uninstall) the service just by...
 
     sudo make uninstall
 
@@ -256,17 +272,24 @@ Lastly, you can remove (uninstall) the service just by...
 ### Installing on a Raspberry Pi
 
 I have had great success in following the above instructions for a standard Raspberry Pi Linux
-install.  The original Raspberry Pi is more than powerful enough.
+install.  The original Raspberry Pi is more than powerful enough - I've tried this on a Raspberry Pi 1 Model B, and a Raspberry Pi 2, but others should work fine.
 
-This is a very cheap (~£30) mini computer which runs Linux.  With a serial port adapter and a USB 
-power supply it becomes your very own terminal adapter for the V-Mixer.  Unless you buy a WiFi 
-dongle, you will need to connect it to your wireless router via an Ethernet cable.  
+This is a very cheap (~£30) mini computer which runs Linux.  With a serial port adapter and a USB
+power supply it becomes your very own terminal adapter for the V-Mixer.  Unless you buy a WiFi
+dongle (or get a Raspberry Pi 3), you will need to connect it to your wireless router via an Ethernet cable.
 
-See <http://www.raspberrypi.org/> for more info.
+See <http://www.raspberrypi.org/> for more info.  Ethernet is just plug and play (if you're happy with DHCP), but otherwise setting up networking is beyond the scope of this readme (but there is plenty of guidance on the website for you).
 
-I used the Raspbian "Wheezy" Linux install.  Once that is in place you can just follow the 
-instructions for Linux above to install and get a service running (you won't need to install
-git or python as they will already be installed).
+I've used RASPBIAN STRETCH LITE successfully <https://www.raspberrypi.org/downloads/raspbian/> (non desktop), but any version of raspbian should be okay.
+
+- <https://downloads.raspberrypi.org/raspbian_lite_latest>
+- unzipped
+
+I use Etcher to create SD image - <https://etcher.io/>
+
+- Used 8GB SD Card (but only 2G is needed)
+
+Once that is in place, boot it, and you can just follow the instructions for Linux above to install and get a service running (you won't need to install git or python as they will already be installed).
 
 The Raspberry Pi boots within 20 seconds, and needs no user interaction, so can be boxed and left
 to be powered up and down with the mixer.
@@ -274,7 +297,7 @@ to be powered up and down with the mixer.
 
 ### Upgrading
 
-If you are running windows, just download a new copy from the website, unzip it and copy in your 
+If you are running windows, just download a new copy from the website, unzip it and copy in your
 passcodes.txt and simrc.txt files from your old installation before you delete it.  You may have
 also altered some .bat files for starting vmxproxy.
 
@@ -282,9 +305,9 @@ If you are running Linux, the following will upgrade your installation in place.
 
     cd $HOME/vmxproxypy
     git status
-    
-git status will report any changes you have made to the installation.  This is likely to be 
-only passcodes.txt, and maybe simrc.txt.  Copy those files so you can restore the file(s) 
+
+git status will report any changes you have made to the installation.  This is likely to be
+only passcodes.txt, and maybe simrc.txt.  Copy those files so you can restore the file(s)
 after the upgrade.
 
 The following will revert any changes in the vmxproxypy directory (and any subdirectories),
@@ -294,7 +317,8 @@ and pull in the latest vmxproxy...
     git pull
 
 Then copy back any files that have changed.  It is wise to check what you are overwriting
-looks similar (in case the upgrade as change the format of those files).
+looks similar (in case the format of the files has changed during the upgrade).
+
 
 ---
-JamesCC @ 14jun15
+JamesCC @ 10feb2018
