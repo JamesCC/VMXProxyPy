@@ -19,11 +19,6 @@ except ImportError:
         print("GUI not supported on this platform (perhaps missing tkinter?)", file=sys.stderr)
         return False
 
-__author__ = "James Covey-Crump"
-__copyright__ = "Copyright 2018, James Covey-Crump"
-__license__ = "LGPLv3"
-__version__ = "3.0.1"
-
 
 def main():
     """Main entry point, handles parameter parsing."""
