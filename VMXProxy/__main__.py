@@ -3,11 +3,6 @@
 
 """Main entry point for zip and directory usage of python interpretor startup."""
 
-__author__ = "James Covey-Crump"
-__copyright__ = "Copyright 2018, James Covey-Crump"
-__license__ = "LGPLv3"
-__version__ = "3.0.0"
-
 from __future__ import print_function
 
 import os

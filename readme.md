@@ -191,6 +191,16 @@ the unpack operation.  In there  you'll find Bonjour.msi.  Double click to insta
 independently.
 
 
+### Creating the Windows installer
+
+You can create the installer by typing:
+
+    python setup.py bdist_msi
+
+You will need to have cx_freeze installed on your system.  For a completely fresh build remove
+the build and dist directory prior to running that command.
+
+
 ## Installing under Linux
 
 ### Basic environment
