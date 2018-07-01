@@ -12,6 +12,7 @@ if exist start_VMXProxy.exe (
 
 rem go hunting for python installation
 for /d %%F in ( "C:\Python*"
+                "D:\Python\Python36-32"
                 "%ProgramFiles%\Python*"
                 "%ProgramFiles(x86)%\Python*"
                 "%LocalAppData%\Programs\Python\Python*"
