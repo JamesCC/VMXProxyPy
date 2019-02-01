@@ -25,12 +25,12 @@ all: help
 help:
 	@echo
 	@echo "Make targets:"
-	@echo "    examples                     - example usage"
+	@echo "    examples                     - show examples of usage"
 	@echo "    test                         - unittest"
 	@echo "    dist                         - create windows binaries"
+	@echo "    install uninstall            - install/remove startup service for linux"
 	@echo "    clean clean_test             - clean"
 	@echo "    mrproper                     - clean, remove dist"
-	@echo "    install uninstall            - install/remove startup service for linux"
 	@echo
 
 
@@ -38,49 +38,61 @@ help:
 examples:
 	@echo
 	@echo "Simulator on Network Port 10000..."
-	@echo "    python VMXProxy -n 10000"
+	@echo "    python3 VMXProxy -n 10000"
 	@echo
 	@echo "Simulator on Network Port 10000 with passcode authetication..."
-	@echo "    python VMXProxy -n 10000 -p passcodes.txt"
+	@echo "    python3 VMXProxy -n 10000 -p passcodes.txt"
 	@echo
 	@echo "Simulator on Serial Port /dev/ttyUSB0..."
-	@echo "    python VMXProxy -s /dev/ttyUSB0"
+	@echo "    python3 VMXProxy -s /dev/ttyUSB0"
 	@echo
 	@echo "Proxy to Serial Port /dev/ttyUSB0 on Network port 10000..."
-	@echo "    python VMXProxy -n 10000 -s /dev/ttyUSB0"
+	@echo "    python3 VMXProxy -n 10000 -s /dev/ttyUSB0"
 	@echo
 	@echo "Proxy to Serial Port /dev/ttyUSB0 on Network port 10000 with passcodes..."
-	@echo "    python VMXProxy -n 10000 -s /dev/ttyUSB0 -p passcodes.txt"
+	@echo "    python3 VMXProxy -n 10000 -s /dev/ttyUSB0 -p passcodes.txt"
 	@echo
 
 
 ###############################################################################
-# install (linux)
+# systemd install (linux)
+# SN_SUFFIX can be used to create multiple VMXProxy services (with different options)
 install:
-ifeq ($(USER),root)
+	@test "$(USER)" = "root" || (echo "Please run as root or using sudo" && false)
+	@test -n "$(OPTIONS)" || (echo "Please supply OPTIONS variable" && false)
+	(! systemctl -q is-active VMXProxy$(SN_SUFFIX).service) || systemctl stop VMXProxy$(SN_SUFFIX).service
+	perl startup_scripts/gen_service.pl $(OPTIONS) > /etc/systemd/system/VMXProxy$(SN_SUFFIX).service
+	@echo
+	@echo "type...  sudo systemctl start VMXProxy$(SN_SUFFIX).service      to start service now"
+	@echo "         sudo systemctl status VMXProxy$(SN_SUFFIX).service     to see the status"
+	@echo "         journalctl -u VMXProxy$(SN_SUFFIX).service             to see the service log"
+	@echo
+	@echo "         sudo systemctl enable VMXProxy$(SN_SUFFIX).service     to start service automatically at bootup"
+	@echo "         sudo systemctl stop VMXProxy$(SN_SUFFIX).service       to stop service"
+	@echo "         sudo systemctl disable VMXProxy$(SN_SUFFIX).service    to disable service starting at bootup"
+
+uninstall:
+	@test "$(USER)" = "root" || (echo "Please run as root or using sudo" && false)
+	@test -f /etc/systemd/system/VMXProxy$(SN_SUFFIX).service || (echo "VMXProxy$(SN_SUFFIX).service is not installed" && false)
+	(! systemctl -q is-active VMXProxy$(SN_SUFFIX).service) || systemctl stop VMXProxy$(SN_SUFFIX).service
+	systemctl disable VMXProxy$(SN_SUFFIX).service
+	rm -f /etc/systemd/system/VMXProxy$(SN_SUFFIX).service
+
+###############################################################################
+# (fallback) traditional systemV init.d install (linux)
+install_initd:
+	@test "$(USER)" = "root" || (echo "Please run as root or using sudo" && false)
+	@test -n "$(OPTIONS)" || (echo "Please supply OPTIONS variable" && false)
 	perl startup_scripts/gen_initrc.pl $(OPTIONS) > /etc/init.d/VMXProxyStartup
 	chmod 755 /etc/init.d/VMXProxyStartup
 	update-rc.d VMXProxyStartup defaults
 	@echo "type...  /etc/init.d/VMXProxyStartup start  to start service now."
-else
-	@echo Please run as root or using sudo
-endif
 
-install_status:
-ifeq ($(USER),root)
-	/etc/init.d/VMXProxyStartup status
-else
-	@echo Please run as root or using sudo
-endif
-
-uninstall:
-ifeq ($(USER),root)
+uninstall_initd:
+	@test "$(USER)" = "root" || (echo "Please run as root or using sudo" && false)
 	@echo "The following command will error if VMXProxyStart is not installed (ignore it)."
 	/etc/init.d/VMXProxyStartup stop
 	update-rc.d -f  VMXProxyStartup remove
-else
-	@echo Please run as root or using sudo
-endif
 
 
 ###############################################################################
