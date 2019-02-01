@@ -6,3 +6,4 @@ pylint.out
 .spyproject/
 build/
 dist/
+.vscode/

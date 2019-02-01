@@ -22,4 +22,5 @@ rem     -z MS, --delay=MS     (debug) set random delay
 rem     -x X, --discard=X     (debug) set discard rate
 rem ***********************************************************************************************
 
-call start_VMXProxy.bat -v --net=10000 --passcodefile=passcodes.txt
+cd %~dp0..
+call start_VMXProxy.bat -v --serial=COM6
