@@ -19,10 +19,10 @@ There are three modes of operation...
      console, but does not use a serial port.  Useful for testing the Android application.
 
   2. Proxy Mode - where VMXProxy does its primary purpose which is to forward on network
-
-     traffic to the serial port (connected to a V-Mixer console) and echo the responses back.
+     traffic to the serial port (connected to a V-Mixer console) and echos the responses back.
 
   3. Serial Port Simulation Mode - where VMXProxy pretends to be a V-Mixer console.
+     (only useful for testing VMXProxy itself, or Bluetooth adaptor setups)
 
 V-Mixer mixing consoles have strict handshake protocol which is fine over a serial connection,
 but over network traffic the long round trip delays can make the protocol very slow.
@@ -30,7 +30,7 @@ but over network traffic the long round trip delays can make the protocol very s
 VMXProxy dramatically improves performance for the android app, as we are able to concatenate
 query commands and their responses minimising that round trip delay.  It also can handle
 multiple clients (apps) connecting to the mixer, and provides some caching to limit the
-traffic going to the mixer serial port.
+traffic going to the mixer's serial port.
 
 
 ## Installation
@@ -44,7 +44,7 @@ your network to the mixer (serial port).
 - Install VMXProxy on [Raspberry Pi](docs/install_raspberry_pi.md)
 
 
-## Overview of Operation
+## Overview of Operation (Background)
 
 A Roland V-Mixer Mixer Console accepts commands to allow adjustment of a variety of controls,
 over the serial port.
@@ -86,7 +86,6 @@ and the copy of Roland's VMixer RS232 protocol PDF in the docs directory of this
 
 The heart of VMXProxy is a python script.  It accepts command line parameters.
 
-
     $ python -m VMXProxy -h
     usage: VMXProxy [-h] [-q] [-v] [-s PORT] [-b BAUD] [-n PORT] [-p FILE] [-z MS]
                     [-x X] [--version] [-g]
@@ -117,6 +116,9 @@ The script is compatible with both Python 2.7 and Python 3.6+.
 
 The -g option will present a GUI for providing the configuration or altering options already
 provided on the command line.
+
+The -z (--delay) and -x (--discard) options are only for stress testing the app, they will make
+performance worse - *please don't use them*.
 
 Windows users can use a compiled version of the script, to avoid needing to install python.  By
 default it starts the GUI unless you give it options.

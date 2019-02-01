@@ -41,17 +41,23 @@ to unpack the executable (yes you can do that).  Look for... .rsrc/RCDATA/CABINE
 the unpack operation.  In there  you'll find Bonjour.msi.  Double click to install this
 independently.
 
+This has been a disappointing feature for me.  There are many reasons why this might not work
+well on a network, and the solutions to get it working reliably long winded.  In practice you
+may wish to stick with finding your VMXProxy's IP address and entering that.  Most router won't
+change IP addresses unless they are reset.
+
 
 ## Upgrading
 
-If you are running windows, just download a new copy from the website, unzip it and copy in your
-passcodes.txt and simrc.txt files from your old installation before you delete it.  You may have
+The Android App manages most of the complex functionality, and so VMXProxy is fairly stable.  There
+has been no need to upgrade in last 4 years.  In 2018 Python 3 support was added, and GUI to aid
+configuration for windows users, but otherwise changes are to the documentation and install scripts
+keeping them up-to-date.
+
+That said, if you want to update, just download a new copy from the website, unzip it and copy in
+your passcodes.txt and simrc.txt files from your old installation before you delete it.  You may have
 also altered some .bat files for starting vmxproxy.
 
-In practice VMXProxy is fairly stable, and the only upgrades in last 3 years is the support of
-Python 3, addition of a GUI for windows users, and updates on notes for installations.  There has
-been no new features affecting the server itself, as the Android App manages most of the
-functionality.
 
 ---
 JamesCC @ 01feb2019

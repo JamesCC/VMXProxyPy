@@ -125,13 +125,13 @@ These can then both be started and enabled to run at boot:
 
 ### Upgrading
 
-In practice VMXProxy is fairly stable, and the only upgrades in last 3 years is the support of
-Python 3, addition of a GUI for windows users, and updates on notes for installations.  There has
-been no new features affecting the server itself, as the Android App manages most of the
-functionality.
+The Android App manages most of the complex functionality, and so VMXProxy is fairly stable.  There
+has been no need to upgrade in last 4 years.  In 2018 Python 3 support was added, and GUI to aid
+configuration for windows users, but otherwise changes are to the documentation and install scripts
+keeping them up-to-date.
 
 
-The following steps will upgrade your installation in place.
+That said, the following steps will upgrade your installation in place.
 
 But first check to see if you need to upgrade.
 
@@ -165,6 +165,7 @@ Lastly reinstall the service.  The `OPTIONS` should be options given in the `mak
 command in the previous section.
 
     make install OPTIONS=...
+
 
 ---
 JamesCC @ 01feb2019

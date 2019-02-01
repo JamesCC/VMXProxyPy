@@ -1,44 +1,44 @@
 # Installing on a Raspberry Pi
 
-I have had great success in following the above instructions for a standard Raspberry Pi Linux
-install.
+I have had great success in following the Linux install instructions for a standard Raspberry Pi.
 
 This is a very cheap (~£30) mini computer which runs Linux.  With a serial port adapter and a USB
-power supply it becomes your very own terminal adapter for the V-Mixer.  Unless you buy a WiFi
-dongle (or get a Raspberry Pi 3), you will need to connect it to your wireless router via an
-Ethernet cable.
+power supply it becomes your very own terminal adapter for the V-Mixer.  With Raspberry Pi 3 you
+can easily set it up to connect via WiFi to a router.
 
-The original Raspberry Pi is more than powerful enough, but it has not be tested on this platform.
-The limitations will be support of the Raspbian image (which I believe is supported).
+The original Raspberry Pi 1 is more than powerful enough.  VMXProxy runs happily on this, however
+you will need to make sure there is still support of the Raspbian image (which at Jan 2019 - is
+still supported).
 
-There should be no issue running on a Raspberry Pi 2 or 3.
+There should be no issue running on a Raspberry Pi 2 or 3 (ARMv7).
 
 See <http://www.raspberrypi.org/> for more info.  Ethernet is just plug and play (if you're happy
 with DHCP), but otherwise setting up networking is beyond the scope of this readme (but there is
-plenty of guidance on the website for you).
+plenty of guidance on the web for you).
 
 
 ## Overview
 
-I've provided a lot of detail down here, but it shouldn't be complicated, nor take too long.
+I've provided a lot of detail down here, but it shouldn't be too complicated, nor take too long.
 
-If you follow the instructions you shouldn't need a keyboard, monitor or mouse for the
-raspberry pi.
+If you follow the instructions, and you have a computer on the same network, you shouldn't need a
+keyboard, monitor or mouse for the Raspberry Pi.
 
 Steps:
 
-- Download RASPBIAN STRETCH LITE image
-- Install on SD Card using Etcher (windows tool)
+- Download RASPBIAN STRETCH LITE image (~300 Mbytes)
+- Install on SD Card (8GB+) using Etcher (windows tool)
 - Setup ssh to work on first boot
-- (optiona) setup WiFi
+- (optional) setup WiFi details
 - Power up and Boot the Pi
 - Install a (free) network scanner to find your Pi (the IP address)
 - Log on using ssh via a (free) application called Putty
-- Execute a few commands
-- Alter a few files with your settings
-- Execute a few more commands
+- Execute a few commands to install dependencies
+- Alter a few files with your settings (e.g. passcodes.txt)
+- Execute a few more commands to make it automatically run
 
-Job done.
+All these steps can be done to setup a Simulator so you can get this working without the Mixer and
+then it is a couple of quick command to switch over to a real (Mixer) setup.
 
 
 ## Downloading the Raspbian image
@@ -121,24 +121,25 @@ First thing you should do is *Change the password!*  Do this by typing:
 
 (entering in the old password `raspbian` and then your new password)
 
-The Raspberry Pi is a Linux device, so now follow the instructions for installing on a
-[Linux](install_linux.md).
+The Raspberry Pi is a Linux device, so now follow the instructions for
+[installing on Linux](install_linux.md).
 
 
 ### Upgrading
 
-In practice VMXProxy is fairly stable, and only the upgrades in last 3 years is the support of
-Python 3, addition of a GUI for windows users, and updates on notes for installations.  There has
-been no new features affecting the server itself, as the Android App manages most of the
-functionality.
+The Android App manages most of the complex functionality, and so VMXProxy is fairly stable.  There
+has been no need to upgrade in last 4 years.  In 2018 Python 3 support was added, and GUI to aid
+configuration for windows users, but otherwise changes are to the documentation and install scripts
+keeping them up-to-date.
 
-Updating is the same as in [Linux](install_linux.md).
+That said, updating is described in [Linux](install_linux.md).
 
 Just use Putty again to connect using SSH (and you're new password).  This can be done in situ, as
 you don't need a screen to do it, and you could even get an SSH client (to replace putty) for your
 phone.
 
 - [JuiceSSH](https://play.google.com/store/apps/details?id=com.sonelli.juicessh)
+
 
 ---
 JamesCC @ 01feb2019
