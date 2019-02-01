@@ -1,0 +1,19 @@
+# see https://help.github.com/articles/dealing-with-line-endings/ for more info
+#   <file> text=auto       - checkout to native line endings
+#   <file> text eol=crlf   - checkout crlf (windows)
+#   <file> text eol=lf     - checkout lf (unix)
+#   <file> binary          - checkout leave as is
+
+# Set the default behavior, in case people don't have core.autocrlf set.
+* text=auto
+
+# Explicitly declare text files you want to always be normalized and converted
+# to native line endings on checkout.
+*.py text
+
+# Explicitly declare text files you want to always be normalized and converted
+# to unix line endings on checkout.
+*.sh text eol=lf
+*.service text eol=lf
+*.pl text eol=lf
+Makefile text eol=lf

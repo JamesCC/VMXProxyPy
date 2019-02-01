@@ -33,8 +33,8 @@ if sys.version_info > (3, 0):
     from tkinter import ttk
 else:
     import Tkinter as tk
-    import tkFileDialog as filedialog
-    import ttk
+    import tkFileDialog as filedialog       # pylint: disable=E0401
+    import ttk                              # pylint: disable=E0401
 
 
 class SimpleApp(tk.Tk):

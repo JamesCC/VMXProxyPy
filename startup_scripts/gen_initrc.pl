@@ -12,7 +12,7 @@ while(<DATA>)
 
 __DATA__
 #! /bin/sh
-# /etc/init.d/VMXProxyStartup 
+# /etc/init.d/VMXProxyStartup
 
 ### BEGIN INIT INFO
 # Provides:          VMXProxy
