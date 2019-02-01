@@ -1,3 +1,5 @@
+*.tar.gz
+*.zip
 *.pyc
 *.bak
 .coverage
