@@ -101,8 +101,7 @@ class VMXProcessor(object):
             else:
                 # Send to mixer (if one is setup)
                 if self.__mixer_if:
-                    mixer_reply_ascii = self.__mixer_if.process(output_stage2.encode())
-                    mixer_reply = mixer_reply_ascii.decode()
+                    mixer_reply = self.__mixer_if.process(output_stage2)
                 else:
                     mixer_reply = self.__state_monitor.simulate(output_stage2)
 

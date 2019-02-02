@@ -50,11 +50,11 @@ class VMXSerialPort(object):
         with no parameters just to wait for a reply."""
         if string is not None:
             self.__serial.flushInput()
-            self.__serial.write(string)
+            self.__serial.write(string.encode("ascii", errors="ignore"))
         response = ""
         inside_quotes = False
         while True:
-            char = self.__serial.read(1)
+            char = self.__serial.read(1).decode("ascii", errors="ignore")
             response += char
             if char == "" or char == chr(6):
                 break

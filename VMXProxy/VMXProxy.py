@@ -88,7 +88,7 @@ class ThreadedTCPRequestHandler(socketserver.BaseRequestHandler):
         command_count = 0
         tcp_input_gatherer = VMXParser()
         try:
-            data = self.request.recv(1024).decode()
+            data = self.request.recv(1024).decode("ascii", errors="ignore")
             while data:
                 command = tcp_input_gatherer.process(data)
                 while command:
@@ -103,9 +103,9 @@ class ThreadedTCPRequestHandler(socketserver.BaseRequestHandler):
                         response = self.NOT_AUTENTICATED_RESPONSE
 
                     if response != "":
-                        self.request.sendall(response.encode())
+                        self.request.sendall(response.encode("ascii", errors="ignore"))
                     command = tcp_input_gatherer.process()
-                data = self.request.recv(1024).decode()
+                data = self.request.recv(1024).decode("ascii", errors="ignore")
         except:
             pass
         logging.info("%s Disconnected (after %d commands)", client_ip, command_count)
@@ -218,9 +218,9 @@ def vmx_proxy(serial_port_name=None, baudrate=115200,
             to_serial = ""
             tcp_input_gatherer = VMXParser()
             while True:
-                from_serial = serial_port.process(to_serial.encode())
+                from_serial = serial_port.process(to_serial)
                 to_serial = ""
-                command = tcp_input_gatherer.process(from_serial.decode())
+                command = tcp_input_gatherer.process(from_serial)
                 while command:
                     to_serial += cmd_processor.process(command)
                     command = tcp_input_gatherer.process()
