@@ -36,7 +36,7 @@ installed as part of python, but you can check (and install) by...
 
 You can now run the script using...
 
-    cd vmxproxypy
+    cd VMXProxyPy
     python3 -m VMXProxy --help
 
 You must run the script from this directory (where this readme file is), as VMXProxy expects to
@@ -109,7 +109,7 @@ Lastly, you can remove (stop and uninstall) the service just by:
 The above will install `VMXProxy.service`.  It is possible to install several services
 simulataneously by adding a suffix to the service name:
 
-    sudo make install OPTIONS="--net 10000 --passcodefile=passcodes.txt"
+    sudo make install OPTIONS="--serial /dev/ttyUSB0 --net 10000 --passcodefile=passcodes.txt"
     sudo make install SN_SUFFIX=-sim OPTIONS="--net 10001 --passcodefile=passcodes.txt"
 
 Will create two services - a regular `VMXProxy.service`, and a simulator `VMXProxy-sim.service`.
@@ -122,34 +122,37 @@ These can then both be started and enabled to run at boot:
     sudo systemctl enable VMXProxy-sim.service
     sudo systemctl start VMXProxy-sim.service
 
+If you need to uninstall you'll need to supply the SN_SUFFIX to remove the second one:
+
+    sudo make uninstall
+    sudo make uninstall SN_SUFFIX=-sim
+
 
 ### Upgrading
 
-The Android App manages most of the complex functionality, and so VMXProxy is fairly stable.  There
-has been no need to upgrade in last 4 years.  In 2018 Python 3 support was added, and GUI to aid
-configuration for windows users, but otherwise changes are to the documentation and install scripts
-keeping them up-to-date.
-
-
-That said, the following steps will upgrade your installation in place.
+The following steps will upgrade your installation in place.
 
 But first check to see if you need to upgrade.
 
-    cd $HOME/vmxproxypy
+    cd $HOME/VMXProxyPy
+    git remote update
     git status
 
-git status will report any changes you have made to the installation.  This is likely to be
-only passcodes.txt, and maybe simrc.txt.  Copy those files so you can restore the file(s)
-after the upgrade.
+git status will report any changes you have made to the installation, and whether you are
+up to date with origin/master.  If you are up to date then you don't need to do anything.
+
+You may have changed files.  This is likely to be passcodes.txt, and maybe simrc.txt.  If updating
+copy those files so you can restore them after the upgrade.
 
     cp passcodes.txt $HOME
 
 Stop the service if it is running, and uninstall it.
 
-    make uninstall
+    sudo make uninstall
 
-The following will revert any changes in the vmxproxypy directory (and any subdirectories),
-and pull in the latest vmxproxy.
+
+The following will revert any changes in the VMXProxyPy directory (and any subdirectories),
+and pull in the latest VMXProxy.
 
     git reset --hard
     git pull
@@ -168,4 +171,4 @@ command in the previous section.
 
 
 ---
-JamesCC @ 01feb2019
+JamesCC @ 02feb2019
