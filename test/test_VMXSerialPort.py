@@ -29,6 +29,7 @@ from VMXProxy.VMXSerialPort import VMXSerialPort
 
 SERIAL = None
 #SERIAL = "/dev/ttyUSB0"
+#SERIAL = "COM3"
 
 
 class TestVMXSerialPort(unittest.TestCase):

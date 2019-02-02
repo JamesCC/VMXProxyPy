@@ -127,16 +127,27 @@ The Raspberry Pi is a Linux device, so now follow the instructions for
 
 ### Upgrading
 
-The Android App manages most of the complex functionality, and so VMXProxy is fairly stable.  There
-has been no need to upgrade in last 4 years.  In 2018 Python 3 support was added, and GUI to aid
-configuration for windows users, but otherwise changes are to the documentation and install scripts
-keeping them up-to-date.
+Updating is described in [Linux](install_linux.md).
 
-That said, updating is described in [Linux](install_linux.md).
-
-Just use Putty again to connect using SSH (and you're new password).  This can be done in situ, as
+Just use Putty again to connect using SSH (and your new password).  This can be done in situ, as
 you don't need a screen to do it, and you could even get an SSH client (to replace putty) for your
 phone.
+
+**If you are using the pre-built Raspberry Pi image**, note there are several VMXProxy services
+running.  To uninstall them you'll need:
+
+    sudo make uninstall
+    sudo make uninstall SN_SUFFIX=-sim
+    sudo make uninstall SN_SUFFIX=-serial-sim
+
+And To install after the upgrade (and restoring your passcodes.txt file):
+
+    sudo make install OPTIONS="--serial /dev/ttyUSB0 --net 10000 --passcodefile=passcodes.txt"
+    sudo make install SN_SUFFIX=-sim OPTIONS="--net 10001 --passcodefile=passcodes.txt"
+    sudo make install SN_SUFFIX=-serial-sim OPTIONS="--serial /dev/ttyUSB1"
+
+
+Lastly, there are Android SSH clients (for doing on-site upgrades):
 
 - [JuiceSSH](https://play.google.com/store/apps/details?id=com.sonelli.juicessh)
 

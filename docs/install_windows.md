@@ -49,13 +49,8 @@ change IP addresses unless they are reset.
 
 ## Upgrading
 
-The Android App manages most of the complex functionality, and so VMXProxy is fairly stable.  There
-has been no need to upgrade in last 4 years.  In 2018 Python 3 support was added, and GUI to aid
-configuration for windows users, but otherwise changes are to the documentation and install scripts
-keeping them up-to-date.
-
-That said, if you want to update, just download a new copy from the website, unzip it and copy in
-your passcodes.txt and simrc.txt files from your old installation before you delete it.  You may have
+If you want to update, just download a new copy from the website, unzip it and copy in your
+passcodes.txt and simrc.txt files from your old installation before you delete it.  You may have
 also altered some .bat files for starting vmxproxy.
 
 
