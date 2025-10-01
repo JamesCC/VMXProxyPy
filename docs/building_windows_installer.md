@@ -11,6 +11,5 @@ You can create the installer by typing:
 You will need to have cx_freeze installed on your system.  For a completely fresh build remove
 the build and dist directory prior to running that command.
 
-
 ---
 JamesCC @ 01feb2019

@@ -12,32 +12,34 @@ For Linux PC's running Fedora replace `apt-get` with `dnf`.
 
     python3 --version
 
-The last command prints out the python version.  Python is very likely to already be installed on
-your system.  It is recommended to use python3 where possible, although the script will work with
-python 2.7 (if so, remove the 3 from `pip3` and `python3-pip` below when installing pyserial).
+The last command prints out the python version.  Python is very likely to
+already be installed on your system.  It is recommended to use python3 where
+possible, although the script will work with python 2.7 (if so, remove the 3
+from `pip3` and `python3-pip` below when installing pyserial).
 
 If you don't have python3 then install with:
 
     sudo apt-get install python3
 
-VMXProxy has been tested working with python 2.7.x, and 3.5 upwards.
+VMXProxy has been tested working with python 2.7.x (not recommended), and python
+3.5 upwards.
 
 
-Now you have the environment setup, get the VMXProxy code itself...
+Now you have the environment setup, get the VMXProxy code itself:
 
     cd $HOME
     git clone https://github.com/JamesCC/VMXProxyPy
 
 VMXProxy has a python module dependency on pyserial.  In most cases this will have already been
-installed as part of python, but you can check (and install) by...
+installed as part of python, but you can check (and install) by:
 
-    sudo apt-get install python3-pip
+    sudo python3 -m venv .venv
+    . ./venv/bin/activate
     pip3 install pyserial
 
-You can now run the script using...
+You can now run the script using:
 
-    cd VMXProxyPy
-    python3 -m VMXProxy --help
+    ./start_VMXProxy.sh --help
 
 You must run the script from this directory (where this readme file is), as VMXProxy expects to
 find simrc.txt in the current directory.
@@ -47,21 +49,21 @@ find simrc.txt in the current directory.
 
 This installs a systemd service, which can be set to run at bootup.
 
-To install the service use `make install OPTION=...` with the OPTIONS set to the required arguments
-for VMXProxy (to select which mode it runs in).   You can easily re-install to change options
-at a later date if you want to experiment.
+To install the service use `make install OPTION=...` with the OPTIONS set to the
+required arguments for VMXProxy (to select which mode it runs in).   You can
+easily re-install to change options at a later date if you want to experiment.
 
 
 For example, to run connecting a mixer via USB serial port adaptor (usually on /dev/ttyUSB0),
-without a passcode access control...
+without a passcode access control:
 
     sudo make install OPTIONS="--serial /dev/ttyUSB0 --net 10000"
 
-OR, to run with password control **(recommended)**...
+OR, to run with password control **(recommended)**:
 
     sudo make install OPTIONS="--serial /dev/ttyUSB0 --net 10000 --passcodefile=passcodes.txt"
 
-OR, just to try as a simulator (i.e. fake a connection to a mixer)...
+OR, just to try as a simulator (i.e. fake a connection to a mixer):
 
     sudo make install OPTIONS="--net 10000 --passcodefile=passcodes.txt"
 
@@ -112,8 +114,9 @@ simulataneously by adding a suffix to the service name:
     sudo make install OPTIONS="--serial /dev/ttyUSB0 --net 10000 --passcodefile=passcodes.txt"
     sudo make install SN_SUFFIX=-sim OPTIONS="--net 10001 --passcodefile=passcodes.txt"
 
-Will create two services - a regular `VMXProxy.service`, and a simulator `VMXProxy-sim.service`.
-Note the simulator is on port 10001, whilst the regular proxy service is on 10000.
+Will create two services - a regular `VMXProxy.service`, and a simulator
+`VMXProxy-sim.service`. Note the simulator is on port 10001, whilst the regular
+proxy service is on 10000.
 
 These can then both be started and enabled to run at boot:
 
@@ -138,34 +141,49 @@ But first check to see if you need to upgrade.
     git remote update
     git status
 
-git status will report any changes you have made to the installation, and whether you are
-up to date with origin/master.  If you are up to date then you don't need to do anything.
+git status will report any changes you have made to the installation, and
+whether you are up to date with origin/master.  If you are up to date then you
+don't need to do anything.
 
-You may have changed files.  This is likely to be passcodes.txt, and maybe simrc.txt.  If updating
-copy those files so you can restore them after the upgrade.
+You may have changed files.  This is likely to be passcodes.txt, and maybe
+simrc.txt.  If updating copy those files so you can restore them after the
+upgrade.
 
     cp passcodes.txt $HOME
 
-Stop the service if it is running, and uninstall it.
+Stop the service if it is running, and uninstall it.  Use `SN_SUFFIX` if that
+was used to create a service variant. e.g.
 
     sudo make uninstall
+    sudo make uninstall SN_SUFFIX=-sim
+    sudo make uninstall SN_SUFFIX=-serial-sim
+
+If you are unsure what it is called run:
+
+    sudo systemctl list-unit-files VMXProxy
+
+Its status can be checked with the following (substitute `VMXProxy.service` with
+the appropriate name):
+
+    sudo systemctl status VMXProxy.service
 
 
-The following will revert any changes in the VMXProxyPy directory (and any subdirectories),
-and pull in the latest VMXProxy.
+The following will revert any changes in the VMXProxyPy directory (and any
+subdirectories), and pull in the latest VMXProxy.
 
     git reset --hard
     git pull
 
-Then copy back any files that have changed.  It is wise to check what you are overwriting
-looks similar (in case the format of the files has changed during the upgrade).
+Then copy back any files that have changed.  It is wise to check what you are
+overwriting looks similar (in case the format of the files has changed during
+the upgrade).
 
     cat passcodes.txt
     cat $HOME/passcodes.txt
     cp $HOME/passcodes.txt .
 
-Lastly reinstall the service.  The `OPTIONS` should be options given in the `make install`
-command in the previous section.
+Lastly reinstall the service.  The `OPTIONS` should be options given in the
+`make install` command in the previous section.
 
     make install OPTIONS=...
 

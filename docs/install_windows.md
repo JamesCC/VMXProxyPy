@@ -6,9 +6,8 @@ For windows you don't need to install Python, you can use a prebuilt executable,
 MSI file (windows installer).  Just double click to install, and an icon will be placed on your
 desktop.
 
-The installer can be found on the website, with details of how to run it...
-<https://sites.google.com/site/vmxserialremote/vmxproxy>
-(to build it see [building_windows_installer.md](building_windows_installer.md))
+The installer can be found on the [releases page](https://github.com/JamesCC/VMXProxyPy/releases)
+(to build it see [building_windows_installer.md](building_windows_installer.md)).
 
 In the installation there are additional batch files found in `startup_scripts` that can be used
 to start the server without the use of the GUI.  Just double click the relevant batch file.  Edit
@@ -22,7 +21,12 @@ file) and type...
 
     python -m VMXProxy --help
 
-Note VMXProxy has a dependency on pyserial - https://pypi.python.org/pypi/pyserial
+Note python must be on your path and VMXProxy has a dependency on 
+pyserial - https://pypi.python.org/pypi/pyserial
+
+A batch file wraps up the call to make this simpler (and hunts down common locations for python):
+
+    start_VMXProxy.bat --help
 
 
 ## Automatic Discovery
