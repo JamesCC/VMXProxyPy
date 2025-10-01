@@ -43,14 +43,19 @@ then it is a couple of quick command to switch over to a real (Mixer) setup.
 
 ## Downloading the Raspbian image
 
-I've used RASPBIAN STRETCH LITE successfully <https://www.raspberrypi.org/downloads/raspbian/>
-(non desktop and the smallest download), but any version of raspbian should be okay.
+I've used RASPBIAN STRETCH LITE successfully (non desktop and the smallest
+download), but any version of Raspberry PI OS should be okay.  Your choice will
+largely be based on the Raspberry PI you have (Raspberry PI 3 onwards is
+supported). If you can dig out the images, Raspberry PI 1 and 2 works as well.
+
+They are all based on Debian which should align with the commands in
+the following sections.
 
 - <https://www.raspberrypi.org/downloads/raspbian/>
 
-I use Etcher to create SD image - <https://etcher.io/>
+The Raspberry PI installer now includes an SD imager.
 
-- Used 8GB SD Card (but only 2G is needed)
+- I used an 8GB SD Card (but only 2G is needed)
 
 
 ## Enable SSH
@@ -64,9 +69,9 @@ This will enable SSH on first boot.
 
 ## Enabling Wifi
 
-This can be done in advance of first boot by placing another file on the created SD Card.  If you
-want to use WiFi and you're using STETCH LITE you'll probably want to do this step as you don't
-have a nice GUI to set this up later.
+This can be done in advance of first boot by placing another file on the created
+SD Card.  If you want to use WiFi and you're using STETCH LITE you'll probably
+want to do this step as you don't have a nice GUI to set this up later.
 
 - `wpa_supplicant.conf`  (with you wifi credentials and config)
 
@@ -75,23 +80,24 @@ See https://www.e-tinkers.com/2017/03/boot-raspberry-pi-with-wifi-on-first-boot/
 
 ## First boot
 
-Once that is in place, boot it, and you can just follow the instructions for Linux above to
-install and get a service running (you won't need to install git or python as they will already
-be installed).
+Once that is in place, boot it, and you can just follow the instructions for
+Linux above to install and get a service running (you won't need to install git
+or python as they will already be installed).
 
-The Raspberry Pi boots within 20 seconds, and needs no user interaction, so can be boxed and left
-to be powered up and down with the mixer.
+Choose a sensible username and password.  These are not needed by users running
+the App, only for you setting it up.
+
+The Raspberry Pi boots within 20 seconds, and needs no user interaction
+(keyboard or display), so can be boxed and left to be powered up and down with
+the mixer.
 
 
 ## Install a network scanner on your phone.
 
-Once booted you'll need to know the Raspberry Pi's IP address.  There are helpful (free) Android
-apps that can search the network for you.
+Once booted you'll need to know the Raspberry Pi's IP address.  There are
+helpful (free) Android apps that can search the network for you.  Here is one:
 
 - [Network Analyzer](https://play.google.com/store/apps/details?id=net.techet.netanalyzerlite.an)
-- [Fing](https://play.google.com/store/apps/details?id=com.overlook.android.fing)
-
-I recommend Network Analyzer (Net Analyzer).
 
 To Scan your network:
 
@@ -113,13 +119,7 @@ that will let you execute commands on the Raspberry Pi.
 - In the "Host Name" enter the IP address you found above
 - Click Open
 
-Enter in the username `pi`, and the password `raspbian`.
-
-First thing you should do is *Change the password!*  Do this by typing:
-
-    passwd
-
-(entering in the old password `raspbian` and then your new password)
+Enter in the username, and the password.
 
 The Raspberry Pi is a Linux device, so now follow the instructions for
 [installing on Linux](install_linux.md).
@@ -133,8 +133,8 @@ Just use Putty again to connect using SSH (and your new password).  This can be 
 you don't need a screen to do it, and you could even get an SSH client (to replace putty) for your
 phone.
 
-**If you are using the pre-built Raspberry Pi image**, note there are several VMXProxy services
-running.  To uninstall them you'll need:
+Note you may have chosen to have several VMXProxy services running.  To
+uninstall them you'll need:
 
     sudo make uninstall
     sudo make uninstall SN_SUFFIX=-sim

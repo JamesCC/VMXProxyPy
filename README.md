@@ -2,7 +2,9 @@
 
 github: <https://github.com/JamesCC/VMXProxyPy>
 
-website: <https://sites.google.com/site/vmxserialremote/>
+wiki: <https://github.com/JamesCC/VMX-Serial-Remote/wiki>
+
+releases: <https://github.com/JamesCC/VMXProxyPy/releases>
 
 
 ## Introduction
@@ -38,6 +40,8 @@ traffic going to the mixer's serial port.
 If you want to get going quickly, head straight to the installation guide for your chosen
 platform.  This is to install and setup VMXProxy on the computer / device that will connect
 your network to the mixer (serial port).
+
+For Windows users you can get an single installer that avoids the need to install Python.
 
 - Install VMXProxy on [Windows](docs/install_windows.md)
 - Install VMXProxy on [Linux PC](docs/install_linux.md)

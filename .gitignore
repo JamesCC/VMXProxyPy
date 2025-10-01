@@ -9,3 +9,4 @@ pylint.out
 build/
 dist/
 .vscode/
+.venv/
