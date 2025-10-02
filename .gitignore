@@ -1,3 +1,4 @@
+*.code-workspace
 *.tar.gz
 *.zip
 *.pyc
@@ -5,7 +6,6 @@
 .coverage
 htmlcov/
 pylint.out
-.spyproject/
 build/
 dist/
 .vscode/

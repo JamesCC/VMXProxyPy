@@ -1,0 +1,26 @@
+{
+    "name": "VMX Proxy Development",
+
+    "build": {
+        // Path to your Dockerfile, relative to the .devcontainer folder
+        "dockerfile": "../Dockerfile",
+        // Context is where the build command is executed.
+        // "../" makes the build context the project root (where the Dockerfile is).
+        "context": ".."
+    },
+
+    // Optional: Install VS Code extensions inside the container
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-python.python"
+            ]
+        }
+    },
+
+    // forward the network port (assumed an unchanged default of 10000)
+    "forwardPorts": [10000],
+
+    // Command to run after the container is created (optional)
+    "postCreateCommand": "echo 'Development container ready!'"
+}

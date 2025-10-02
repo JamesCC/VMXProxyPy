@@ -9,49 +9,60 @@ releases: <https://github.com/JamesCC/VMXProxyPy/releases>
 
 ## Introduction
 
-A network to serial terminal server optimised for connection to Roland V-Mixer mixing consoles.
-Intended to be used with VMX Serial Remote Android App.
+A network to serial terminal server optimised for connection to Roland V-Mixer
+mixing consoles. Intended to be used with VMX Serial Remote Android App.
 
-It is python script, runs under Linux, Windows and (potentially) OSX.  There is a graphical
-user interface to aid setting up.
+It is python script, runs under Linux, Windows and (potentially) OSX.  It
+replaces an older ruby implementation.
+
+There is a graphical user interface to aid setting up under desktop
+environments, but in most cases you'll run it as a background service.  
 
 There are three modes of operation...
 
-  1. Network Simulation Mode - where VMXProxy pretends to be connected to a V-Mixer mixing
-     console, but does not use a serial port.  Useful for testing the Android application.
+  1. Network Simulation Mode - where VMXProxy pretends to be connected to a
+     V-Mixer mixing console, but does not use a serial port.  Useful for testing
+     the Android application.
 
-  2. Proxy Mode - where VMXProxy does its primary purpose which is to forward on network
-     traffic to the serial port (connected to a V-Mixer console) and echos the responses back.
+  2. Proxy Mode - where VMXProxy does its primary purpose which is to forward on
+     network traffic to the serial port (connected to a V-Mixer console) and
+     echos the responses back.
 
-  3. Serial Port Simulation Mode - where VMXProxy pretends to be a V-Mixer console.
-     (only useful for testing VMXProxy itself, or Bluetooth adaptor setups)
+  3. Serial Port Simulation Mode - where VMXProxy pretends to be a V-Mixer
+     console. (only useful for testing VMXProxy itself, or Bluetooth adaptor
+     setups)
 
-V-Mixer mixing consoles have strict handshake protocol which is fine over a serial connection,
-but over network traffic the long round trip delays can make the protocol very slow.
+V-Mixer mixing consoles have strict handshake protocol which is fine over a
+serial connection, but over network traffic the long round trip delays can make
+the protocol very slow.
 
-VMXProxy dramatically improves performance for the android app, as we are able to concatenate
-query commands and their responses minimising that round trip delay.  It also can handle
-multiple clients (apps) connecting to the mixer, and provides some caching to limit the
-traffic going to the mixer's serial port.
+VMXProxy dramatically improves performance for the android app, as we are able
+to concatenate query commands and their responses minimising that round trip
+delay.  It also can handle multiple clients (apps) connecting to the mixer, and
+provides some caching to limit the traffic going to the mixer's serial port.
 
 
 ## Installation
 
-If you want to get going quickly, head straight to the installation guide for your chosen
-platform.  This is to install and setup VMXProxy on the computer / device that will connect
-your network to the mixer (serial port).
+If you want to get going quickly, head straight to the installation guide for
+your chosen platform.  This is to install and setup VMXProxy on the computer /
+device that will connect your network to the mixer (serial port).
 
-For Windows users you can get an single installer that avoids the need to install Python.
+For Windows users you can get an single installer that avoids the need to
+install Python.
 
 - Install VMXProxy on [Windows](docs/install_windows.md)
 - Install VMXProxy on [Linux PC](docs/install_linux.md)
 - Install VMXProxy on [Raspberry Pi](docs/install_raspberry_pi.md)
 
+If you are looking to modify the code you might want to take a look at 
+[Developing using VS Code, WSL2 and Docker](docs/development_vscode_wsl2_docker.md)
+
 
 ## Overview of Operation (Background)
 
-A Roland V-Mixer Mixer Console accepts commands to allow adjustment of a variety of controls,
-over the serial port.
+A Roland V-Mixer Mixer Console accepts commands to allow adjustment of a variety
+of controls, over the serial port.
 
 These commands take the form of... `$CMD:I1,p1,p2;`
 
@@ -72,18 +83,20 @@ If accepted, the response is either of the same form... `$RSP:I1,p1,p2;`
 Or an ACK character code 0x06 (if no response information is needed).
 
 
-VMXProxy forwards on these commands from a network socket to the serial port, and returns back the
-responses.  It also allows concatenated commands by use of an & ampersand in place of the semicolon.
-When it sees an ampersand it breaks up the command into a series of serial port commands,
-concatenating the results before sending the results back en-mass.  This improves performance
-significantly, important when we are already using a slow interface such as a serial port.
+VMXProxy forwards on these commands from a network socket to the serial port,
+and returns back the responses.  It also allows concatenated commands by use of
+an & ampersand in place of the semicolon. When it sees an ampersand it breaks up
+the command into a series of serial port commands, concatenating the results
+before sending the results back en-mass.  This improves performance
+significantly, important when we are already using a slow interface such as a
+serial port.
 
-In simulation mode, VMXProxy will fake the responses from the mixer, but to the app it looks the
-same.
+In simulation mode, VMXProxy will fake the responses from the mixer, but to the
+app it looks the same.
 
-A list of the commands is available on the Roland website, but VMXProxy only supports a subset of
-them in simulation mode.  For more info see https://sites.google.com/site/vmxserialremote/the-concept
-and the copy of Roland's VMixer RS232 protocol PDF in the docs directory of this repository.
+A list of the commands is available on the Roland website, but VMXProxy only
+supports a subset of them in simulation mode.  For more info see the copy of
+Roland's VMixer RS232 protocol PDF in the docs directory of this repository.
 
 
 ## The Python Script
